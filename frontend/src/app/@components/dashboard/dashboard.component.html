@@ -1,0 +1,53 @@
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <h2>
+      進口稅平台
+    </h2>
+
+    <nav>
+  <a routerLink="/purchase">Dashboard</a>
+  <a routerLink="/product-manage">商品管理</a>
+  <a routerLink="/purchase">進貨試算</a>
+  <a routerLink="/hs-code">HS Code</a>
+  <a routerLink="/report">報表分析</a>
+</nav>
+
+  </aside>
+
+  <main class="main">
+
+    <div class="dashboard-container">
+
+      <h1>
+        報表分析 Dashboard
+      </h1>
+
+      <div class="chart-card">
+
+        <h2>
+          商品 Import Duty 分析
+        </h2>
+
+        <canvas #dutyChart>
+        </canvas>
+
+      </div>
+
+      <div class="chart-card">
+
+        <h2>
+          分類平均 Import Duty 分析
+        </h2>
+
+        <canvas #categoryChart>
+        </canvas>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
