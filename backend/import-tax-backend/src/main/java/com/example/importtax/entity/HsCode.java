@@ -1,7 +1,5 @@
 package com.example.importtax.entity;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -16,50 +14,35 @@ public class HsCode {
 
     private String name;
 
+    @Column(name = "category_name")
+    private String categoryName;
+
+    @Column(name = "duty_rate")
+    private Double dutyRate;
+
+    @Column(name = "vat_rate")
+    private Double vatRate;
+
     private String description;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    // Getter Setter
+    public String getCode() { return code; }
+    public void setCode(String code) { this.code = code; }
 
-    public Long getId() {
-        return id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public String getCategoryName() { return categoryName; }
+    public void setCategoryName(String categoryName) { this.categoryName = categoryName; }
 
-    public String getCode() {
-        return code;
-    }
+    public Double getDutyRate() { return dutyRate; }
+    public void setDutyRate(Double dutyRate) { this.dutyRate = dutyRate; }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+    public Double getVatRate() { return vatRate; }
+    public void setVatRate(Double vatRate) { this.vatRate = vatRate; }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
 }

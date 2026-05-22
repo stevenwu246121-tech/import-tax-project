@@ -5,11 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { Product } from '../../models/product';
 import { ApiService } from '../../@services/api.service';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss'],
 })

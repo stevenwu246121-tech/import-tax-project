@@ -1,1 +1,78 @@
-<p>hs-code works!</p>
+<div class="layout">
+
+  <aside class="sidebar">
+    <h2>進口稅平台</h2>
+
+   <nav>
+  <a routerLink="/purchase">Dashboard</a>
+  <a routerLink="/product-manage">商品管理</a>
+  <a routerLink="/purchase">進貨試算</a>
+  <a routerLink="/hs-code">HS Code</a>
+  <a routerLink="/report">報表分析</a>
+</nav>
+  </aside>
+
+  <main class="main">
+
+    <h1>HS Code 查詢</h1>
+
+    <section class="panel">
+
+      <h2>食品類 HS Code 對照表</h2>
+
+      <div class="search-box">
+
+        <input type="text" placeholder="搜尋 HS Code / 商品 / 分類" [(ngModel)]="keyword" (input)="search()">
+
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>HS Code</th>
+            <th>商品類型</th>
+            <th>分類</th>
+            <th>Import Duty</th>
+            <th>VAT</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let item of filteredHsCodes">
+
+            <td>
+              {{ item.code }}
+            </td>
+
+            <td>
+              {{ item.name }}
+            </td>
+
+            <td>
+              {{ item.categoryName }}
+            </td>
+
+            <td>
+              {{ item.dutyRate }}%
+            </td>
+
+            <td>
+              {{ item.vatRate }}%
+            </td>
+
+            <td>
+              {{ item.description }}
+            </td>
+
+          </tr>
+
+        </tbody>
+      </table>
+
+    </section>
+
+  </main>
+
+</div>

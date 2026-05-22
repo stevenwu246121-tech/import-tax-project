@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { Product } from '../models/product';
 import { PurchaseCalculateResponse } from '../models/purchase-calculate-response';
 import { PurchaseCalculateRequest } from '../models/purchase-calculate-request';
+import { HsCode } from '../models/hs-code';
 
 @Injectable({
   providedIn: 'root',
@@ -19,10 +20,8 @@ export class ApiService {
   }
 
   getJpyExchangeRate(): Observable<number> {
-  return this.http.get<number>(
-    `${this.baseUrl}/exchange-rate/jpy`
-  );
-}
+    return this.http.get<number>(`${this.baseUrl}/exchange-rate/jpy`);
+  }
 
   calculatePurchase(
     request: PurchaseCalculateRequest,
@@ -32,4 +31,19 @@ export class ApiService {
       request,
     );
   }
+
+  getHsCodes(): Observable<HsCode[]> {
+    return this.http.get<HsCode[]>(`${this.baseUrl}/hs-codes`);
+  }
+
+  createProduct(body: any) {
+    return this.http.post(`${this.baseUrl}/products`, body);
+  }
+
+  deleteProduct(productId: number) {
+
+  return this.http.delete(
+    `${this.baseUrl}/products/${productId}`
+  );
+}
 }

@@ -1,0 +1,117 @@
+<div class="layout">
+
+  <aside class="sidebar">
+
+    <h2>
+      進口稅平台
+    </h2>
+
+    <nav>
+
+      <a routerLink="/purchase">
+        Dashboard
+      </a>
+
+      <a routerLink="/product-manage" class="active">
+        商品管理
+      </a>
+
+      <a routerLink="/purchase">
+        進貨試算
+      </a>
+
+      <a routerLink="/hs-code">
+        HS Code
+      </a>
+
+      <a routerLink="/report">
+        報表分析
+      </a>
+
+    </nav>
+
+  </aside>
+
+  <main class="main">
+
+    <h1>
+      商品管理
+    </h1>
+
+    <div class="form-card">
+
+      <input type="text" placeholder="商品名稱" [(ngModel)]="productReq.name" />
+
+      <input type="number" placeholder="分類 ID" [(ngModel)]="productReq.categoryId" />
+
+      <input type="number" placeholder="HS Code ID" [(ngModel)]="productReq.hsCodeId" />
+
+      <input type="text" placeholder="來源國" [(ngModel)]="productReq.originCountry" />
+
+      <input type="text" placeholder="單位" [(ngModel)]="productReq.unit" />
+
+      <input type="number" placeholder="單價" [(ngModel)]="productReq.unitPrice" />
+
+      <button (click)="createProduct()">
+        新增商品
+      </button>
+
+    </div>
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>商品</th>
+
+          <th>分類</th>
+
+          <th>HS Code</th>
+
+          <th>價格</th>
+
+          <th>操作</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let product of products">
+
+          <td>
+            {{ product.productName }}
+          </td>
+
+          <td>
+            {{ product.categoryName }}
+          </td>
+
+          <td>
+            {{ product.hsCode }}
+          </td>
+
+          <td>
+            {{ product.unitPrice }}
+          </td>
+
+          <td>
+
+            <button class="danger" (click)="deleteProduct(product.id)">
+              刪除
+            </button>
+
+          </td>
+
+        </tr>
+
+      </tbody>
+
+    </table>
+
+  </main>
+
+</div>
