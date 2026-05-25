@@ -13,7 +13,7 @@ import { HsCode } from '../../models/hs-code';
 @Component({
   selector: 'app-hs-code',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './hs-code.component.html',
   styleUrls: ['./hs-code.component.scss'],
 })

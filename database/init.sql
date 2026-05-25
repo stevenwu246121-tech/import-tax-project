@@ -340,3 +340,13 @@ FROM product p
 JOIN category c ON p.category_id = c.id
 JOIN hs_code h ON p.hs_code_id = h.id
 JOIN import_tax_rule r ON p.hs_code_id = r.hs_code_id;
+
+INSERT INTO hs_code
+(code, name, category_name, duty_rate, vat_rate, description)
+VALUES
+('0702.00.0000', '番茄', '生鮮', 8.00, 5.00, '新鮮番茄');
+
+INSERT INTO import_tax_rule
+(import_country, origin_country, hs_code_id, duty_rate, vat_rate, effective_from, effective_to)
+VALUES
+('TW', 'JP', 8, 8.00, 5.00, '2024-01-01', '2099-12-31');

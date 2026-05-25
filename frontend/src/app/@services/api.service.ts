@@ -41,9 +41,16 @@ export class ApiService {
   }
 
   deleteProduct(productId: number) {
+    return this.http.delete(`${this.baseUrl}/products/${productId}`);
+  }
 
-  return this.http.delete(
-    `${this.baseUrl}/products/${productId}`
+  updateProduct(productId: number, body: any) {
+    return this.http.put(`${this.baseUrl}/products/${productId}`, body);
+  }
+
+  getCategories() {
+  return this.http.get<any[]>(
+    `${this.baseUrl}/categories`
   );
 }
 }
