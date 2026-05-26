@@ -1,53 +1,31 @@
-<div class="layout">
+<div class="dashboard-container">
+  <h1>報表分析 Dashboard</h1>
 
-  <aside class="sidebar">
+  <div *ngIf="isLoading" class="empty">
+    資料載入中...
+  </div>
 
-    <h2>
-      進口稅平台
-    </h2>
+  <div *ngIf="!isLoading && errorMessage" class="empty error">
+    {{ errorMessage }}
+  </div>
 
-    <nav>
-  <a routerLink="/purchase">Dashboard</a>
-  <a routerLink="/product-manage">商品管理</a>
-  <a routerLink="/purchase">進貨試算</a>
-  <a routerLink="/hs-code">HS Code</a>
-  <a routerLink="/report">報表分析</a>
-</nav>
+  <div *ngIf="!isLoading && !errorMessage && products.length === 0" class="empty">
+    目前沒有商品資料，請先新增商品。
+  </div>
 
-  </aside>
+  <div class="chart-card">
+    <h2>商品 Import Duty 分析</h2>
 
-  <main class="main">
-
-    <div class="dashboard-container">
-
-      <h1>
-        報表分析 Dashboard
-      </h1>
-
-      <div class="chart-card">
-
-        <h2>
-          商品 Import Duty 分析
-        </h2>
-
-        <canvas #dutyChart>
-        </canvas>
-
-      </div>
-
-      <div class="chart-card">
-
-        <h2>
-          分類平均 Import Duty 分析
-        </h2>
-
-        <canvas #categoryChart>
-        </canvas>
-
-      </div>
-
+    <div class="chart-wrapper">
+      <canvas #dutyChart></canvas>
     </div>
+  </div>
 
-  </main>
+  <div class="chart-card">
+    <h2>分類平均 Import Duty 分析</h2>
 
+    <div class="chart-wrapper">
+      <canvas #categoryChart></canvas>
+    </div>
+  </div>
 </div>

@@ -1,42 +1,37 @@
 import { Routes } from '@angular/router';
 
+import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { ProductManageComponent } from './@components/product-manage/product-manage.component';
-
 import { HsCodeComponent } from './@components/hs-code/hs-code.component';
-
 import { DashboardComponent } from './@components/dashboard/dashboard.component';
-import { ProductsComponent } from './@components/Products/products.component';
+import { ProductsComponent } from './@components/products/products.component';
 
 export const routes: Routes = [
   {
     path: '',
-
-    redirectTo: 'purchase',
-
-    pathMatch: 'full',
-  },
-
-  {
-    path: 'purchase',
-
-    component: ProductsComponent,
-  },
-
-  {
-    path: 'product-manage',
-
-    component: ProductManageComponent,
-  },
-
-  {
-    path: 'hs-code',
-
-    component: HsCodeComponent,
-  },
-
-  {
-    path: 'report',
-
-    component: DashboardComponent,
+    component: MainLayoutComponent,
+    children: [
+      {
+        path: '',
+        redirectTo: 'purchase',
+        pathMatch: 'full',
+      },
+      {
+        path: 'purchase',
+        component: ProductsComponent,
+      },
+      {
+        path: 'product-manage',
+        component: ProductManageComponent,
+      },
+      {
+        path: 'hs-code',
+        component: HsCodeComponent,
+      },
+      {
+        path: 'report',
+        component: DashboardComponent,
+      },
+    ],
   },
 ];

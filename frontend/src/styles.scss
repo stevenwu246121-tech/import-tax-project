@@ -1,1 +1,190 @@
-/* You can add global styles to this file, and also import other style files */
+/* =========================
+   Global Reset
+========================= */
+
+html,
+body,
+app-root {
+  display: block;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  background: #f4f7fb;
+  color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================
+   Design Tokens
+========================= */
+
+:root {
+  --color-bg: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-danger: #dc2626;
+  --color-muted: #64748b;
+  --color-border: #e5e7eb;
+  --color-table-head: #eef2f7;
+  --color-text: #0f172a;
+  --color-text-muted: #6b7280;
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+/* =========================
+   Common Layout Helpers
+========================= */
+
+.page-title {
+  font-size: 42px;
+  font-weight: 900;
+  margin: 0 0 32px;
+}
+
+.panel,
+.card,
+.form-card,
+.chart-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-card);
+}
+
+.panel {
+  margin-bottom: 32px;
+}
+
+.panel h2 {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 28px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* =========================
+   Forms
+========================= */
+
+input,
+select {
+  height: 48px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #d1d5db;
+  padding: 0 14px;
+  font-size: 16px;
+  outline: none;
+  background: white;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--color-primary);
+}
+
+/* =========================
+   Buttons
+========================= */
+
+button {
+  height: 44px;
+  min-width: 80px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--color-primary-hover);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.danger,
+.danger {
+  background: var(--color-danger);
+}
+
+button.secondary,
+.secondary {
+  background: var(--color-muted);
+}
+
+/* =========================
+   Tables
+========================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--color-table-head);
+}
+
+th,
+td {
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 16px;
+}
+
+th {
+  font-weight: 800;
+}
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* =========================
+   Small Components
+========================= */
+
+.badge {
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.empty {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
+  margin-bottom: 20px;
+}

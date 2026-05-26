@@ -1,50 +1,46 @@
-<div class="layout">
-
-  <aside class="sidebar">
-
-    <h2>
-      進口稅平台
-    </h2>
-
-    <nav>
-
-      <a routerLink="/purchase">
-        Dashboard
-      </a>
-
-      <a routerLink="/product-manage" class="active">
-        商品管理
-      </a>
-
-      <a routerLink="/purchase">
-        進貨試算
-      </a>
-
-      <a routerLink="/hs-code">
-        HS Code
-      </a>
-
-      <a routerLink="/report">
-        報表分析
-      </a>
-
-    </nav>
-
-  </aside>
-
-  <main class="main">
 
     <h1>
       商品管理
     </h1>
 
+    <div class="search-bar">
+
+      <input type="text" placeholder="搜尋商品名稱" [(ngModel)]="keyword" />
+
+    </div>
+
+    <div class="filter-bar">
+
+      <select [(ngModel)]="selectedCategory">
+
+        <option value="">
+          全部分類
+        </option>
+
+        <option *ngFor="let category of categories" [value]="category.name">
+          {{ category.name }}
+        </option>
+
+      </select>
+
+    </div>
+
+
     <div class="form-card">
 
       <input type="text" placeholder="商品名稱" [(ngModel)]="productReq.name" />
 
-      <input type="number" placeholder="分類 ID" [(ngModel)]="productReq.categoryId" />
+      <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
+        <option *ngFor="let category of categories" [ngValue]="category.id">
+          {{ category.name }}
+        </option>
+      </select>
 
-      <input type="number" placeholder="HS Code ID" [(ngModel)]="productReq.hsCodeId" />
+      <select [(ngModel)]="productReq.hsCodeId">
+        <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
+          {{ hsCode.code }} - {{ hsCode.name }}
+        </option>
+      </select>
 
       <input type="text" placeholder="來源國" [(ngModel)]="productReq.originCountry" />
 
@@ -52,8 +48,8 @@
 
       <input type="number" placeholder="單價" [(ngModel)]="productReq.unitPrice" />
 
-      <button (click)="createProduct()">
-        新增商品
+      <button (click)="submitProduct()">
+        {{ editingProductId ? '更新商品' : '新增商品' }}
       </button>
 
     </div>
@@ -80,8 +76,7 @@
 
       <tbody>
 
-        <tr *ngFor="let product of products">
-
+        <tr *ngFor="let product of filteredProducts()">
           <td>
             {{ product.productName }}
           </td>
@@ -104,6 +99,10 @@
               刪除
             </button>
 
+            <button (click)="editProduct(product)">
+              修改
+            </button>
+
           </td>
 
         </tr>
@@ -112,6 +111,3 @@
 
     </table>
 
-  </main>
-
-</div>
