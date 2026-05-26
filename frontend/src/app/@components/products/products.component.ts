@@ -1,28 +1,34 @@
 import { Component, OnInit } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 import { Product } from '../../models/product';
+
 import { ApiService } from '../../@services/api.service';
+
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnInit {
-  selectedCountry = 'TW';
-  currency = 'TWD';
-  exchangeRate = 1;
-  products: Product[] = [];
 
-  convertCurrency(amount: number): number {
-    return amount * this.exchangeRate;
-  }
+  selectedCountry = 'TW';
+
+  currency = 'TWD';
+
+  exchangeRate = 1;
+
+  products: Product[] = [];
 
   quantities: {
     [productId: number]: number;
@@ -44,69 +50,118 @@ export class ProductsComponent implements OnInit {
 
   landedCostTotal = 0;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
   }
 
+  loadProducts(): void {
+    this.apiService
+      .getProducts()
+      .subscribe({
+
+        next: (response: Product[]) => {
+          this.products = response;
+        },
+
+        error: (error: unknown) => {
+          console.error(error);
+        }
+      });
+  }
+
+  convertCurrency(amount: number): number {
+    return amount * this.exchangeRate;
+  }
+
   changeCountry(): void {
-    console.log('changeCountry:', this.selectedCountry);
+
+    console.log(
+      'changeCountry:',
+      this.selectedCountry
+    );
 
     if (this.selectedCountry === 'TW') {
+
       this.currency = 'TWD';
+
       this.exchangeRate = 1;
+
+      this.recalculateIfCartHasItems();
+
       return;
     }
 
     this.currency = 'JPY';
 
-    this.apiService.getJpyExchangeRate().subscribe({
-      next: (rate: number) => {
-        console.log('JPY Rate:', rate);
-        this.exchangeRate = rate;
-        this.calculate();
-      },
-      error: (error: unknown) => {
-        console.error('匯率取得失敗', error);
-        this.exchangeRate = 4.5;
-        this.calculate();
-      },
-    });
+    this.apiService
+      .getJpyExchangeRate()
+      .subscribe({
+
+        next: (rate: number) => {
+
+          console.log(
+            'JPY Rate:',
+            rate
+          );
+
+          this.exchangeRate = rate;
+
+          this.recalculateIfCartHasItems();
+        },
+
+        error: (error: unknown) => {
+
+          console.error(
+            '匯率取得失敗',
+            error
+          );
+
+          this.exchangeRate = 4.5;
+
+          this.recalculateIfCartHasItems();
+        }
+      });
   }
-  loadProducts(): void {
-    this.apiService.getProducts().subscribe({
-      next: (response: Product[]) => {
-        this.products = response;
-      },
-      error: (error: unknown) => {
-        console.error(error);
-      },
-    });
+
+  recalculateIfCartHasItems(): void {
+
+    if (this.cartItems.length > 0) {
+      this.calculate();
+    }
   }
 
   addToCart(product: Product): void {
-    const quantity = this.quantities[product.id];
+
+    const quantity =
+      this.quantities[product.id];
 
     if (!quantity || quantity <= 0) {
+
       alert('請輸入正確數量');
 
       return;
     }
 
-    const existItem = this.cartItems.find(
-      (item) => item.productId === product.id,
-    );
+    const existItem =
+      this.cartItems.find(
+        item =>
+          item.productId === product.id
+      );
 
     if (existItem) {
+
       existItem.quantity += quantity;
+
     } else {
+
       this.cartItems.push({
         productId: product.id,
-
         productName: product.productName,
-
-        quantity: quantity,
+        quantity: quantity
       });
     }
 
@@ -116,27 +171,31 @@ export class ProductsComponent implements OnInit {
   }
 
   removeFromCart(productId: number): void {
-    this.cartItems = this.cartItems.filter(
-      (item) => item.productId !== productId,
-    );
+
+    this.cartItems =
+      this.cartItems.filter(
+        item =>
+          item.productId !== productId
+      );
 
     if (this.cartItems.length > 0) {
+
       this.calculate();
-    } else {
-      this.calculateResponse = undefined;
 
-      this.subtotal = 0;
-
-      this.dutyTotal = 0;
-
-      this.vatTotal = 0;
-
-      this.landedCostTotal = 0;
+      return;
     }
+
+    this.resetCalculation();
   }
 
   clearCart(): void {
+
     this.cartItems = [];
+
+    this.resetCalculation();
+  }
+
+  resetCalculation(): void {
 
     this.calculateResponse = undefined;
 
@@ -150,38 +209,50 @@ export class ProductsComponent implements OnInit {
   }
 
   calculate(): void {
+
     if (this.cartItems.length === 0) {
-      alert('購物車沒有商品');
+
+      this.resetCalculation();
 
       return;
     }
 
     const request = {
-      items: this.cartItems.map((item) => ({
+      items: this.cartItems.map(item => ({
         productId: item.productId,
-
-        quantity: item.quantity,
-      })),
+        quantity: item.quantity
+      }))
     };
 
-    this.apiService.calculatePurchase(request).subscribe({
-      next: (response: PurchaseCalculateResponse) => {
-        console.log(response);
+    this.apiService
+      .calculatePurchase(request)
+      .subscribe({
 
-        this.calculateResponse = response;
+        next: (
+          response: PurchaseCalculateResponse
+        ) => {
 
-        this.subtotal = response.subtotal;
+          console.log(response);
 
-        this.dutyTotal = response.dutyTotal;
+          this.calculateResponse = response;
 
-        this.vatTotal = response.vatTotal;
+          this.subtotal =
+            response.subtotal;
 
-        this.landedCostTotal = response.landedCostTotal;
-      },
+          this.dutyTotal =
+            response.dutyTotal;
 
-      error: (error: unknown) => {
-        console.error(error);
-      },
-    });
+          this.vatTotal =
+            response.vatTotal;
+
+          this.landedCostTotal =
+            response.landedCostTotal;
+        },
+
+        error: (error: unknown) => {
+          console.error(error);
+          alert('進貨試算失敗');
+        }
+      });
   }
 }
