@@ -47,58 +47,46 @@
   {{ errorMessage }}
 </div>
 <section class="content-grid">
-  <div class="panel product-list-panel">
+  <div class="panel">
     <h2>商品列表</h2>
 
-    <div class="table-wrapper">
-      <table class="product-table">
-        <thead>
-          <tr>
-            <th>商品</th>
-            <th>分類</th>
-            <th>HS Code</th>
-            <th>Duty</th>
-            <th>VAT</th>
-            <th>單價</th>
-            <th>數量</th>
-            <th>操作</th>
-          </tr>
-        </thead>
+    <table>
+      <thead>
+        <tr>
+          <th>商品</th>
+          <th>分類</th>
+          <th>HS Code</th>
+          <th>Duty</th>
+          <th>VAT</th>
+          <th>單價</th>
+          <th>數量</th>
+          <th>操作</th>
+        </tr>
+      </thead>
 
-        <tbody>
-          <tr *ngFor="let product of products">
-            <td>{{ product.productName }}</td>
-            <td>
-              <span class="badge">{{ product.categoryName }}</span>
-            </td>
-            <td>{{ product.hsCode }}</td>
-            <td>{{ product.dutyRate }}%</td>
-            <td>{{ product.vatRate }}%</td>
-            <td>{{ product.unitPrice }}</td>
-            <td>
-              <input
-                type="number"
-                min="1"
-                placeholder="數量"
-                [(ngModel)]="quantities[product.id]"
-                [disabled]="isCalculating"
-              />
-            </td>
-            <td>
-              <button
-                (click)="addToCart(product)"
-                [disabled]="isCalculating"
-              >
-                加入
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <tbody>
+        <tr *ngFor="let product of products">
+          <td>{{ product.productName }}</td>
+          <td><span class="badge">{{ product.categoryName }}</span></td>
+          <td>{{ product.hsCode }}</td>
+          <td>{{ product.dutyRate }}%</td>
+          <td>{{ product.vatRate }}%</td>
+          <td>{{ product.unitPrice }}</td>
+          <td>
+            <input type="number" min="1" placeholder="數量" [(ngModel)]="quantities[product.id]"
+              [disabled]="isCalculating" />
+          </td>
+          <td>
+            <button (click)="addToCart(product)" [disabled]="isCalculating">
+              加入
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="panel cart-panel">
+  <div class="panel">
     <h2>進貨試算購物車</h2>
 
     <div *ngIf="cartItems.length === 0" class="empty">
@@ -117,23 +105,19 @@
     </div>
 
     <div class="actions">
-      <button
-        (click)="calculate()"
-        [disabled]="cartItems.length === 0 || isCalculating"
-      >
-        {{ isCalculating ? '試算中...' : '進貨試算' }}
+
+      <button (click)="calculate()">
+        進貨試算
       </button>
 
-      <button
-        class="secondary"
-        (click)="clearCart()"
-        [disabled]="cartItems.length === 0"
-      >
+      <button class="secondary" (click)="clearCart()">
         清空
       </button>
+
     </div>
 
     <div class="summary" *ngIf="calculateResponse">
+
       <h3>試算總額</h3>
 
       <p>
@@ -151,10 +135,11 @@
         {{ convertCurrency(vatTotal) | number:'1.2-2' }}
       </p>
 
-      <h3>
+      <h2>
         Landed Cost：{{ currency }}
         {{ convertCurrency(landedCostTotal) | number:'1.2-2' }}
-      </h3>
+      </h2>
+
     </div>
   </div>
 </section>
