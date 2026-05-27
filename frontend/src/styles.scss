@@ -1,130 +1,147 @@
-.layout {
-  display: flex;
+/* =========================
+   Global Reset
+========================= */
+
+html,
+body,
+app-root {
+  display: block;
+  width: 100%;
   min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
   background: #f4f7fb;
   color: #0f172a;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-.sidebar {
-  width: 260px;
-  height: 100%;
-  background: #07122c;
-  color: white;
-  padding: 36px 24px;
-  flex-shrink: 0;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-.sidebar h2 {
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 48px;
+/* =========================
+   Design Tokens
+========================= */
+
+:root {
+  --color-bg: #f4f7fb;
+  --color-surface: #ffffff;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-danger: #dc2626;
+  --color-muted: #64748b;
+  --color-border: #e5e7eb;
+  --color-table-head: #eef2f7;
+  --color-text: #0f172a;
+  --color-text-muted: #6b7280;
+
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
+/* =========================
+   Common Layout Helpers
+========================= */
 
-.sidebar nav a {
-  color: #e5e7eb;
-  text-decoration: none;
-  font-size: 20px;
-  font-weight: 700;
-  padding: 18px 20px;
-  border-radius: 14px;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: #2563eb;
-  color: white;
-}
-
-.main {
-  flex: 1;
-  padding: 48px;
-}
-
-.main h1 {
+.page-title {
   font-size: 42px;
   font-weight: 900;
-  margin-bottom: 32px;
+  margin: 0 0 32px;
 }
 
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.country-select {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.currency {
-  background: white;
-  padding: 16px 24px;
-  border-radius: 16px;
-  font-size: 18px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.card {
-  background: white;
-  min-height: 150px;
-  padding: 34px;
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.card span {
-  font-size: 17px;
-  color: #6b7280;
-  margin-bottom: 12px;
-}
-
-.card strong {
-  font-size: 36px;
-  font-weight: 800;
-}
-
-.highlight {
-  border-left: 6px solid #2563eb;
-}
-
-.content-grid {
-  display: grid;
-  grid-template-columns: 2.3fr 1fr;
-  gap: 28px;
+.panel,
+.card,
+.form-card,
+.chart-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-card);
 }
 
 .panel {
-  background: white;
-  border-radius: 24px;
-  padding: 36px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   margin-bottom: 32px;
 }
 
 .panel h2 {
   font-size: 32px;
   font-weight: 800;
-  margin-bottom: 28px;
+  margin: 0 0 28px;
 }
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* =========================
+   Forms
+========================= */
+
+input,
+select {
+  height: 48px;
+  border-radius: var(--radius-sm);
+  border: 1px solid #d1d5db;
+  padding: 0 14px;
+  font-size: 16px;
+  outline: none;
+  background: white;
+}
+
+input:focus,
+select:focus {
+  border-color: var(--color-primary);
+}
+
+/* =========================
+   Buttons
+========================= */
+
+button {
+  height: 44px;
+  min-width: 80px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--color-primary-hover);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.danger,
+.danger {
+  background: var(--color-danger);
+}
+
+button.secondary,
+.secondary {
+  background: var(--color-muted);
+}
+
+/* =========================
+   Tables
+========================= */
 
 table {
   width: 100%;
@@ -132,13 +149,13 @@ table {
 }
 
 thead {
-  background: #eef2f7;
+  background: var(--color-table-head);
 }
 
 th,
 td {
   padding: 20px 22px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-border);
   font-size: 16px;
 }
 
@@ -150,51 +167,16 @@ tbody tr:hover {
   background: #f9fafb;
 }
 
-input,
-select {
-  height: 48px;
-  border-radius: 12px;
-  border: 1px solid #d1d5db;
-  padding: 0 14px;
-  font-size: 16px;
-  outline: none;
-  background: white;
-}
-
-td input {
-  width: 130px;
-}
-
-button {
-  height: 44px;
-  min-width: 80px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 12px;
-  background: #2563eb;
-  color: white;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-.danger {
-  background: #dc2626;
-}
-
-.secondary {
-  background: #64748b;
-}
+/* =========================
+   Small Components
+========================= */
 
 .badge {
+  display: inline-block;
   padding: 8px 14px;
   border-radius: 999px;
   background: #dbeafe;
-  color: #2563eb;
+  color: var(--color-primary);
   font-weight: 800;
   font-size: 12px;
 }
@@ -202,28 +184,7 @@ button:hover {
 .empty {
   background: #f8fafc;
   padding: 20px;
-  border-radius: 16px;
-  color: #64748b;
+  border-radius: var(--radius-md);
+  color: var(--color-muted);
   margin-bottom: 20px;
-}
-
-.cart-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.summary {
-  background: #eef6ff;
-  border-radius: 18px;
-  padding: 24px;
-  margin-top: 24px;
 }

@@ -45,13 +45,25 @@ export class HsCodeComponent implements OnInit {
   }
 
   search(): void {
-    const keyword = this.keyword.toLowerCase();
+  const keyword = this.keyword.trim().toLowerCase();
 
-    this.filteredHsCodes = this.hsCodes.filter(
-      (item) =>
-        item.name.toLowerCase().includes(keyword) ||
-        item.code.toLowerCase().includes(keyword) ||
-        item.categoryName.toLowerCase().includes(keyword),
-    );
+  if (!keyword) {
+    this.filteredHsCodes = this.hsCodes;
+    return;
   }
+
+  this.filteredHsCodes = this.hsCodes.filter(item => {
+    const name = item.name?.toLowerCase() ?? '';
+    const code = item.code?.toLowerCase() ?? '';
+    const categoryName = item.categoryName?.toLowerCase() ?? '';
+    const description = item.description?.toLowerCase() ?? '';
+
+    return (
+      name.includes(keyword) ||
+      code.includes(keyword) ||
+      categoryName.includes(keyword) ||
+      description.includes(keyword)
+    );
+  });
+}
 }

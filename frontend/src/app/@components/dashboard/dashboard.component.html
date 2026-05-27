@@ -1,32 +1,31 @@
+<div class="dashboard-container">
+  <h1>報表分析 Dashboard</h1>
 
+  <div *ngIf="isLoading" class="empty">
+    資料載入中...
+  </div>
 
+  <div *ngIf="!isLoading && errorMessage" class="empty error">
+    {{ errorMessage }}
+  </div>
 
-    <div class="dashboard-container">
+  <div *ngIf="!isLoading && !errorMessage && products.length === 0" class="empty">
+    目前沒有商品資料，請先新增商品。
+  </div>
 
-      <h1>
-        報表分析 Dashboard
-      </h1>
+  <div class="chart-card">
+    <h2>商品 Import Duty 分析</h2>
 
-      <div class="chart-card">
-
-        <h2>
-          商品 Import Duty 分析
-        </h2>
-
-        <canvas #dutyChart>
-        </canvas>
-
-      </div>
-
-      <div class="chart-card">
-
-        <h2>
-          分類平均 Import Duty 分析
-        </h2>
-
-        <canvas #categoryChart>
-        </canvas>
-
-      </div>
-
+    <div class="chart-wrapper">
+      <canvas #dutyChart></canvas>
     </div>
+  </div>
+
+  <div class="chart-card">
+    <h2>分類平均 Import Duty 分析</h2>
+
+    <div class="chart-wrapper">
+      <canvas #categoryChart></canvas>
+    </div>
+  </div>
+</div>

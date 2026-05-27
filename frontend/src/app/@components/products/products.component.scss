@@ -1,91 +1,8 @@
-.layout {
-  display: flex;
-  min-height: 100vh;
-  background: #f4f7fb;
-  color: #0f172a;
-}
-
-/* =========================
-   Sidebar
-========================= */
-
-.sidebar {
-  width: 170px;
-  min-width: 170px;
-
-  background: #07122c;
-  color: white;
-
-  padding: 28px 14px;
-
-  flex-shrink: 0;
-}
-
-.sidebar h2 {
-  font-size: 20px;
-  font-weight: 900;
-  line-height: 1.3;
-
-  margin-bottom: 36px;
-}
-
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.sidebar nav a {
-  color: #e5e7eb;
-  text-decoration: none;
-
-  font-size: 15px;
-  font-weight: 700;
-
-  padding: 12px 14px;
-
-  border-radius: 10px;
-
-  transition: 0.2s;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: #2563eb;
-  color: white;
-}
-
-/* =========================
-   Main
-========================= */
-
-.main {
-  flex: 1;
-
-  padding: 28px 30px;
-
-  overflow-x: hidden;
-}
-
-.main h1 {
-  font-size: 42px;
-  font-weight: 900;
-
-  margin-bottom: 28px;
-
-  line-height: 1.2;
-}
-
-/* =========================
-   Toolbar
-========================= */
-
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .country-select {
@@ -96,380 +13,68 @@
 
 .currency {
   background: white;
-
-  padding: 14px 22px;
-
+  padding: 16px 24px;
   border-radius: 16px;
-
   font-size: 18px;
-  font-weight: 700;
-
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* =========================
-   Summary Cards
-========================= */
-
 .summary-grid {
   display: grid;
-
   grid-template-columns: repeat(4, 1fr);
-
-  gap: 22px;
-
-  margin-bottom: 28px;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
 .card {
-  background: white;
-
-  min-height: 120px;
-
-  padding: 26px 28px;
-
-  border-radius: 22px;
-
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-
+  min-height: 150px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .card span {
-  font-size: 15px;
-  font-weight: 600;
-
-  color: #6b7280;
-
-  margin-bottom: 10px;
+  font-size: 17px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
 }
 
 .card strong {
-  font-size: 34px;
-  font-weight: 900;
-
-  color: #111827;
+  font-size: 36px;
+  font-weight: 800;
 }
 
 .highlight {
-  border-left: 6px solid #2563eb;
+  border-left: 6px solid var(--color-primary);
 }
-
-/* =========================
-   Content Grid
-========================= */
 
 .content-grid {
   display: grid;
-
-  grid-template-columns: minmax(0, 3.5fr) 320px;
-
-  gap: 22px;
-
-  align-items: start;
-}
-
-/* =========================
-   Panel
-========================= */
-
-.panel {
-  background: white;
-
-  border-radius: 24px;
-
-  padding: 30px;
-
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-
-  overflow-x: auto;
-}
-
-.panel h2 {
-  font-size: 30px;
-  font-weight: 900;
-
-  margin-bottom: 24px;
-}
-
-/* =========================
-   Table
-========================= */
-
-table {
-  width: 100%;
-
-  border-collapse: collapse;
-
-  table-layout: auto;
-
-  min-width: 980px;
-}
-
-thead {
-  background: #eef2f7;
-}
-
-th,
-td {
-  padding: 18px 16px;
-
-  border-bottom: 1px solid #e5e7eb;
-
-  font-size: 15px;
-
-  white-space: nowrap;
-
-  vertical-align: middle;
-}
-
-th {
-  font-weight: 800;
-
-  color: #111827;
-}
-
-tbody tr:hover {
-  background: #f9fafb;
-}
-
-/* 欄位寬度 */
-
-th:first-child,
-td:first-child {
-  min-width: 140px;
-}
-
-th:nth-child(2),
-td:nth-child(2) {
-  min-width: 90px;
-}
-
-th:nth-child(3),
-td:nth-child(3) {
-  min-width: 140px;
-}
-
-th:last-child,
-td:last-child {
-  min-width: 120px;
-}
-
-/* =========================
-   Inputs
-========================= */
-
-input,
-select {
-  height: 46px;
-
-  border-radius: 12px;
-
-  border: 1px solid #d1d5db;
-
-  padding: 0 14px;
-
-  font-size: 15px;
-
-  background: white;
-
-  outline: none;
-
-  transition: 0.2s;
-}
-
-input:focus,
-select:focus {
-  border-color: #2563eb;
-
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+  grid-template-columns: 2.3fr 1fr;
+  gap: 28px;
 }
 
 td input {
-  width: 120px;
+  width: 130px;
 }
-
-/* =========================
-   Buttons
-========================= */
-
-button {
-  height: 42px;
-
-  min-width: 78px;
-
-  padding: 0 18px;
-
-  border: none;
-
-  border-radius: 12px;
-
-  background: #2563eb;
-
-  color: white;
-
-  font-size: 15px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition: 0.2s;
-}
-
-button:hover {
-  background: #1d4ed8;
-}
-
-.danger {
-  background: #dc2626;
-}
-
-.danger:hover {
-  background: #b91c1c;
-}
-
-.secondary {
-  background: #64748b;
-}
-
-.secondary:hover {
-  background: #475569;
-}
-
-/* =========================
-   Badge
-========================= */
-
-.badge {
-  display: inline-flex;
-
-  align-items: center;
-  justify-content: center;
-
-  padding: 6px 12px;
-
-  border-radius: 999px;
-
-  background: #dbeafe;
-
-  color: #2563eb;
-
-  font-size: 12px;
-  font-weight: 800;
-}
-
-/* =========================
-   Empty
-========================= */
-
-.empty {
-  background: #f8fafc;
-
-  padding: 18px;
-
-  border-radius: 16px;
-
-  color: #64748b;
-
-  margin-bottom: 18px;
-}
-
-/* =========================
-   Cart Item
-========================= */
 
 .cart-item {
   display: flex;
-
   justify-content: space-between;
   align-items: center;
-
-  padding: 14px 0;
-
-  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--color-border);
 }
-
-/* =========================
-   Actions
-========================= */
 
 .actions {
   display: flex;
-
   gap: 12px;
-
-  margin-top: 18px;
+  margin-top: 20px;
 }
-
-/* =========================
-   Summary
-========================= */
 
 .summary {
   background: #eef6ff;
-
   border-radius: 18px;
-
-  padding: 22px;
-
-  margin-top: 22px;
-}
-
-.summary p {
-  margin-bottom: 12px;
-
-  font-size: 15px;
-
-  font-weight: 600;
-}
-
-.summary strong {
-  font-size: 18px;
-  font-weight: 900;
-}
-
-/* =========================
-   Responsive
-========================= */
-
-@media (max-width: 1400px) {
-  .summary-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 992px) {
-  .layout {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    min-width: 100%;
-  }
-
-  .main {
-    padding: 24px 16px;
-  }
-
-  .summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: flex-start;
-
-    gap: 16px;
-  }
-
-  table {
-    min-width: 850px;
-  }
+  padding: 24px;
+  margin-top: 24px;
 }

@@ -1,258 +1,223 @@
 import { Component, OnInit } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
 
 import { Product } from '../../models/product';
-
 import { ApiService } from '../../@services/api.service';
-
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
+
+interface CartItem {
+  productId: number;
+  productName: string;
+  quantity: number;
+}
+
+interface PurchaseCalculateRequest {
+  items: Array<{
+    productId: number;
+    quantity: number;
+  }>;
+}
 
 @Component({
   selector: 'app-products',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnInit {
-
-  selectedCountry = 'TW';
+  selectedCountry: 'TW' | 'JP' = 'TW';
 
   currency = 'TWD';
-
   exchangeRate = 1;
 
   products: Product[] = [];
-
-  quantities: {
-    [productId: number]: number;
-  } = {};
-
-  cartItems: {
-    productId: number;
-    productName: string;
-    quantity: number;
-  }[] = [];
+  quantities: Record<number, number> = {};
+  cartItems: CartItem[] = [];
 
   calculateResponse?: PurchaseCalculateResponse;
 
   subtotal = 0;
-
   dutyTotal = 0;
-
   vatTotal = 0;
-
   landedCostTotal = 0;
 
-  constructor(
-    private apiService: ApiService
-  ) {}
+  isLoadingProducts = false;
+  isLoadingExchangeRate = false;
+  isCalculating = false;
+  errorMessage = '';
+
+  constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadProducts();
   }
 
   loadProducts(): void {
-    this.apiService
-      .getProducts()
-      .subscribe({
+    this.isLoadingProducts = true;
+    this.errorMessage = '';
 
-        next: (response: Product[]) => {
-          this.products = response;
-        },
-
-        error: (error: unknown) => {
-          console.error(error);
-        }
-      });
+    this.apiService.getProducts().subscribe({
+      next: (response: Product[]) => {
+        this.products = response ?? [];
+        this.initializeQuantities();
+        this.isLoadingProducts = false;
+      },
+      error: (error: unknown) => {
+        console.error('商品載入失敗:', error);
+        this.products = [];
+        this.isLoadingProducts = false;
+        this.errorMessage = '商品資料載入失敗，請確認後端服務是否正常。';
+      },
+    });
   }
 
-  convertCurrency(amount: number): number {
-    return amount * this.exchangeRate;
+  private initializeQuantities(): void {
+    this.products.forEach((product) => {
+      this.quantities[product.id] = this.quantities[product.id] || 1;
+    });
+  }
+
+  convertCurrency(amount: number | undefined | null): number {
+    return (amount ?? 0) * this.exchangeRate;
   }
 
   changeCountry(): void {
-
-    console.log(
-      'changeCountry:',
-      this.selectedCountry
-    );
-
     if (this.selectedCountry === 'TW') {
-
       this.currency = 'TWD';
-
       this.exchangeRate = 1;
-
       this.recalculateIfCartHasItems();
-
       return;
     }
 
     this.currency = 'JPY';
+    this.loadJpyExchangeRate();
+  }
 
-    this.apiService
-      .getJpyExchangeRate()
-      .subscribe({
+  private loadJpyExchangeRate(): void {
+    this.isLoadingExchangeRate = true;
 
-        next: (rate: number) => {
+    this.apiService.getJpyExchangeRate().subscribe({
+      next: (rate: number) => {
+        this.exchangeRate = rate;
+        this.isLoadingExchangeRate = false;
+        this.recalculateIfCartHasItems();
+      },
+      error: (error: unknown) => {
+        console.error('匯率取得失敗:', error);
 
-          console.log(
-            'JPY Rate:',
-            rate
-          );
+        // 備援匯率，避免畫面完全不能用
+        this.exchangeRate = 4.5;
+        this.isLoadingExchangeRate = false;
 
-          this.exchangeRate = rate;
-
-          this.recalculateIfCartHasItems();
-        },
-
-        error: (error: unknown) => {
-
-          console.error(
-            '匯率取得失敗',
-            error
-          );
-
-          this.exchangeRate = 4.5;
-
-          this.recalculateIfCartHasItems();
-        }
-      });
+        this.recalculateIfCartHasItems();
+      },
+    });
   }
 
   recalculateIfCartHasItems(): void {
-
-    if (this.cartItems.length > 0) {
-      this.calculate();
-    }
-  }
-
-  addToCart(product: Product): void {
-
-    const quantity =
-      this.quantities[product.id];
-
-    if (!quantity || quantity <= 0) {
-
-      alert('請輸入正確數量');
-
+    if (this.cartItems.length === 0) {
       return;
     }
-
-    const existItem =
-      this.cartItems.find(
-        item =>
-          item.productId === product.id
-      );
-
-    if (existItem) {
-
-      existItem.quantity += quantity;
-
-    } else {
-
-      this.cartItems.push({
-        productId: product.id,
-        productName: product.productName,
-        quantity: quantity
-      });
-    }
-
-    this.quantities[product.id] = 0;
 
     this.calculate();
   }
 
-  removeFromCart(productId: number): void {
+  getQuantity(productId: number): number {
+    return this.quantities[productId] || 1;
+  }
 
-    this.cartItems =
-      this.cartItems.filter(
-        item =>
-          item.productId !== productId
-      );
+  addToCart(product: Product): void {
+    const quantity = this.getQuantity(product.id);
 
-    if (this.cartItems.length > 0) {
-
-      this.calculate();
-
+    if (quantity <= 0) {
+      alert('請輸入正確數量');
+      this.quantities[product.id] = 1;
       return;
     }
 
-    this.resetCalculation();
+    const existItem = this.cartItems.find(
+      (item) => item.productId === product.id
+    );
+
+    if (existItem) {
+      existItem.quantity += quantity;
+    } else {
+      this.cartItems.push({
+        productId: product.id,
+        productName: product.productName,
+        quantity,
+      });
+    }
+
+    this.quantities[product.id] = 1;
+    this.calculate();
+  }
+
+  removeFromCart(productId: number): void {
+    this.cartItems = this.cartItems.filter(
+      (item) => item.productId !== productId
+    );
+
+    this.recalculateIfCartHasItems();
+
+    if (this.cartItems.length === 0) {
+      this.resetCalculation();
+    }
   }
 
   clearCart(): void {
-
     this.cartItems = [];
-
     this.resetCalculation();
   }
 
-  resetCalculation(): void {
-
-    this.calculateResponse = undefined;
-
-    this.subtotal = 0;
-
-    this.dutyTotal = 0;
-
-    this.vatTotal = 0;
-
-    this.landedCostTotal = 0;
-  }
-
   calculate(): void {
-
     if (this.cartItems.length === 0) {
-
       this.resetCalculation();
-
       return;
     }
 
-    const request = {
-      items: this.cartItems.map(item => ({
+    const request = this.buildCalculateRequest();
+
+    this.isCalculating = true;
+    this.errorMessage = '';
+
+    this.apiService.calculatePurchase(request).subscribe({
+      next: (response: PurchaseCalculateResponse) => {
+        this.calculateResponse = response;
+        this.applyCalculationResult(response);
+        this.isCalculating = false;
+      },
+      error: (error: unknown) => {
+        console.error('進貨試算失敗:', error);
+        this.isCalculating = false;
+        this.errorMessage = '進貨試算失敗，請確認商品資料或後端服務。';
+      },
+    });
+  }
+
+  private buildCalculateRequest(): PurchaseCalculateRequest {
+    return {
+      items: this.cartItems.map((item) => ({
         productId: item.productId,
-        quantity: item.quantity
-      }))
+        quantity: item.quantity,
+      })),
     };
+  }
 
-    this.apiService
-      .calculatePurchase(request)
-      .subscribe({
+  private applyCalculationResult(response: PurchaseCalculateResponse): void {
+    this.subtotal = response.subtotal ?? 0;
+    this.dutyTotal = response.dutyTotal ?? 0;
+    this.vatTotal = response.vatTotal ?? 0;
+    this.landedCostTotal = response.landedCostTotal ?? 0;
+  }
 
-        next: (
-          response: PurchaseCalculateResponse
-        ) => {
-
-          console.log(response);
-
-          this.calculateResponse = response;
-
-          this.subtotal =
-            response.subtotal;
-
-          this.dutyTotal =
-            response.dutyTotal;
-
-          this.vatTotal =
-            response.vatTotal;
-
-          this.landedCostTotal =
-            response.landedCostTotal;
-        },
-
-        error: (error: unknown) => {
-          console.error(error);
-          alert('進貨試算失敗');
-        }
-      });
+  resetCalculation(): void {
+    this.calculateResponse = undefined;
+    this.subtotal = 0;
+    this.dutyTotal = 0;
+    this.vatTotal = 0;
+    this.landedCostTotal = 0;
   }
 }
