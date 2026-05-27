@@ -2,13 +2,13 @@ import { Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
-import { RouterLink } from '@angular/router';
-
 import { FormsModule } from '@angular/forms';
 
 import { ApiService } from '../../@services/api.service';
 
 import { HsCode } from '../../models/hs-code';
+
+import { Category } from '../../models/category';
 
 @Component({
   selector: 'app-hs-code',
@@ -22,22 +22,51 @@ export class HsCodeComponent implements OnInit {
 
   filteredHsCodes: HsCode[] = [];
 
-  keyword: string = '';
+  categories: Category[] = [];
+
+  keyword = '';
+
+  editingHsCodeId: number | null = null;
+
+  hsCodeReq = {
+    code: '',
+    name: '',
+    categoryId: 1,
+    dutyRate: 0,
+    vatRate: 5,
+    description: '',
+  };
+
+  openedActionId: number | null = null;
+
+  toggleActionMenu(id: number): void {
+    this.openedActionId = this.openedActionId === id ? null : id;
+  }
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadHsCodes();
+    this.loadCategories();
   }
 
   loadHsCodes(): void {
     this.apiService.getHsCodes().subscribe({
       next: (response: HsCode[]) => {
         this.hsCodes = response;
-
         this.filteredHsCodes = response;
       },
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
+  }
 
+  loadCategories(): void {
+    this.apiService.getCategories().subscribe({
+      next: (response: Category[]) => {
+        this.categories = response;
+      },
       error: (error: unknown) => {
         console.error(error);
       },
@@ -45,25 +74,135 @@ export class HsCodeComponent implements OnInit {
   }
 
   search(): void {
-  const keyword = this.keyword.trim().toLowerCase();
+    const keyword = this.keyword.trim().toLowerCase();
 
-  if (!keyword) {
-    this.filteredHsCodes = this.hsCodes;
-    return;
+    if (!keyword) {
+      this.filteredHsCodes = this.hsCodes;
+      return;
+    }
+
+    this.filteredHsCodes = this.hsCodes.filter((item) => {
+      const name = item.name?.toLowerCase() ?? '';
+      const code = item.code?.toLowerCase() ?? '';
+      const categoryName = item.categoryName?.toLowerCase() ?? '';
+      const description = item.description?.toLowerCase() ?? '';
+
+      return (
+        name.includes(keyword) ||
+        code.includes(keyword) ||
+        categoryName.includes(keyword) ||
+        description.includes(keyword)
+      );
+    });
   }
 
-  this.filteredHsCodes = this.hsCodes.filter(item => {
-    const name = item.name?.toLowerCase() ?? '';
-    const code = item.code?.toLowerCase() ?? '';
-    const categoryName = item.categoryName?.toLowerCase() ?? '';
-    const description = item.description?.toLowerCase() ?? '';
+  submitHsCode(): void {
+    if (!this.isValidHsCode()) {
+      return;
+    }
 
-    return (
-      name.includes(keyword) ||
-      code.includes(keyword) ||
-      categoryName.includes(keyword) ||
-      description.includes(keyword)
-    );
-  });
-}
+    if (this.editingHsCodeId) {
+      this.apiService
+        .updateHsCode(this.editingHsCodeId, this.hsCodeReq)
+        .subscribe({
+          next: () => {
+            alert('更新成功');
+            this.loadHsCodes();
+            this.resetForm();
+          },
+          error: (error: unknown) => {
+            console.error(error);
+            alert('更新失敗');
+          },
+        });
+
+      return;
+    }
+
+    this.apiService.createHsCode(this.hsCodeReq).subscribe({
+      next: () => {
+        alert('新增成功');
+        this.loadHsCodes();
+        this.resetForm();
+      },
+      error: (error: unknown) => {
+        console.error(error);
+        alert('新增失敗');
+      },
+    });
+  }
+
+  isValidHsCode(): boolean {
+    if (!this.hsCodeReq.code.trim()) {
+      alert('請輸入 HS Code');
+      return false;
+    }
+
+    if (!this.hsCodeReq.name.trim()) {
+      alert('請輸入商品名稱');
+      return false;
+    }
+
+    if (!this.hsCodeReq.categoryId) {
+      alert('請選擇分類');
+      return false;
+    }
+
+    if (this.hsCodeReq.dutyRate < 0) {
+      alert('Import Duty 不可小於 0');
+      return false;
+    }
+
+    if (this.hsCodeReq.vatRate < 0) {
+      alert('VAT 不可小於 0');
+      return false;
+    }
+
+    return true;
+  }
+
+  editHsCode(hsCode: HsCode): void {
+    this.editingHsCodeId = hsCode.id;
+
+    this.hsCodeReq = {
+      code: hsCode.code,
+      name: hsCode.name,
+      categoryId: hsCode.categoryId,
+      dutyRate: hsCode.dutyRate,
+      vatRate: hsCode.vatRate,
+      description: hsCode.description ?? '',
+    };
+  }
+
+  deleteHsCode(id: number): void {
+    const confirmed = confirm('確定要刪除嗎？');
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.apiService.deleteHsCode(id).subscribe({
+      next: () => {
+        alert('刪除成功');
+        this.loadHsCodes();
+      },
+      error: (error: unknown) => {
+        console.error(error);
+        alert('刪除失敗，可能已有商品使用此 HS Code');
+      },
+    });
+  }
+
+  resetForm(): void {
+    this.hsCodeReq = {
+      code: '',
+      name: '',
+      categoryId: 1,
+      dutyRate: 0,
+      vatRate: 5,
+      description: '',
+    };
+
+    this.editingHsCodeId = null;
+  }
 }

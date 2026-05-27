@@ -6,6 +6,8 @@ export interface HsCode {
 
   name: string;
 
+  categoryId: number;
+
   categoryName: string;
 
   dutyRate: number;

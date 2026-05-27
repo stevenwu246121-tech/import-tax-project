@@ -45,6 +45,12 @@ export class ProductManageComponent implements OnInit {
 
   editingProductId: number | null = null;
 
+  openedActionId: number | null = null;
+
+  toggleActionMenu(id: number): void {
+    this.openedActionId = this.openedActionId === id ? null : id;
+  }
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
@@ -182,17 +188,58 @@ export class ProductManageComponent implements OnInit {
   }
 
   submitProduct(): void {
+    if (!this.productReq.name.trim()) {
+      alert('請輸入商品名稱');
+      return;
+    }
+
+    if (!this.productReq.originCountry) {
+      alert('請選擇來源國');
+      return;
+    }
+
+    if (!this.productReq.unit.trim()) {
+      alert('請輸入單位');
+      return;
+    }
+
+    if (this.productReq.unitPrice < 0) {
+      alert('單價不可小於 0');
+      return;
+    }
+
+    if (
+      this.productReq.name.includes('日本') &&
+      this.productReq.originCountry !== 'JP'
+    ) {
+      alert('商品名稱包含「日本」，來源國只能選 JP');
+      return;
+    }
+
+    if (
+      this.productReq.name.includes('台灣') &&
+      this.productReq.originCountry !== 'TW'
+    ) {
+      alert('商品名稱包含「台灣」，來源國只能選 TW');
+      return;
+    }
+
     if (this.editingProductId) {
       this.apiService
         .updateProduct(this.editingProductId, this.productReq)
         .subscribe({
           next: () => {
             alert('更新成功');
+
             this.loadProducts();
+
             this.resetForm();
           },
+
           error: (error) => {
             console.error(error);
+
+            alert('更新失敗');
           },
         });
 

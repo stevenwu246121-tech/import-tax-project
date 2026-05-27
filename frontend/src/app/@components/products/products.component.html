@@ -73,21 +73,13 @@
           <td>{{ product.vatRate }}%</td>
           <td>{{ product.unitPrice }}</td>
           <td>
-            <input
-            type="number"
-            min="1"
-            placeholder="數量"
-            [(ngModel)]="quantities[product.id]"
-            [disabled]="isCalculating"
-/>
+            <input type="number" min="1" placeholder="數量" [(ngModel)]="quantities[product.id]"
+              [disabled]="isCalculating" />
           </td>
           <td>
-            <button
-  (click)="addToCart(product)"
-  [disabled]="isCalculating"
->
-  加入
-</button>
+            <button (click)="addToCart(product)" [disabled]="isCalculating">
+              加入
+            </button>
           </td>
         </tr>
       </tbody>
@@ -113,26 +105,41 @@
     </div>
 
     <div class="actions">
-      <button
-  (click)="calculate()"
-  [disabled]="cartItems.length === 0 || isCalculating"
->
-  {{ isCalculating ? '試算中...' : '進貨試算' }}
-</button>
-      <button class="secondary" (click)="clearCart()">清空</button>
+
+      <button (click)="calculate()">
+        進貨試算
+      </button>
+
+      <button class="secondary" (click)="clearCart()">
+        清空
+      </button>
+
     </div>
 
     <div class="summary" *ngIf="calculateResponse">
+
       <h3>試算總額</h3>
 
-      <p>商品小計：{{ currency }} {{ convertCurrency(subtotal) | number:'1.2-2' }}</p>
-      <p>Import Duty：{{ currency }} {{ convertCurrency(dutyTotal) | number:'1.2-2' }}</p>
-      <p>Import VAT：{{ currency }} {{ convertCurrency(vatTotal) | number:'1.2-2' }}</p>
+      <p>
+        商品小計：{{ currency }}
+        {{ convertCurrency(subtotal) | number:'1.2-2' }}
+      </p>
+
+      <p>
+        Import Duty：{{ currency }}
+        {{ convertCurrency(dutyTotal) | number:'1.2-2' }}
+      </p>
+
+      <p>
+        Import VAT：{{ currency }}
+        {{ convertCurrency(vatTotal) | number:'1.2-2' }}
+      </p>
 
       <h2>
-        Landed Cost：
-        {{ currency }} {{ convertCurrency(landedCostTotal) | number:'1.2-2' }}
+        Landed Cost：{{ currency }}
+        {{ convertCurrency(landedCostTotal) | number:'1.2-2' }}
       </h2>
+
     </div>
   </div>
 </section>

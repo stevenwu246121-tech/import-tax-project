@@ -1,113 +1,115 @@
+<h1>
+  商品管理
+</h1>
 
-    <h1>
-      商品管理
-    </h1>
+<div class="search-filter-row">
 
-    <div class="search-bar">
+  <input type="text" placeholder="搜尋商品名稱" [(ngModel)]="keyword" />
 
-      <input type="text" placeholder="搜尋商品名稱" [(ngModel)]="keyword" />
+  <select [(ngModel)]="selectedCategory">
 
-    </div>
+    <option value="">
+      全部分類
+    </option>
 
-    <div class="filter-bar">
+    <option *ngFor="let category of categories" [value]="category.name">
+      {{ category.name }}
+    </option>
 
-      <select [(ngModel)]="selectedCategory">
+  </select>
 
-        <option value="">
-          全部分類
-        </option>
-
-        <option *ngFor="let category of categories" [value]="category.name">
-          {{ category.name }}
-        </option>
-
-      </select>
-
-    </div>
+</div>
 
 
-    <div class="form-card">
+<div class="form-card">
 
-      <input type="text" placeholder="商品名稱" [(ngModel)]="productReq.name" />
+  <input type="text" placeholder="商品名稱" [(ngModel)]="productReq.name" />
 
-      <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
-        <option *ngFor="let category of categories" [ngValue]="category.id">
-          {{ category.name }}
-        </option>
-      </select>
+  <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
+    <option *ngFor="let category of categories" [ngValue]="category.id">
+      {{ category.name }}
+    </option>
+  </select>
 
-      <select [(ngModel)]="productReq.hsCodeId">
-        <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
-          {{ hsCode.code }} - {{ hsCode.name }}
-        </option>
-      </select>
+  <select [(ngModel)]="productReq.hsCodeId">
+    <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
+      {{ hsCode.code }} - {{ hsCode.name }}
+    </option>
+  </select>
 
-      <input type="text" placeholder="來源國" [(ngModel)]="productReq.originCountry" />
+  <input type="text" placeholder="來源國" [(ngModel)]="productReq.originCountry" />
 
-      <input type="text" placeholder="單位" [(ngModel)]="productReq.unit" />
+  <input type="text" placeholder="單位" [(ngModel)]="productReq.unit" />
 
-      <input type="number" placeholder="單價" [(ngModel)]="productReq.unitPrice" />
+  <input type="number" placeholder="單價" [(ngModel)]="productReq.unitPrice" />
 
-      <button (click)="submitProduct()">
-        {{ editingProductId ? '更新商品' : '新增商品' }}
-      </button>
+  <button (click)="submitProduct()">
+    {{ editingProductId ? '更新商品' : '新增商品' }}
+  </button>
 
-    </div>
+</div>
 
-    <table>
+<table>
 
-      <thead>
+  <thead>
 
-        <tr>
+    <tr>
 
-          <th>商品</th>
+      <th>商品</th>
 
-          <th>分類</th>
+      <th>分類</th>
 
-          <th>HS Code</th>
+      <th>HS Code</th>
 
-          <th>價格</th>
+      <th>價格</th>
 
-          <th>操作</th>
+      <th>操作</th>
 
-        </tr>
+    </tr>
 
-      </thead>
+  </thead>
 
-      <tbody>
+  <tbody>
 
-        <tr *ngFor="let product of filteredProducts()">
-          <td>
-            {{ product.productName }}
-          </td>
+    <tr *ngFor="let product of filteredProducts()">
+      <td>
+        {{ product.productName }}
+      </td>
 
-          <td>
-            {{ product.categoryName }}
-          </td>
+      <td>
+        {{ product.categoryName }}
+      </td>
 
-          <td>
-            {{ product.hsCode }}
-          </td>
+      <td>
+        {{ product.hsCode }}
+      </td>
 
-          <td>
-            {{ product.unitPrice }}
-          </td>
+      <td>
+        {{ product.unitPrice }}
+      </td>
 
-          <td>
+      <td class="action-cell">
 
-            <button class="danger" (click)="deleteProduct(product.id)">
-              刪除
-            </button>
+        <button class="edit-menu-btn" (click)="toggleActionMenu(product.id)">
+          編輯
+        </button>
 
-            <button (click)="editProduct(product)">
-              修改
-            </button>
+        <div class="action-menu" *ngIf="openedActionId === product.id">
 
-          </td>
+          <button class="action-update" (click)="editProduct(product); openedActionId = null">
+            修改
+          </button>
 
-        </tr>
+          <button class="action-delete" (click)="deleteProduct(product.id); openedActionId = null">
+            刪除
+          </button>
 
-      </tbody>
+        </div>
 
-    </table>
+      </td>
 
+    </tr>
+
+  </tbody>
+
+</table>

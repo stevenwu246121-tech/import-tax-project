@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
+
 import { HttpClient } from '@angular/common/http';
+
 import { Observable } from 'rxjs';
 
 import { Product } from '../models/product';
+
 import { PurchaseCalculateResponse } from '../models/purchase-calculate-response';
+
 import { PurchaseCalculateRequest } from '../models/purchase-calculate-request';
+
 import { HsCode } from '../models/hs-code';
+
+import { Category } from '../models/category';
 
 @Injectable({
   providedIn: 'root',
@@ -16,41 +23,88 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(`${this.baseUrl}/products`);
+    return this.http.get<Product[]>(
+      `${this.baseUrl}/products`
+    );
   }
 
-  getJpyExchangeRate(): Observable<number> {
-    return this.http.get<number>(`${this.baseUrl}/exchange-rate/jpy`);
+  createProduct(body: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/products`,
+      body
+    );
   }
 
-  calculatePurchase(
-    request: PurchaseCalculateRequest,
-  ): Observable<PurchaseCalculateResponse> {
-    return this.http.post<PurchaseCalculateResponse>(
-      `${this.baseUrl}/purchase/calculate`,
-      request,
+  updateProduct(
+    productId: number,
+    body: any
+  ): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/products/${productId}`,
+      body
+    );
+  }
+
+  deleteProduct(productId: number): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/products/${productId}`
+    );
+  }
+
+  getCategories(): Observable<Category[]> {
+    return this.http.get<Category[]>(
+      `${this.baseUrl}/categories`
     );
   }
 
   getHsCodes(): Observable<HsCode[]> {
-    return this.http.get<HsCode[]>(`${this.baseUrl}/hs-codes`);
+    return this.http.get<HsCode[]>(
+      `${this.baseUrl}/hs-codes`
+    );
   }
 
-  createProduct(body: any) {
-    return this.http.post(`${this.baseUrl}/products`, body);
+  createHsCode(body: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/hs-codes`,
+      body
+    );
   }
 
-  deleteProduct(productId: number) {
-    return this.http.delete(`${this.baseUrl}/products/${productId}`);
+  updateHsCode(
+    hsCodeId: number,
+    body: any
+  ): Observable<any> {
+    return this.http.put(
+      `${this.baseUrl}/hs-codes/${hsCodeId}`,
+      body
+    );
   }
 
-  updateProduct(productId: number, body: any) {
-    return this.http.put(`${this.baseUrl}/products/${productId}`, body);
+  deleteHsCode(hsCodeId: number): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/hs-codes/${hsCodeId}`
+    );
   }
 
-  getCategories() {
-  return this.http.get<any[]>(
-    `${this.baseUrl}/categories`
-  );
-}
+  getJpyExchangeRate(): Observable<number> {
+    return this.http.get<number>(
+      `${this.baseUrl}/exchange-rate/jpy`
+    );
+  }
+
+  calculatePurchase(
+    request: PurchaseCalculateRequest
+  ): Observable<PurchaseCalculateResponse> {
+    return this.http.post<PurchaseCalculateResponse>(
+      `${this.baseUrl}/purchase/calculate`,
+      request
+    );
+  }
+
+  createOrder(request: any): Observable<any> {
+    return this.http.post(
+      `${this.baseUrl}/orders`,
+      request
+    );
+  }
 }

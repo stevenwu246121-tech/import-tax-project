@@ -149,3 +149,41 @@ td {
   width: 240px;
 }
 
+.action-cell {
+  position: relative;
+  width: 120px;
+}
+
+.edit-menu-btn {
+  background: #2563eb;
+}
+
+.action-menu {
+  position: absolute;
+  top: 58px;
+  right: 24px;
+  z-index: 10;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  background: white;
+  padding: 10px;
+  border-radius: 14px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.action-menu button {
+  width: 90px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.action-update {
+  background: #2563eb;
+}
+
+.action-delete {
+  background: #dc2626;
+}
