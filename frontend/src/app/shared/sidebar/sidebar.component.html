@@ -1,15 +1,44 @@
 <aside class="sidebar">
+  <a class="brand-logo" routerLink="/purchase" aria-label="回到首頁">
+    <div class="brand-mark">
+      <span>TX</span>
+    </div>
 
-  <h2>
-    進口稅平台
-  </h2>
+    <div class="brand-text">
+      <strong>算稅器</strong>
+      <small>Import Cost Engine</small>
+    </div>
+  </a>
 
-  <nav>
-    <a routerLink="/purchase">Dashboard</a>
-    <a routerLink="/product-manage" routerLinkActive="active">商品管理</a>
-    <a routerLink="/purchase">進貨試算</a>
-    <a routerLink="/hs-code">HS Code</a>
-    <a routerLink="/report">報表分析</a>
+  <nav class="sidebar-nav">
+
+    <a
+      routerLink="/purchase"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+    >
+      進貨試算
+    </a>
+
+    <a
+      routerLink="/product-manage"
+      routerLinkActive="active"
+    >
+      商品管理
+    </a>
+
+    <a
+      routerLink="/hs-code"
+      routerLinkActive="active"
+    >
+      HS Code
+    </a>
+
+    <a
+      routerLink="/report"
+      routerLinkActive="active"
+    >
+      報表分析
+    </a>
   </nav>
-
 </aside>
