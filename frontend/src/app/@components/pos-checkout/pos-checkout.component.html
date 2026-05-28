@@ -10,9 +10,70 @@
         </p>
       </div>
 
-      <div class="badge-group">
-        <span class="badge">{{ selectedRegion }}</span>
-        <span class="badge success">內用</span>
+      <div class="checkout-settings">
+        <div class="badge-group">
+          <div class="custom-select" [class.open]="isRegionMenuOpen">
+            <button
+              type="button"
+              class="pill-trigger pill-region"
+              (click)="toggleRegionMenu()"
+              aria-label="選擇地區"
+            >
+              {{ selectedRegion }}
+              <span class="chevron">⌄</span>
+            </button>
+
+            <div class="pill-menu region-menu" *ngIf="isRegionMenuOpen">
+              <button
+                type="button"
+                [class.selected]="selectedRegion === 'TW'"
+                (click)="selectRegion('TW')"
+              >
+                TW
+              </button>
+
+              <button
+                type="button"
+                [class.selected]="selectedRegion === 'JP'"
+                (click)="selectRegion('JP')"
+              >
+                JP
+              </button>
+            </div>
+          </div>
+
+          <div class="custom-select" [class.open]="isDiningMenuOpen">
+            <button
+              type="button"
+              class="pill-trigger pill-dining"
+              [class.dine-in]="selectedDiningType === 'DINE_IN'"
+              [class.take-out]="selectedDiningType === 'TAKE_OUT'"
+              (click)="toggleDiningMenu()"
+              aria-label="選擇用餐方式"
+            >
+              {{ diningTypeLabel }}
+              <span class="chevron">⌄</span>
+            </button>
+
+            <div class="pill-menu dining-menu" *ngIf="isDiningMenuOpen">
+              <button
+                type="button"
+                [class.selected]="selectedDiningType === 'DINE_IN'"
+                (click)="selectDiningType('DINE_IN')"
+              >
+                內用
+              </button>
+
+              <button
+                type="button"
+                [class.selected]="selectedDiningType === 'TAKE_OUT'"
+                (click)="selectDiningType('TAKE_OUT')"
+              >
+                外帶
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -26,7 +87,9 @@
         <span class="card-category">{{ product.categoryName }}</span>
         <strong>{{ product.productName }}</strong>
         <small>HS {{ product.hsCode }}</small>
-        <span class="card-price">TWD {{ product.unitPrice | number:'1.0-0' }}</span>
+        <span class="card-price">
+          {{ currencyLabel }} {{ product.unitPrice | number:'1.0-0' }}
+        </span>
       </button>
     </div>
 
@@ -46,7 +109,9 @@
           <tr *ngFor="let item of cart; let i = index">
             <td>{{ item.product.productName }}</td>
             <td>{{ item.product.hsCode }}</td>
-            <td>TWD {{ item.product.unitPrice | number:'1.0-0' }}</td>
+            <td>
+              {{ currencyLabel }} {{ item.product.unitPrice | number:'1.0-0' }}
+            </td>
             <td>
               <div class="qty-counter">
                 <button type="button" (click)="updateQuantity(i, -1)">-</button>
@@ -55,7 +120,8 @@
               </div>
             </td>
             <td>
-              TWD {{ item.product.unitPrice * item.quantity | number:'1.0-0' }}
+              {{ currencyLabel }}
+              {{ item.product.unitPrice * item.quantity | number:'1.0-0' }}
             </td>
           </tr>
 
@@ -72,25 +138,49 @@
   <aside class="pos-summary-panel">
     <h2>結帳結果</h2>
 
+    <div class="checkout-mode-box">
+      <div>
+        <span>結帳地區</span>
+        <strong>{{ regionLabel }}</strong>
+      </div>
+
+      <div>
+        <span>使用方式</span>
+        <strong>{{ diningTypeLabel }}</strong>
+      </div>
+    </div>
+
     <div class="summary-list">
       <div class="summary-row">
         <span>Subtotal</span>
-        <strong>TWD {{ calculationResult?.subtotal || 0 | number:'1.2-2' }}</strong>
+        <strong>
+          {{ currencyLabel }}
+          {{ (calculationResult?.subtotal || 0) | number:'1.2-2' }}
+        </strong>
       </div>
 
       <div class="summary-row">
         <span>Duty Total</span>
-        <strong>TWD {{ calculationResult?.dutyTotal || 0 | number:'1.2-2' }}</strong>
+        <strong>
+          {{ currencyLabel }}
+          {{ (calculationResult?.dutyTotal || 0) | number:'1.2-2' }}
+        </strong>
       </div>
 
       <div class="summary-row">
         <span>VAT Total</span>
-        <strong>TWD {{ calculationResult?.vatTotal || 0 | number:'1.2-2' }}</strong>
+        <strong>
+          {{ currencyLabel }}
+          {{ (calculationResult?.vatTotal || 0) | number:'1.2-2' }}
+        </strong>
       </div>
 
       <div class="total-row">
         <span>Landed Cost Total</span>
-        <strong>TWD {{ calculationResult?.landedCostTotal || 0 | number:'1.2-2' }}</strong>
+        <strong>
+          {{ currencyLabel }}
+          {{ (calculationResult?.landedCostTotal || 0) | number:'1.2-2' }}
+        </strong>
       </div>
     </div>
 

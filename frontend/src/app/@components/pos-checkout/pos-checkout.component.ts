@@ -7,6 +7,9 @@ import { Product } from '../../models/product';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
 import { PurchaseItemRequest } from '../../models/purchase-item-request';
 
+type Region = 'TW' | 'JP';
+type DiningType = 'DINE_IN' | 'TAKE_OUT';
+
 @Component({
   selector: 'app-pos-checkout',
   standalone: true,
@@ -24,14 +27,60 @@ export class PosCheckoutComponent implements OnInit {
 
   calculationResult?: PurchaseCalculateResponse;
 
-  selectedRegion = 'TW';
+  selectedRegion: Region = 'TW';
+  selectedDiningType: DiningType = 'DINE_IN';
 
-  selectedDiningType = 'DINE_IN';
+  isRegionMenuOpen = false;
+  isDiningMenuOpen = false;
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadProducts();
+  }
+
+  get currencyLabel(): string {
+    return this.selectedRegion === 'TW' ? 'TWD' : 'JPY';
+  }
+
+  get regionLabel(): string {
+    return this.selectedRegion === 'TW' ? '台灣 TW' : '日本 JP';
+  }
+
+  get diningTypeLabel(): string {
+    return this.selectedDiningType === 'DINE_IN' ? '內用' : '外帶';
+  }
+
+  get diningTypeDescription(): string {
+    return this.selectedDiningType === 'DINE_IN'
+      ? '內用結帳模式'
+      : '外帶結帳模式';
+  }
+
+  toggleRegionMenu(): void {
+    this.isRegionMenuOpen = !this.isRegionMenuOpen;
+    this.isDiningMenuOpen = false;
+  }
+
+  toggleDiningMenu(): void {
+    this.isDiningMenuOpen = !this.isDiningMenuOpen;
+    this.isRegionMenuOpen = false;
+  }
+
+  selectRegion(region: Region): void {
+    this.selectedRegion = region;
+    this.isRegionMenuOpen = false;
+    this.onCheckoutSettingChange();
+  }
+
+  selectDiningType(type: DiningType): void {
+    this.selectedDiningType = type;
+    this.isDiningMenuOpen = false;
+    this.onCheckoutSettingChange();
+  }
+
+  onCheckoutSettingChange(): void {
+    this.calculate();
   }
 
   loadProducts(): void {
