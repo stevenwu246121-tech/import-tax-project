@@ -1,0 +1,156 @@
+.home-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.home-card,
+.home-panel {
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+.home-card {
+  min-height: 120px;
+  padding: 26px;
+}
+
+.home-card span {
+  display: block;
+  color: #64748b;
+  margin-bottom: 10px;
+}
+
+.home-card strong {
+  display: block;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.home-card small {
+  display: block;
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.up {
+  color: #16a34a;
+}
+
+.down {
+  color: #dc2626;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1.45fr 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 28px;
+  align-items: stretch;
+}
+
+.home-grid.lower {
+  grid-template-columns: 1fr 1.2fr 1fr;
+}
+
+.home-panel {
+  padding: 28px;
+  min-height: 330px;
+  overflow: hidden;
+}
+
+.home-panel h2 {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 20px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.panel-header button {
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid #dbe2ea;
+  background: white;
+}
+
+.chart-box {
+  height: 240px;
+  position: relative;
+}
+
+.chart-box.small {
+  height: 230px;
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#countryChart {
+  max-width: 260px;
+  max-height: 220px;
+  margin: 0 auto;
+}
+
+.preview-list {
+  display: grid;
+  gap: 14px;
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.preview-list div {
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.preview-list strong,
+.preview-list span {
+  display: block;
+}
+
+.preview-list span {
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.quick-calc {
+  display: grid;
+  gap: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.quick-calc input,
+.quick-calc select {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  padding: 0 14px;
+}
+
+.quick-calc button {
+  height: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: white;
+  font-weight: 800;
+}
+
+.total {
+  display: block;
+  margin-top: 20px;
+  font-size: 22px;
+  color: #2563eb;
+}

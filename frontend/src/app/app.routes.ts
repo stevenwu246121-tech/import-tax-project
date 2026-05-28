@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+
+import { DashboardHomeComponent } from './@components/dashboard-home/dashboard-home.component';
 import { ProductManageComponent } from './@components/product-manage/product-manage.component';
 import { HsCodeComponent } from './@components/hs-code/hs-code.component';
 import { DashboardComponent } from './@components/dashboard/dashboard.component';
@@ -14,20 +16,24 @@ export const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'purchase',
+        redirectTo: 'dashboard',
         pathMatch: 'full',
+      },
+      {
+        path: 'dashboard',
+        component: DashboardHomeComponent,
       },
       {
         path: 'pos-checkout',
         component: PosCheckoutComponent,
       },
       {
-        path: 'purchase',
-        component: ProductsComponent,
-      },
-      {
         path: 'product-manage',
         component: ProductManageComponent,
+      },
+      {
+        path: 'purchase',
+        component: ProductsComponent,
       },
       {
         path: 'hs-code',

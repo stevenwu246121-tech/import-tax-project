@@ -1,0 +1,139 @@
+<h1>進貨稅率與成本平台</h1>
+
+<div class="home-summary-grid">
+
+  <div class="home-card">
+    <span>今日進貨總額</span>
+    <strong>NT$ {{ todayImportTotal | number }}</strong>
+    <small class="up">▲ 12.5% 較昨日</small>
+  </div>
+
+  <div class="home-card">
+    <span>Import Duty</span>
+    <strong>NT$ 8,250</strong>
+    <small class="up">▲ 8.2% 較昨日</small>
+  </div>
+
+  <div class="home-card">
+    <span>Import VAT</span>
+    <strong>NT$ 6,272</strong>
+    <small class="up">▲ 6.1% 較昨日</small>
+  </div>
+
+  <div class="home-card">
+    <span>平均毛利率</span>
+    <strong>42.6%</strong>
+    <small class="down">▼ 2.3% 較昨日</small>
+  </div>
+
+</div>
+
+<div class="home-grid">
+
+  <section class="home-panel wide">
+    <div class="panel-header">
+      <h2>進貨成本趨勢（近7天）</h2>
+      <button>近7天</button>
+    </div>
+
+    <div class="chart-box">
+      <canvas id="trendChart"></canvas>
+    </div>
+  </section>
+
+  <section class="home-panel">
+    <h2>各國進貨金額占比</h2>
+
+    <div class="chart-box small">
+      <canvas id="countryChart"></canvas>
+    </div>
+  </section>
+
+  <section class="home-panel">
+    <h2>稅額分析（近7天）</h2>
+
+    <div class="chart-box small">
+      <canvas id="taxChart"></canvas>
+    </div>
+  </section>
+
+</div>
+
+<div class="home-grid lower">
+
+  <section class="home-panel">
+    <h2>商品列表預覽</h2>
+
+    <div class="preview-list">
+
+      <div>
+        <strong>日本咖啡豆</strong>
+        <span>HS Code：0901.11.0000</span>
+      </div>
+
+      <div>
+        <strong>法國奶油</strong>
+        <span>HS Code：0405.10.0000</span>
+      </div>
+
+      <div>
+        <strong>美國杏仁</strong>
+        <span>HS Code：0802.12.0000</span>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="home-panel">
+    <h2>進貨試算購物車</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>商品</th>
+          <th>數量</th>
+          <th>小計</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>日本咖啡豆</td>
+          <td>10</td>
+          <td>5,000</td>
+        </tr>
+
+        <tr>
+          <td>法國奶油</td>
+          <td>5</td>
+          <td>2,100</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <strong class="total">
+      Landed Cost：NT$ 11,254
+    </strong>
+  </section>
+
+  <section class="home-panel">
+    <h2>HS Code 快速試算</h2>
+
+    <div class="quick-calc">
+      <input value="0901.11.0000" />
+
+      <select>
+        <option>台灣（TW）</option>
+      </select>
+
+      <select>
+        <option>日本（JP）</option>
+      </select>
+
+      <input value="10000" />
+
+      <button>查詢</button>
+    </div>
+  </section>
+
+</div>
