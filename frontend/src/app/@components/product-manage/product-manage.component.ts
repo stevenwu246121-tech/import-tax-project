@@ -43,6 +43,23 @@ export class ProductManageComponent implements OnInit {
     unitPrice: 0,
   };
 
+  productRules = {
+    日本咖啡豆: {
+      category: '乾貨',
+      hsCode: '0901.11.0000',
+    },
+
+    日本白米: {
+      category: '乾貨',
+      hsCode: '1006.30.0000',
+    },
+
+    日本和牛: {
+      category: '肉品',
+      hsCode: '0201.30.0000',
+    },
+  };
+
   editingProductId: number | null = null;
 
   openedActionId: number | null = null;
@@ -117,19 +134,29 @@ export class ProductManageComponent implements OnInit {
     });
   }
 
-  isValidProduct(): boolean {
-    if (!this.productReq.name.trim()) {
-      alert('請輸入商品名稱');
+  isValidProductRule(): boolean {
+    const rule =
+      this.productRules[this.productReq.name as keyof typeof this.productRules];
+
+    if (!rule) {
+      return true;
+    }
+
+    const selectedCategory = this.categories.find(
+      (category) => category.id === this.productReq.categoryId,
+    );
+
+    const selectedHsCode = this.hsCodes.find(
+      (hsCode) => hsCode.id === this.productReq.hsCodeId,
+    );
+
+    if (selectedCategory?.name !== rule.category) {
+      alert(`${this.productReq.name} 的分類只能是「${rule.category}」`);
       return false;
     }
 
-    if (!this.productReq.hsCodeId) {
-      alert('請選擇 HS Code');
-      return false;
-    }
-
-    if (this.productReq.unitPrice <= 0) {
-      alert('價格需大於 0');
+    if (selectedHsCode?.code !== rule.hsCode) {
+      alert(`${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`);
       return false;
     }
 
@@ -137,9 +164,9 @@ export class ProductManageComponent implements OnInit {
   }
 
   createProduct(): void {
-    if (!this.isValidProduct()) {
-      return;
-    }
+  if (!this.isValidProductRule()) {
+    return;
+  }
 
     this.apiService.createProduct(this.productReq).subscribe({
       next: () => {
@@ -224,6 +251,10 @@ export class ProductManageComponent implements OnInit {
       return;
     }
 
+    if (!this.isValidProductRule()) {
+      return;
+    }
+
     if (this.editingProductId) {
       this.apiService
         .updateProduct(this.editingProductId, this.productReq)
@@ -272,5 +303,30 @@ export class ProductManageComponent implements OnInit {
 
       return matchKeyword && matchCategory;
     });
+  }
+
+  onProductNameChange(): void {
+    const rule =
+      this.productRules[this.productReq.name as keyof typeof this.productRules];
+
+    if (!rule) {
+      return;
+    }
+
+    const category = this.categories.find(
+      (item) => item.name === rule.category,
+    );
+
+    const hsCode = this.hsCodes.find((item) => item.code === rule.hsCode);
+
+    if (category) {
+      this.productReq.categoryId = category.id;
+    }
+
+    this.onCategoryChange();
+
+    if (hsCode) {
+      this.productReq.hsCodeId = hsCode.id;
+    }
   }
 }

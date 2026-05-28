@@ -10,13 +10,17 @@
 
   <div class="home-card">
     <span>Import Duty</span>
-    <strong>NT$ 8,250</strong>
+    <strong>
+      NT$ {{ totalDuty | number:'1.0-0' }}
+    </strong>
     <small class="up">▲ 8.2% 較昨日</small>
   </div>
 
   <div class="home-card">
     <span>Import VAT</span>
-    <strong>NT$ 6,272</strong>
+    <strong>
+      NT$ {{ totalVat | number:'1.0-0' }}
+    </strong>
     <small class="up">▲ 6.1% 較昨日</small>
   </div>
 
@@ -33,7 +37,11 @@
   <section class="home-panel wide">
     <div class="panel-header">
       <h2>進貨成本趨勢（近7天）</h2>
-      <button>近7天</button>
+      <select>
+        <option>近7天</option>
+        <option>近30天</option>
+        <option>近90天</option>
+      </select>
     </div>
 
     <div class="chart-box">
@@ -42,7 +50,7 @@
   </section>
 
   <section class="home-panel">
-    <h2>各國進貨金額占比</h2>
+    <h2>進貨金額占比</h2>
 
     <div class="chart-box small">
       <canvas id="countryChart"></canvas>
@@ -66,19 +74,9 @@
 
     <div class="preview-list">
 
-      <div>
-        <strong>日本咖啡豆</strong>
-        <span>HS Code：0901.11.0000</span>
-      </div>
-
-      <div>
-        <strong>法國奶油</strong>
-        <span>HS Code：0405.10.0000</span>
-      </div>
-
-      <div>
-        <strong>美國杏仁</strong>
-        <span>HS Code：0802.12.0000</span>
+      <div *ngFor="let product of previewProducts">
+        <strong>{{ product.productName }}</strong>
+        <span>HS Code：{{ product.hsCode }}</span>
       </div>
 
     </div>

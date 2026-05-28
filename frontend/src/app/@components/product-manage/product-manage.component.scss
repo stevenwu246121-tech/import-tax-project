@@ -229,3 +229,38 @@ tbody tr:hover {
   grid-column: 1 / 2;
   width: 100%;
 }
+
+/* 搜尋區塊 */
+.search-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.search-filter-row input {
+  width: 420px;
+}
+
+.search-filter-row select {
+  width: 240px;
+}
+
+/* select 統一樣式 */
+select {
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid #dbe2ea;
+  padding: 0 16px;
+  background: white;
+  font-size: 16px;
+}
+
+/* input 統一 */
+input {
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid #dbe2ea;
+  padding: 0 16px;
+  font-size: 16px;
+}

@@ -23,7 +23,7 @@
 
 <div class="form-card">
 
-  <input type="text" placeholder="商品名稱" [(ngModel)]="productReq.name" />
+  <input type="text" placeholder="商品名稱" [(ngModel)]="productReq.name" (change)="onProductNameChange()" />
 
   <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
     <option *ngFor="let category of categories" [ngValue]="category.id">
@@ -37,7 +37,11 @@
     </option>
   </select>
 
-  <input type="text" placeholder="來源國" [(ngModel)]="productReq.originCountry" />
+  <select [(ngModel)]="productReq.originCountry">
+    <option value="">選擇來源國</option>
+    <option value="JP">JP</option>
+    <option value="TW">TW</option>
+  </select>
 
   <input type="text" placeholder="單位" [(ngModel)]="productReq.unit" />
 
