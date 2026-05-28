@@ -5,6 +5,7 @@ import { ProductManageComponent } from './@components/product-manage/product-man
 import { HsCodeComponent } from './@components/hs-code/hs-code.component';
 import { DashboardComponent } from './@components/dashboard/dashboard.component';
 import { ProductsComponent } from './@components/products/products.component';
+import { PosCheckoutComponent } from './@components/pos-checkout/pos-checkout.component';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,10 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'purchase',
         pathMatch: 'full',
+      },
+      {
+        path: 'pos-checkout',
+        component: PosCheckoutComponent,
       },
       {
         path: 'purchase',

@@ -1,0 +1,106 @@
+<h1>POS 結帳即時計算</h1>
+
+<section class="pos-grid">
+  <div class="pos-main panel">
+    <div class="section-title-bar">
+      <div>
+        <h2>商品快速選取</h2>
+        <p class="subtitle">
+          點擊商品卡片加入購物車，系統會即時計算 Duty、VAT 與 Landed Cost。
+        </p>
+      </div>
+
+      <div class="badge-group">
+        <span class="badge">{{ selectedRegion }}</span>
+        <span class="badge success">內用</span>
+      </div>
+    </div>
+
+    <div class="product-cards-grid">
+      <button
+        type="button"
+        class="product-card"
+        *ngFor="let product of productList"
+        (click)="addToCart(product)"
+      >
+        <span class="card-category">{{ product.categoryName }}</span>
+        <strong>{{ product.productName }}</strong>
+        <small>HS {{ product.hsCode }}</small>
+        <span class="card-price">TWD {{ product.unitPrice | number:'1.0-0' }}</span>
+      </button>
+    </div>
+
+    <div class="cart-table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>商品</th>
+            <th>HS Code</th>
+            <th>單價</th>
+            <th>數量</th>
+            <th>小計</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of cart; let i = index">
+            <td>{{ item.product.productName }}</td>
+            <td>{{ item.product.hsCode }}</td>
+            <td>TWD {{ item.product.unitPrice | number:'1.0-0' }}</td>
+            <td>
+              <div class="qty-counter">
+                <button type="button" (click)="updateQuantity(i, -1)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button type="button" (click)="updateQuantity(i, 1)">+</button>
+              </div>
+            </td>
+            <td>
+              TWD {{ item.product.unitPrice * item.quantity | number:'1.0-0' }}
+            </td>
+          </tr>
+
+          <tr *ngIf="cart.length === 0">
+            <td colspan="5" class="empty-cart">
+              請點擊上方商品卡片加入購物車
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <aside class="pos-summary-panel">
+    <h2>結帳結果</h2>
+
+    <div class="summary-list">
+      <div class="summary-row">
+        <span>Subtotal</span>
+        <strong>TWD {{ calculationResult?.subtotal || 0 | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>Duty Total</span>
+        <strong>TWD {{ calculationResult?.dutyTotal || 0 | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="summary-row">
+        <span>VAT Total</span>
+        <strong>TWD {{ calculationResult?.vatTotal || 0 | number:'1.2-2' }}</strong>
+      </div>
+
+      <div class="total-row">
+        <span>Landed Cost Total</span>
+        <strong>TWD {{ calculationResult?.landedCostTotal || 0 | number:'1.2-2' }}</strong>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="secondary clear-button"
+      (click)="clearCart()"
+      [disabled]="cart.length === 0"
+    >
+      清空購物車
+    </button>
+  </aside>
+</section>
