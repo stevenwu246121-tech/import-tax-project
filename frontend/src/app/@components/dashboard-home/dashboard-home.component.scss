@@ -1,37 +1,53 @@
+:host {
+  display: block;
+}
+
+/* 上方標題留白縮小 */
+h1 {
+  margin: 0 0 20px;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+/* 四張摘要卡 */
 .home-summary-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 28px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .home-card,
 .home-panel {
   background: white;
-  border-radius: 24px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
 }
 
 .home-card {
-  min-height: 120px;
-  padding: 26px;
+  min-height: 92px;
+  padding: 18px 20px;
 }
 
 .home-card span {
   display: block;
   color: #64748b;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
+  font-size: 14px;
 }
 
 .home-card strong {
   display: block;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 900;
+  line-height: 1.2;
 }
 
 .home-card small {
   display: block;
-  margin-top: 10px;
+  margin-top: 6px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -43,11 +59,12 @@
   color: #dc2626;
 }
 
+/* 中下方區塊 */
 .home-grid {
   display: grid;
   grid-template-columns: 1.45fr 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 28px;
+  gap: 18px;
+  margin-bottom: 20px;
   align-items: stretch;
 }
 
@@ -56,38 +73,41 @@
 }
 
 .home-panel {
-  padding: 28px;
-  min-height: 330px;
+  padding: 20px;
+  min-height: 260px;
   overflow: hidden;
 }
 
 .home-panel h2 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 900;
-  margin-bottom: 20px;
+  margin: 0 0 14px;
 }
 
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
-.panel-header button {
+.panel-header select {
   height: 36px;
-  padding: 0 16px;
   border-radius: 10px;
-  border: 1px solid #dbe2ea;
+  border: 1px solid #d1d5db;
+  padding: 0 12px;
   background: white;
+  font-weight: 700;
 }
 
+/* 圖表高度縮小 */
 .chart-box {
-  height: 240px;
+  height: 200px;
   position: relative;
 }
 
 .chart-box.small {
-  height: 230px;
+  height: 190px;
 }
 
 .chart-box canvas {
@@ -96,22 +116,23 @@
 }
 
 #countryChart {
-  max-width: 260px;
-  max-height: 220px;
+  max-width: 220px;
+  max-height: 185px;
   margin: 0 auto;
 }
 
+/* 商品列表預覽 */
 .preview-list {
   display: grid;
-  gap: 14px;
-  max-height: 230px;
+  gap: 10px;
+  max-height: 190px;
   overflow-y: auto;
 }
 
 .preview-list div {
-  padding: 14px;
+  padding: 11px 12px;
   border: 1px solid #e5e7eb;
-  border-radius: 14px;
+  border-radius: 12px;
 }
 
 .preview-list strong,
@@ -121,36 +142,77 @@
 
 .preview-list span {
   color: #64748b;
-  margin-top: 4px;
+  margin-top: 3px;
+  font-size: 13px;
 }
 
+/* 快速試算 */
 .quick-calc {
   display: grid;
-  gap: 12px;
-  max-height: 240px;
+  gap: 10px;
+  max-height: 200px;
   overflow-y: auto;
 }
 
 .quick-calc input,
 .quick-calc select {
-  height: 44px;
-  border-radius: 12px;
+  height: 40px;
+  border-radius: 10px;
   border: 1px solid #d1d5db;
-  padding: 0 14px;
+  padding: 0 12px;
 }
 
 .quick-calc button {
-  height: 44px;
+  height: 40px;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: #2563eb;
   color: white;
   font-weight: 800;
 }
 
+/* 表格區也縮小 */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
 .total {
   display: block;
-  margin-top: 20px;
-  font-size: 22px;
+  margin-top: 14px;
+  font-size: 20px;
   color: #2563eb;
+}
+
+/* RWD */
+@media (max-width: 1200px) {
+  .home-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-grid,
+  .home-grid.lower {
+    grid-template-columns: 1fr;
+  }
+
+  .home-panel {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 30px;
+    margin-bottom: 16px;
+  }
+
+  .home-summary-grid {
+    grid-template-columns: 1fr;
+  }
 }
