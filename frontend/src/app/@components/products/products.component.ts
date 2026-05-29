@@ -29,7 +29,7 @@ interface PurchaseCalculateRequest {
 export class ProductsComponent implements OnInit {
   selectedCountry: 'TW' | 'JP' = 'TW';
 
-  currency = 'TWD';
+  currency = 'NTD ';
   exchangeRate = 1;
 
   products: Product[] = [];
@@ -85,13 +85,13 @@ export class ProductsComponent implements OnInit {
 
   changeCountry(): void {
     if (this.selectedCountry === 'TW') {
-      this.currency = 'TWD';
+      this.currency = 'NTD ';
       this.exchangeRate = 1;
       this.recalculateIfCartHasItems();
       return;
     }
 
-    this.currency = 'JPY';
+    this.currency = 'JPY ';
     this.loadJpyExchangeRate();
   }
 

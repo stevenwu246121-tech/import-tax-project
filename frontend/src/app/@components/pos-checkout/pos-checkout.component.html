@@ -1,4 +1,4 @@
-<h1>POS 結帳即時計算</h1>
+<h1>POS 即時計算</h1>
 
 <section class="pos-grid">
   <div class="pos-main panel">
@@ -6,7 +6,7 @@
       <div>
         <h2>商品快速選取</h2>
         <p class="subtitle">
-          點擊商品卡片加入購物車，系統會即時計算 Duty、VAT 與 Landed Cost。
+          點擊商品卡片加入購物車，系統會即時計算進口稅、進口營業稅與抵岸成本。
         </p>
       </div>
 
@@ -158,7 +158,7 @@
 
     <div class="summary-list">
       <div class="summary-row">
-        <span>Subtotal</span>
+        <span>小計</span>
         <strong>
           {{ currencyLabel }}
           {{ convertCurrency(calculationResult?.subtotal || 0) | number:'1.2-2' }}
@@ -166,7 +166,7 @@
       </div>
 
       <div class="summary-row">
-        <span>Duty Total</span>
+        <span>進口稅總計</span>
         <strong>
           {{ currencyLabel }}
           {{ convertCurrency(calculationResult?.dutyTotal || 0) | number:'1.2-2' }}
@@ -174,7 +174,7 @@
       </div>
 
       <div class="summary-row">
-        <span>VAT Total</span>
+        <span>進口營業稅總計</span>
         <strong>
           {{ currencyLabel }}
           {{ convertCurrency(calculationResult?.vatTotal || 0) | number:'1.2-2' }}
@@ -182,7 +182,7 @@
       </div>
 
       <div class="total-row">
-        <span>Landed Cost Total</span>
+        <span>抵岸成本總計</span>
         <strong>
           {{ currencyLabel }}
           {{ convertCurrency(calculationResult?.landedCostTotal || 0) | number:'1.2-2' }}
