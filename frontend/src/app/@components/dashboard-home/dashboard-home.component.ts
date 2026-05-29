@@ -8,12 +8,15 @@ import { ApiService } from '../../@services/api.service';
 
 import { Product } from '../../models/product';
 
+import { HsCode } from '../../models/hs-code';
+import { FormsModule } from '@angular/forms';
+
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss'],
 })
@@ -31,17 +34,42 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   countryTotals: { [key: string]: number } = {};
 
   twdToJpyRate = 0;
+
   updateTime = '';
+
+  selectedHsCode = '';
+
+  dutyRate = 0;
+
+  vatRate = 0;
+
+  hsCodes: HsCode[] = [];
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadProducts();
+
     this.loadExchangeRate();
+
+    this.loadHsCodes();
   }
 
   ngAfterViewInit(): void {
     this.createTrendChart();
+
     this.createTaxChart();
+  }
+
+  loadHsCodes(): void {
+    this.apiService.getHsCodes().subscribe({
+      next: (response: HsCode[]) => {
+        this.hsCodes = response;
+      },
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
   }
 
   loadProducts(): void {
@@ -53,17 +81,19 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
         this.todayImportTotal = response.reduce(
           (sum, product) => sum + product.unitPrice,
-          0,
+          0
         );
 
         this.totalDuty = response.reduce(
-          (sum, product) => sum + (product.unitPrice * product.dutyRate) / 100,
-          0,
+          (sum, product) =>
+            sum + (product.unitPrice * product.dutyRate) / 100,
+          0
         );
 
         this.totalVat = response.reduce(
-          (sum, product) => sum + (product.unitPrice * product.vatRate) / 100,
-          0,
+          (sum, product) =>
+            sum + (product.unitPrice * product.vatRate) / 100,
+          0
         );
 
         this.countryTotals = response.reduce(
@@ -78,7 +108,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
             return acc;
           },
-          {},
+          {}
         );
 
         this.createCountryChart();
@@ -88,6 +118,35 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         console.error(error);
       },
     });
+  }
+
+  loadExchangeRate(): void {
+    this.apiService.getJpyExchangeRate().subscribe({
+      next: (response: number) => {
+        this.twdToJpyRate = 1 / response;
+
+        this.updateTime = new Date().toLocaleString();
+      },
+
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
+  }
+
+  searchHsCode(): void {
+    const found = this.hsCodes.find(
+      (item) => item.code === this.selectedHsCode.trim()
+    );
+
+    if (!found) {
+      alert('查無此 HS Code');
+      return;
+    }
+
+    this.dutyRate = found.dutyRate;
+
+    this.vatRate = found.vatRate;
   }
 
   createTrendChart(): void {
@@ -116,14 +175,11 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
     new Chart('countryChart', {
       type: 'doughnut',
-
       data: {
         labels,
-
         datasets: [
           {
             data,
-
             backgroundColor: [
               '#2563eb',
               '#22c55e',
@@ -136,6 +192,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
       },
     });
   }
+
   createTaxChart(): void {
     new Chart('taxChart', {
       type: 'bar',
@@ -153,20 +210,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
             backgroundColor: '#22c55e',
           },
         ],
-      },
-    });
-  }
-
-  loadExchangeRate(): void {
-    this.apiService.getJpyExchangeRate().subscribe({
-      next: (response: number) => {
-        this.twdToJpyRate = 1 / response;
-
-        this.updateTime = new Date().toLocaleString();
-      },
-
-      error: (error: unknown) => {
-        console.error(error);
       },
     });
   }

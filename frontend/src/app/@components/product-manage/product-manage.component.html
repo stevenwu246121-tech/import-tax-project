@@ -30,7 +30,7 @@
   <input
     type="text"
     placeholder="商品名稱"
-    maxlength="30"
+    maxlength="6"
     [(ngModel)]="productReq.name"
     (change)="onProductNameChange()"
   />
@@ -79,13 +79,14 @@
   <input
     type="text"
     placeholder="單位"
-    maxlength="5"
+    maxlength="6"
     [(ngModel)]="productReq.unit"
   />
 
   <input
     type="number"
     placeholder="單價"
+    maxlength="6"
     [(ngModel)]="productReq.unitPrice"
   />
 

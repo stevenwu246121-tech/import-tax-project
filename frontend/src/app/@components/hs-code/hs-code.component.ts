@@ -9,6 +9,7 @@ import { ApiService } from '../../@services/api.service';
 import { HsCode } from '../../models/hs-code';
 
 import { Category } from '../../models/category';
+import { ExchangeRateService } from '../../@services/exchange-rate.service';
 
 @Component({
   selector: 'app-hs-code',
@@ -43,7 +44,9 @@ export class HsCodeComponent implements OnInit {
     this.openedActionId = this.openedActionId === id ? null : id;
   }
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService,
+    private exchangeRateService: ExchangeRateService
+  ) {}
 
   ngOnInit(): void {
     this.loadHsCodes();

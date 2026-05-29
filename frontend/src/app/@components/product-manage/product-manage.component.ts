@@ -9,6 +9,7 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
 import { HsCode } from '../../models/hs-code';
+import { ExchangeRateService } from '../../@services/exchange-rate.service';
 
 @Component({
   selector: 'app-product-manage',
@@ -68,7 +69,10 @@ export class ProductManageComponent implements OnInit {
     this.openedActionId = this.openedActionId === id ? null : id;
   }
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private exchangeRateService: ExchangeRateService,
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();

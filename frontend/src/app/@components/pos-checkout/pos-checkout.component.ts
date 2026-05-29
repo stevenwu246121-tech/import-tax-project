@@ -6,6 +6,7 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
 import { PurchaseItemRequest } from '../../models/purchase-item-request';
+import { ExchangeRateService } from '../../@services/exchange-rate.service';
 
 type Region = 'TW' | 'JP';
 type DiningType = 'DINE_IN' | 'TAKE_OUT';
@@ -37,7 +38,9 @@ export class PosCheckoutComponent implements OnInit {
   isRegionMenuOpen = false;
   isDiningMenuOpen = false;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService,
+    private exchangeRateService: ExchangeRateService
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();

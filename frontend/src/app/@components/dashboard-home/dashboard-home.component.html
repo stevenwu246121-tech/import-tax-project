@@ -10,17 +10,13 @@
 
   <div class="home-card">
     <span>Import Duty</span>
-    <strong>
-      NT$ {{ totalDuty | number:'1.0-0' }}
-    </strong>
+    <strong>NT$ {{ totalDuty | number:'1.0-0' }}</strong>
     <small class="up">▲ 8.2% 較昨日</small>
   </div>
 
   <div class="home-card">
     <span>Import VAT</span>
-    <strong>
-      NT$ {{ totalVat | number:'1.0-0' }}
-    </strong>
+    <strong>NT$ {{ totalVat | number:'1.0-0' }}</strong>
     <small class="up">▲ 6.1% 較昨日</small>
   </div>
 
@@ -37,6 +33,7 @@
   <section class="home-panel wide">
     <div class="panel-header">
       <h2>進貨成本趨勢（近7天）</h2>
+
       <select>
         <option>近7天</option>
         <option>近30天</option>
@@ -87,10 +84,10 @@
 
     <div class="exchange-card">
 
-      <span>NT → JPY</span>
+      <span>TWD → JPY</span>
 
       <strong>
-        1 NT = {{ twdToJpyRate | number:'1.2-2' }} JPY
+        1 TWD = {{ twdToJpyRate | number:'1.2-2' }} JPY
       </strong>
 
       <small>
@@ -103,20 +100,37 @@
   <section class="home-panel">
     <h2>HS Code 快速試算</h2>
 
+    <div class="hs-result" *ngIf="dutyRate || vatRate">
+      <p>
+        進口稅：
+        <strong>{{ dutyRate }}%</strong>
+      </p>
+
+      <p>
+        營業稅：
+        <strong>{{ vatRate }}%</strong>
+      </p>
+
+    </div>
+
     <div class="quick-calc">
-      <input value="0901.11.0000" />
 
-      <select>
-        <option>台灣（TW）</option>
+      <select [(ngModel)]="selectedHsCode">
+
+        <option value="">
+          請選擇 HS Code
+        </option>
+
+        <option *ngFor="let hs of hsCodes" [value]="hs.code">
+          {{ hs.code }} - {{ hs.name }}
+        </option>
+
       </select>
 
-      <select>
-        <option>日本（JP）</option>
-      </select>
+      <button (click)="searchHsCode()">
+        查詢
+      </button>
 
-      <input value="10000" />
-
-      <button>查詢</button>
     </div>
   </section>
 

@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Product } from '../../models/product';
 import { ApiService } from '../../@services/api.service';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
+import { ExchangeRateService } from '../../@services/exchange-rate.service';
 
 interface CartItem {
   productId: number;
@@ -48,7 +49,10 @@ export class ProductsComponent implements OnInit {
   isCalculating = false;
   errorMessage = '';
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private exchangeRateService: ExchangeRateService,
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -138,7 +142,7 @@ export class ProductsComponent implements OnInit {
     }
 
     const existItem = this.cartItems.find(
-      (item) => item.productId === product.id
+      (item) => item.productId === product.id,
     );
 
     if (existItem) {
@@ -157,7 +161,7 @@ export class ProductsComponent implements OnInit {
 
   removeFromCart(productId: number): void {
     this.cartItems = this.cartItems.filter(
-      (item) => item.productId !== productId
+      (item) => item.productId !== productId,
     );
 
     this.recalculateIfCartHasItems();
