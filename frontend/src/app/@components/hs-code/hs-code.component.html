@@ -15,14 +15,22 @@
     <input type="text" placeholder="商品名稱" [(ngModel)]="hsCodeReq.name" />
 
     <select [(ngModel)]="hsCodeReq.categoryId">
-      <option *ngFor="let category of categories" [ngValue]="category.id">
-        {{ category.name }}
-      </option>
+    <option [ngValue]="null" disabled>選擇分類</option>
+
+    <option *ngFor="let category of categories" [ngValue]="category.id">
+    {{ category.name }}
+    </option>
     </select>
 
-    <input type="number" placeholder="Import Duty" [(ngModel)]="hsCodeReq.dutyRate" />
+    <input type="number"
+    min="0"
+    placeholder="進口稅"
+    [(ngModel)]="hsCodeReq.dutyRate" />
 
-    <input type="number" placeholder="VAT" [(ngModel)]="hsCodeReq.vatRate" />
+    <input type="number"
+    min="0"
+    placeholder="進口營業稅"
+    [(ngModel)]="hsCodeReq.vatRate" />
 
     <input type="text" placeholder="說明" [(ngModel)]="hsCodeReq.description" />
 
@@ -38,8 +46,8 @@
         <th>HS Code</th>
         <th>商品類型</th>
         <th>分類</th>
-        <th>Import Duty</th>
-        <th>VAT</th>
+        <th>進口稅</th>
+        <th>進口營業稅</th>
         <th>說明</th>
         <th>操作</th>
       </tr>

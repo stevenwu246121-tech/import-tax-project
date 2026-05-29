@@ -9,7 +9,15 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
 import { HsCode } from '../../models/hs-code';
+interface ProductReq {
+  name: string;
+  categoryId: number;
+  hsCodeId: number;
+  originCountry: string;
+  unit: string;
+  unitPrice: number | null;
 
+}
 @Component({
   selector: 'app-product-manage',
 
@@ -34,14 +42,14 @@ export class ProductManageComponent implements OnInit {
 
   filteredHsCodes: HsCode[] = [];
 
-  productReq = {
-    name: '',
-    categoryId: 1,
-    hsCodeId: 1,
-    originCountry: 'JP',
-    unit: '箱',
-    unitPrice: 0,
-  };
+  productReq: ProductReq = {
+  name: '',
+  categoryId: 0,
+  hsCodeId: 0,
+  originCountry: '',
+  unit: '',
+  unitPrice: null,
+};
 
   productRules = {
     日本咖啡豆: {
@@ -163,23 +171,31 @@ export class ProductManageComponent implements OnInit {
     return true;
   }
 
-  createProduct(): void {
+createProduct(): void {
   if (!this.isValidProductRule()) {
     return;
   }
 
-    this.apiService.createProduct(this.productReq).subscribe({
-      next: () => {
-        alert('新增成功');
-        this.loadProducts();
-        this.resetForm();
-      },
-      error: (error) => {
-        console.error(error);
-        alert('新增失敗');
-      },
-    });
+  if (this.productReq.unitPrice === null) {
+    alert('請輸入價格');
+    return;
   }
+
+  this.apiService.createProduct({
+    ...this.productReq,
+    unitPrice: this.productReq.unitPrice,
+  }).subscribe({
+    next: () => {
+      alert('新增成功');
+      this.loadProducts();
+      this.resetForm();
+    },
+    error: (error) => {
+      console.error(error);
+      alert('新增失敗');
+    },
+  });
+}
 
   deleteProduct(productId: number): void {
     const confirmed = confirm('確定要刪除嗎？');
@@ -201,97 +217,121 @@ export class ProductManageComponent implements OnInit {
     });
   }
 
-  editProduct(product: Product): void {
-    this.editingProductId = product.id;
+editProduct(product: Product): void {
+  this.editingProductId = product.id;
 
-    this.productReq = {
-      name: product.productName,
-      categoryId: 1,
-      hsCodeId: 1,
-      originCountry: 'JP',
-      unit: '箱',
-      unitPrice: product.unitPrice,
-    };
+  const matchedCategory = this.categories.find(
+    (category) => category.name === product.categoryName
+  );
+
+  const matchedHsCode = this.hsCodes.find(
+    (hsCode) => hsCode.code === product.hsCode
+  );
+
+  this.productReq = {
+    name: product.productName,
+    categoryId: matchedCategory?.id ?? 0,
+    hsCodeId: matchedHsCode?.id ?? 0,
+    originCountry: product.productName.includes('台灣') ? 'TW' : 'JP',
+    unit: '箱',
+    unitPrice: product.unitPrice,
+  };
+
+  this.onCategoryChange();
+
+  if (matchedHsCode) {
+    this.productReq.hsCodeId = matchedHsCode.id;
   }
+}
 
   submitProduct(): void {
-    if (!this.productReq.name.trim()) {
-      alert('請輸入商品名稱');
-      return;
-    }
-
-    if (!this.productReq.originCountry) {
-      alert('請選擇來源國');
-      return;
-    }
-
-    if (!this.productReq.unit.trim()) {
-      alert('請輸入單位');
-      return;
-    }
-
-    if (this.productReq.unitPrice < 0) {
-      alert('單價不可小於 0');
-      return;
-    }
-
-    if (
-      this.productReq.name.includes('日本') &&
-      this.productReq.originCountry !== 'JP'
-    ) {
-      alert('商品名稱包含「日本」，來源國只能選 JP');
-      return;
-    }
-
-    if (
-      this.productReq.name.includes('台灣') &&
-      this.productReq.originCountry !== 'TW'
-    ) {
-      alert('商品名稱包含「台灣」，來源國只能選 TW');
-      return;
-    }
-
-    if (!this.isValidProductRule()) {
-      return;
-    }
-
-    if (this.editingProductId) {
-      this.apiService
-        .updateProduct(this.editingProductId, this.productReq)
-        .subscribe({
-          next: () => {
-            alert('更新成功');
-
-            this.loadProducts();
-
-            this.resetForm();
-          },
-
-          error: (error) => {
-            console.error(error);
-
-            alert('更新失敗');
-          },
-        });
-
-      return;
-    }
-
-    this.createProduct();
+  if (!this.productReq.name.trim()) {
+    alert('請輸入商品名稱');
+    return;
   }
+
+  if (!this.productReq.categoryId) {
+    alert('請選擇種類');
+    return;
+  }
+
+  if (!this.productReq.hsCodeId) {
+    alert('請選擇 HS Code');
+    return;
+  }
+
+  if (!this.productReq.originCountry) {
+    alert('請選擇國別');
+    return;
+  }
+
+  if (!this.productReq.unit.trim()) {
+    alert('請輸入數量單位');
+    return;
+  }
+
+  if (this.productReq.unitPrice === null || this.productReq.unitPrice <= 0) {
+    alert('價格需大於 0');
+    return;
+  }
+
+  if (
+    this.productReq.name.includes('日本') &&
+    this.productReq.originCountry !== 'JP'
+  ) {
+    alert('商品名稱包含「日本」，來源國只能選 JP');
+    return;
+  }
+
+  if (
+    this.productReq.name.includes('台灣') &&
+    this.productReq.originCountry !== 'TW'
+  ) {
+    alert('商品名稱包含「台灣」，來源國只能選 TW');
+    return;
+  }
+
+  if (!this.isValidProductRule()) {
+    return;
+  }
+
+  if (this.editingProductId) {
+    this.apiService
+      .updateProduct(this.editingProductId, {
+        ...this.productReq,
+        unitPrice: this.productReq.unitPrice,
+      })
+      .subscribe({
+        next: () => {
+          alert('更新成功');
+          this.loadProducts();
+          this.resetForm();
+        },
+        error: (error) => {
+          console.error(error);
+          alert('更新失敗');
+        },
+      });
+
+    return;
+  }
+
+  this.createProduct();
+}
 
   resetForm(): void {
-    this.productReq = {
-      name: '',
-      categoryId: 1,
-      hsCodeId: 1,
-      originCountry: 'JP',
-      unit: '箱',
-      unitPrice: 0,
-    };
+  this.productReq = {
+    name: '',
+    categoryId: 0,
+    hsCodeId: 0,
+    originCountry: '',
+    unit: '',
+    unitPrice: null,
+  };
 
-    this.editingProductId = null;
-  }
+  this.filteredHsCodes = this.hsCodes;
+  this.editingProductId = null;
+}
 
   filteredProducts(): Product[] {
     return this.products.filter((product) => {
