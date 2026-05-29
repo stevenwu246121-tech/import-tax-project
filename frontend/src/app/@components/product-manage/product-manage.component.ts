@@ -171,10 +171,17 @@ export class ProductManageComponent implements OnInit {
     return true;
   }
 
+<<<<<<< HEAD
 createProduct(): void {
   if (!this.isValidProductRule()) {
     return;
   }
+=======
+  createProduct(): void {
+    if (!this.isValidProductRule()) {
+      return;
+    }
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
 
   if (this.productReq.unitPrice === null) {
     alert('請輸入價格');
@@ -245,9 +252,86 @@ editProduct(product: Product): void {
 }
 
   submitProduct(): void {
+<<<<<<< HEAD
   if (!this.productReq.name.trim()) {
     alert('請輸入商品名稱');
     return;
+=======
+    if (!this.productReq.name.trim()) {
+      alert('請輸入商品名稱');
+      return;
+    }
+
+    if (!this.productReq.originCountry) {
+      alert('請選擇來源國');
+      return;
+    }
+
+    if (!this.productReq.unit.trim()) {
+      alert('請輸入單位');
+      return;
+    }
+
+    const duplicateProduct = this.products.some(
+      (product) =>
+        product.productName.trim() === this.productReq.name.trim() &&
+        product.id !== this.editingProductId,
+    );
+
+    if (duplicateProduct) {
+      alert('商品名稱已存在，請勿重複新增');
+      return;
+    }
+
+    if (!this.productReq.unitPrice || this.productReq.unitPrice <= 0) {
+      alert('單價不可小於 0');
+      return;
+    }
+
+    if (
+      this.productReq.name.includes('日本') &&
+      this.productReq.originCountry !== 'JP'
+    ) {
+      alert('商品名稱包含「日本」，來源國只能選 JP');
+      return;
+    }
+
+    if (
+      this.productReq.name.includes('台灣') &&
+      this.productReq.originCountry !== 'TW'
+    ) {
+      alert('商品名稱包含「台灣」，來源國只能選 TW');
+      return;
+    }
+
+    if (!this.isValidProductRule()) {
+      return;
+    }
+
+    if (this.editingProductId) {
+      this.apiService
+        .updateProduct(this.editingProductId, this.productReq)
+        .subscribe({
+          next: () => {
+            alert('更新成功');
+
+            this.loadProducts();
+
+            this.resetForm();
+          },
+
+          error: (error) => {
+            console.error(error);
+
+            alert('更新失敗');
+          },
+        });
+
+      return;
+    }
+
+    this.createProduct();
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
   }
 
   if (!this.productReq.categoryId) {

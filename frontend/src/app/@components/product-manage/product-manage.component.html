@@ -1,10 +1,12 @@
-<h1>
-  商品管理
-</h1>
+<h1>商品管理</h1>
 
 <div class="search-filter-row">
 
-  <input type="text" placeholder="搜尋商品名稱" [(ngModel)]="keyword" />
+  <input
+    type="text"
+    placeholder="搜尋商品名稱"
+    [(ngModel)]="keyword"
+  />
 
   <select [(ngModel)]="selectedCategory">
 
@@ -12,7 +14,10 @@
       全部分類
     </option>
 
-    <option *ngFor="let category of categories" [value]="category.name">
+    <option
+      *ngFor="let category of categories"
+      [value]="category.name"
+    >
       {{ category.name }}
     </option>
 
@@ -20,46 +25,100 @@
 
 </div>
 
-
 <div class="form-card">
+<<<<<<< HEAD
   <input
     type="text"
     placeholder="商品名稱"
+=======
+
+  <input
+    type="text"
+    placeholder="商品名稱"
+    maxlength="30"
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
     [(ngModel)]="productReq.name"
     (change)="onProductNameChange()"
   />
 
+<<<<<<< HEAD
   <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
     <option [ngValue]="0" disabled>種類</option>
 
     <option *ngFor="let category of categories" [ngValue]="category.id">
+=======
+  <select
+    [(ngModel)]="productReq.categoryId"
+    (change)="onCategoryChange()"
+  >
+
+    <option
+      *ngFor="let category of categories"
+      [ngValue]="category.id"
+    >
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
       {{ category.name }}
     </option>
+
   </select>
 
   <select [(ngModel)]="productReq.hsCodeId">
+<<<<<<< HEAD
     <option [ngValue]="0" disabled>HS Code</option>
 
     <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
+=======
+
+    <option
+      *ngFor="let hsCode of filteredHsCodes"
+      [ngValue]="hsCode.id"
+    >
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
       {{ hsCode.code }} - {{ hsCode.name }}
     </option>
+
   </select>
 
   <select [(ngModel)]="productReq.originCountry">
+<<<<<<< HEAD
     <option value="" disabled>國別</option>
     <option value="JP">JP</option>
     <option value="TW">TW</option>
+=======
+
+    <option value="">
+      選擇來源國
+    </option>
+
+    <option value="JP">
+      JP
+    </option>
+
+    <option value="TW">
+      TW
+    </option>
+
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
   </select>
 
   <input
     type="text"
+<<<<<<< HEAD
     placeholder="數量單位"
+=======
+    placeholder="單位"
+    maxlength="5"
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
     [(ngModel)]="productReq.unit"
   />
 
   <input
     type="number"
+<<<<<<< HEAD
     placeholder="價格"
+=======
+    placeholder="單價"
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
     [(ngModel)]="productReq.unitPrice"
   />
 
@@ -91,8 +150,16 @@
   <tbody>
 
     <tr *ngFor="let product of filteredProducts()">
+
       <td>
-        {{ product.productName }}
+
+        <span
+          class="product-name"
+          [title]="product.productName"
+        >
+          {{ product.productName }}
+        </span>
+
       </td>
 
       <td>
@@ -109,17 +176,29 @@
 
       <td class="action-cell">
 
-        <button class="edit-menu-btn" (click)="toggleActionMenu(product.id)">
+        <button
+          class="edit-menu-btn"
+          (click)="toggleActionMenu(product.id)"
+        >
           編輯
         </button>
 
-        <div class="action-menu" *ngIf="openedActionId === product.id">
+        <div
+          class="action-menu"
+          *ngIf="openedActionId === product.id"
+        >
 
-          <button class="action-update" (click)="editProduct(product); openedActionId = null">
+          <button
+            class="action-update"
+            (click)="editProduct(product); openedActionId = null"
+          >
             修改
           </button>
 
-          <button class="action-delete" (click)="deleteProduct(product.id); openedActionId = null">
+          <button
+            class="action-delete"
+            (click)="deleteProduct(product.id); openedActionId = null"
+          >
             刪除
           </button>
 

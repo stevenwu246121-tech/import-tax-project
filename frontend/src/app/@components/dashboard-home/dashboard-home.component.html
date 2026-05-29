@@ -83,35 +83,21 @@
   </section>
 
   <section class="home-panel">
-    <h2>進貨試算購物車</h2>
+    <h2>即時匯率</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>商品</th>
-          <th>數量</th>
-          <th>小計</th>
-        </tr>
-      </thead>
+    <div class="exchange-card">
 
-      <tbody>
-        <tr>
-          <td>日本咖啡豆</td>
-          <td>10</td>
-          <td>5,000</td>
-        </tr>
+      <span>NT → JPY</span>
 
-        <tr>
-          <td>法國奶油</td>
-          <td>5</td>
-          <td>2,100</td>
-        </tr>
-      </tbody>
-    </table>
+      <strong>
+        1 NT = {{ twdToJpyRate | number:'1.2-2' }} JPY
+      </strong>
 
-    <strong class="total">
-      Landed Cost：NT$ 11,254
-    </strong>
+      <small>
+        更新時間：{{ updateTime }}
+      </small>
+
+    </div>
   </section>
 
   <section class="home-panel">

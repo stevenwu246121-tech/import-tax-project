@@ -30,10 +30,13 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   countryTotals: { [key: string]: number } = {};
 
+  twdToJpyRate = 0;
+  updateTime = '';
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadExchangeRate();
   }
 
   ngAfterViewInit(): void {
@@ -150,6 +153,20 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
             backgroundColor: '#22c55e',
           },
         ],
+      },
+    });
+  }
+
+  loadExchangeRate(): void {
+    this.apiService.getJpyExchangeRate().subscribe({
+      next: (response: number) => {
+        this.twdToJpyRate = 1 / response;
+
+        this.updateTime = new Date().toLocaleString();
+      },
+
+      error: (error: unknown) => {
+        console.error(error);
       },
     });
   }

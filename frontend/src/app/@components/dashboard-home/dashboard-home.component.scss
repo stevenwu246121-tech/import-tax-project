@@ -216,3 +216,29 @@ td {
     grid-template-columns: 1fr;
   }
 }
+
+.exchange-card {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #eef6ff;
+}
+
+.exchange-card span {
+  display: block;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.exchange-card strong {
+  font-size: 32px;
+  font-weight: 900;
+  color: #2563eb;
+}
+
+.exchange-card small {
+  color: #64748b;
+  font-weight: 600;
+}
