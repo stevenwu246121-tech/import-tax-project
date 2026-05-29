@@ -13,35 +13,6 @@
   flex-shrink: 0;
 }
 
-.sidebar h2 {
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 48px;
-}
-
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.sidebar nav a {
-  color: #e5e7eb;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 16px 20px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: #2563eb;
-  color: white;
-}
-
 .main {
   flex: 1;
   padding: 48px;
@@ -62,17 +33,20 @@
   padding: 32px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   margin-bottom: 32px;
+  overflow: visible;
 }
 
 input,
 select {
+  width: 100%;
   height: 56px;
-  border-radius: 14px;
-  border: 1px solid #d1d5db;
-  padding: 0 18px;
+  border-radius: 16px;
+  border: 1px solid #dbe2ea;
+  padding: 0 16px;
   font-size: 16px;
   outline: none;
   background: white;
+  box-sizing: border-box;
 }
 
 input:focus,
@@ -97,17 +71,49 @@ button:hover {
   background: #1d4ed8;
 }
 
-button.danger {
+button.danger,
+.action-delete {
   background: #dc2626;
 }
 
-button.danger:hover {
+button.danger:hover,
+.action-delete:hover {
   background: #b91c1c;
 }
 
+/* 搜尋區塊 */
+.search-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.search-filter-row input {
+  width: 420px;
+}
+
+.search-filter-row select {
+  width: 240px;
+}
+
+/* 表單 */
+.form-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+.form-card button {
+  grid-column: 1 / 2;
+  width: 100%;
+}
+
+/* Table */
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: white;
   border-radius: 22px;
   overflow: visible;
@@ -124,6 +130,7 @@ td {
   border-bottom: 1px solid #e5e7eb;
   font-size: 16px;
   vertical-align: middle;
+  overflow: visible;
 }
 
 th {
@@ -133,6 +140,15 @@ th {
 
 td {
   height: 68px;
+}
+
+tbody,
+tr {
+  overflow: visible;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
 }
 
 th:nth-child(1),
@@ -161,14 +177,27 @@ td:nth-child(5) {
   text-align: left;
 }
 
-tbody tr:hover {
-  background: #f8fafc;
+/* 商品名稱過長防跑版 */
+.product-name {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
+/* 操作下拉選單 */
 .action-cell {
   position: relative;
   width: 140px;
   text-align: left;
+  overflow: visible;
+  z-index: 20;
+}
+
+.action-cell:has(.action-menu) {
+  z-index: 999;
 }
 
 .edit-menu-btn {
@@ -181,7 +210,7 @@ tbody tr:hover {
   position: absolute;
   top: 54px;
   left: 28px;
-  z-index: 10;
+  z-index: 9999;
 
   display: flex;
   flex-direction: column;
@@ -201,75 +230,4 @@ tbody tr:hover {
 
 .action-update {
   background: #2563eb;
-}
-
-.action-delete {
-  background: #dc2626;
-}
-
-.form-card {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-
-  background: white;
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  margin-bottom: 32px;
-}
-
-.form-card input,
-.form-card select {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.form-card button {
-  grid-column: 1 / 2;
-  width: 100%;
-}
-
-/* 搜尋區塊 */
-.search-filter-row {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  margin-bottom: 28px;
-}
-
-.search-filter-row input {
-  width: 420px;
-}
-
-.search-filter-row select {
-  width: 240px;
-}
-
-/* select 統一樣式 */
-select {
-  height: 56px;
-  border-radius: 16px;
-  border: 1px solid #dbe2ea;
-  padding: 0 16px;
-  background: white;
-  font-size: 16px;
-}
-
-/* input 統一 */
-input {
-  height: 56px;
-  border-radius: 16px;
-  border: 1px solid #dbe2ea;
-  padding: 0 16px;
-  font-size: 16px;
-}
-
-.product-name {
-  display: inline-block;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
 }
