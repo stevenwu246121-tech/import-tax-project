@@ -24,17 +24,17 @@
   </div>
 
   <div class="card">
-    <span>Import Duty</span>
+    <span>進口稅</span>
     <strong>{{ currency }} {{ convertCurrency(dutyTotal) | number:'1.2-2' }}</strong>
   </div>
 
   <div class="card">
-    <span>Import VAT</span>
+    <span>進口營業稅</span>
     <strong>{{ currency }} {{ convertCurrency(vatTotal) | number:'1.2-2' }}</strong>
   </div>
 
   <div class="card highlight">
-    <span>Landed Cost</span>
+    <span>抵岸成本</span>
     <strong>{{ currency }} {{ convertCurrency(landedCostTotal) | number:'1.2-2' }}</strong>
   </div>
 </section>
@@ -125,17 +125,17 @@
       </p>
 
       <p>
-        Import Duty：{{ currency }}
+        進口稅：{{ currency }}
         {{ convertCurrency(dutyTotal) | number:'1.2-2' }}
       </p>
 
       <p>
-        Import VAT：{{ currency }}
+        進口營業稅：{{ currency }}
         {{ convertCurrency(vatTotal) | number:'1.2-2' }}
       </p>
 
       <h2>
-        <span>Landed Cost：</span>
+        <span>抵岸成本：</span>
         <span>{{ currency }}{{ convertCurrency(landedCostTotal) | number:'1.2-2' }}</span>
       </h2>
 
