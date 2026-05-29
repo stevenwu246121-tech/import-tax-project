@@ -26,15 +26,31 @@
 </div>
 
 <div class="form-card">
+<<<<<<< HEAD
+  <input
+    type="text"
+    placeholder="商品名稱"
+=======
 
   <input
     type="text"
     placeholder="商品名稱"
+<<<<<<< HEAD
     maxlength="6"
+=======
+    maxlength="30"
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
+>>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
     [(ngModel)]="productReq.name"
     (change)="onProductNameChange()"
   />
 
+<<<<<<< HEAD
+  <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
+    <option [ngValue]="0" disabled>種類</option>
+
+    <option *ngFor="let category of categories" [ngValue]="category.id">
+=======
   <select
     [(ngModel)]="productReq.categoryId"
     (change)="onCategoryChange()"
@@ -44,23 +60,35 @@
       *ngFor="let category of categories"
       [ngValue]="category.id"
     >
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
       {{ category.name }}
     </option>
 
   </select>
 
   <select [(ngModel)]="productReq.hsCodeId">
+<<<<<<< HEAD
+    <option [ngValue]="0" disabled>HS Code</option>
+
+    <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
+=======
 
     <option
       *ngFor="let hsCode of filteredHsCodes"
       [ngValue]="hsCode.id"
     >
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
       {{ hsCode.code }} - {{ hsCode.name }}
     </option>
 
   </select>
 
   <select [(ngModel)]="productReq.originCountry">
+<<<<<<< HEAD
+    <option value="" disabled>國別</option>
+    <option value="JP">JP</option>
+    <option value="TW">TW</option>
+=======
 
     <option value="">
       選擇來源國
@@ -74,26 +102,41 @@
       TW
     </option>
 
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
   </select>
 
   <input
     type="text"
+<<<<<<< HEAD
+    placeholder="數量單位"
+=======
     placeholder="單位"
+<<<<<<< HEAD
     maxlength="6"
+=======
+    maxlength="5"
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
+>>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
     [(ngModel)]="productReq.unit"
   />
 
   <input
     type="number"
+<<<<<<< HEAD
+    placeholder="價格"
+=======
     placeholder="單價"
+<<<<<<< HEAD
     maxlength="6"
+=======
+>>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
+>>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
     [(ngModel)]="productReq.unitPrice"
   />
 
   <button (click)="submitProduct()">
     {{ editingProductId ? '更新商品' : '新增商品' }}
   </button>
-
 </div>
 
 <table>
