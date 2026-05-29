@@ -164,9 +164,9 @@ export class ProductManageComponent implements OnInit {
   }
 
   createProduct(): void {
-  if (!this.isValidProductRule()) {
-    return;
-  }
+    if (!this.isValidProductRule()) {
+      return;
+    }
 
     this.apiService.createProduct(this.productReq).subscribe({
       next: () => {
@@ -230,7 +230,18 @@ export class ProductManageComponent implements OnInit {
       return;
     }
 
-    if (this.productReq.unitPrice < 0) {
+    const duplicateProduct = this.products.some(
+      (product) =>
+        product.productName.trim() === this.productReq.name.trim() &&
+        product.id !== this.editingProductId,
+    );
+
+    if (duplicateProduct) {
+      alert('商品名稱已存在，請勿重複新增');
+      return;
+    }
+
+    if (!this.productReq.unitPrice || this.productReq.unitPrice <= 0) {
       alert('單價不可小於 0');
       return;
     }
