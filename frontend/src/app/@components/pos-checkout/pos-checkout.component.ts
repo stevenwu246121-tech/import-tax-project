@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -32,6 +32,7 @@ export class PosCheckoutComponent implements OnInit {
 
   exchangeRate = 1;
   isLoadingExchangeRate = false;
+  private cachedJpyRate?: number;
 
   isRegionMenuOpen = false;
   isDiningMenuOpen = false;
@@ -59,22 +60,35 @@ export class PosCheckoutComponent implements OnInit {
       ? '內用結帳模式'
       : '外帶結帳模式';
   }
+  @HostListener('document:click')
+  closeDropdowns(): void {
+  this.isRegionMenuOpen = false;
+  this.isDiningMenuOpen = false;
+}
+  toggleRegionMenu(event: MouseEvent): void {
+  event.stopPropagation();
 
-  toggleRegionMenu(): void {
-    this.isRegionMenuOpen = !this.isRegionMenuOpen;
-    this.isDiningMenuOpen = false;
+  this.isRegionMenuOpen = !this.isRegionMenuOpen;
+  this.isDiningMenuOpen = false;
+}
+
+  toggleDiningMenu(event: MouseEvent): void {
+  event.stopPropagation();
+
+  this.isDiningMenuOpen = !this.isDiningMenuOpen;
+  this.isRegionMenuOpen = false;
   }
 
-  toggleDiningMenu(): void {
-    this.isDiningMenuOpen = !this.isDiningMenuOpen;
-    this.isRegionMenuOpen = false;
-  }
 
- selectRegion(region: Region): void {
-  this.selectedRegion = region;
+selectRegion(region: Region): void {
   this.isRegionMenuOpen = false;
 
+  if (region === this.selectedRegion) {
+    return;
+  }
+
   if (region === 'TW') {
+    this.selectedRegion = 'TW';
     this.exchangeRate = 1;
     this.onCheckoutSettingChange();
     return;
@@ -82,12 +96,22 @@ export class PosCheckoutComponent implements OnInit {
 
   this.loadJpyExchangeRate();
 }
+
 loadJpyExchangeRate(): void {
+  if (this.cachedJpyRate) {
+    this.exchangeRate = this.cachedJpyRate;
+    this.selectedRegion = 'JP';
+    this.onCheckoutSettingChange();
+    return;
+  }
+
   this.isLoadingExchangeRate = true;
 
   this.apiService.getJpyExchangeRate().subscribe({
     next: (rate: number) => {
+      this.cachedJpyRate = rate;
       this.exchangeRate = rate;
+      this.selectedRegion = 'JP';
       this.isLoadingExchangeRate = false;
       this.onCheckoutSettingChange();
     },
@@ -95,16 +119,22 @@ loadJpyExchangeRate(): void {
       console.error('匯率取得失敗，使用預設匯率', error);
 
       this.exchangeRate = 4.5;
+      this.selectedRegion = 'JP';
       this.isLoadingExchangeRate = false;
       this.onCheckoutSettingChange();
     },
   });
 }
-  selectDiningType(type: DiningType): void {
-    this.selectedDiningType = type;
-    this.isDiningMenuOpen = false;
-    this.onCheckoutSettingChange();
+selectDiningType(type: DiningType): void {
+  this.isDiningMenuOpen = false;
+
+  if (type === this.selectedDiningType) {
+    return;
   }
+
+  this.selectedDiningType = type;
+  this.onCheckoutSettingChange();
+}
 
   onCheckoutSettingChange(): void {
     this.calculate();
