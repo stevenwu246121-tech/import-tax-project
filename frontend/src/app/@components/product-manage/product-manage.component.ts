@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
-
 import { FormsModule } from '@angular/forms';
 
 import { ApiService } from '../../@services/api.service';
@@ -9,9 +7,7 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
 import { HsCode } from '../../models/hs-code';
-<<<<<<< HEAD
-import { ExchangeRateService } from '../../@services/exchange-rate.service';
-=======
+
 interface ProductReq {
   name: string;
   categoryId: number;
@@ -19,53 +15,42 @@ interface ProductReq {
   originCountry: string;
   unit: string;
   unitPrice: number | null;
->>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
-
 }
+
 @Component({
   selector: 'app-product-manage',
-
   standalone: true,
-
   imports: [CommonModule, FormsModule],
-
   templateUrl: './product-manage.component.html',
-
   styleUrls: ['./product-manage.component.scss'],
 })
 export class ProductManageComponent implements OnInit {
   products: Product[] = [];
-
-  keyword = '';
-
-  selectedCategory = '';
-
   categories: Category[] = [];
-
   hsCodes: HsCode[] = [];
-
   filteredHsCodes: HsCode[] = [];
 
+  keyword = '';
+  selectedCategory = '';
+
   productReq: ProductReq = {
-  name: '',
-  categoryId: 0,
-  hsCodeId: 0,
-  originCountry: '',
-  unit: '',
-  unitPrice: null,
-};
+    name: '',
+    categoryId: 0,
+    hsCodeId: 0,
+    originCountry: '',
+    unit: '',
+    unitPrice: null,
+  };
 
   productRules = {
     日本咖啡豆: {
       category: '乾貨',
       hsCode: '0901.11.0000',
     },
-
     日本白米: {
       category: '乾貨',
       hsCode: '1006.30.0000',
     },
-
     日本和牛: {
       category: '肉品',
       hsCode: '0201.30.0000',
@@ -73,36 +58,52 @@ export class ProductManageComponent implements OnInit {
   };
 
   editingProductId: number | null = null;
-
   openedActionId: number | null = null;
 
-  toggleActionMenu(id: number): void {
-    this.openedActionId = this.openedActionId === id ? null : id;
-  }
-
-  constructor(
-    private apiService: ApiService,
-    private exchangeRateService: ExchangeRateService,
-  ) {}
+  constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadProducts();
-
     this.loadCategories();
-
     this.loadHsCodes();
+  }
+
+  loadProducts(): void {
+    this.apiService.getProducts().subscribe({
+      next: (response: Product[]) => {
+        this.products = response;
+      },
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
   }
 
   loadCategories(): void {
     this.apiService.getCategories().subscribe({
-      next: (response) => {
+      next: (response: Category[]) => {
         this.categories = response;
       },
-
-      error: (error) => {
+      error: (error: unknown) => {
         console.error(error);
       },
     });
+  }
+
+  loadHsCodes(): void {
+    this.apiService.getHsCodes().subscribe({
+      next: (response: HsCode[]) => {
+        this.hsCodes = response;
+        this.filteredHsCodes = response;
+      },
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
+  }
+
+  toggleActionMenu(id: number): void {
+    this.openedActionId = this.openedActionId === id ? null : id;
   }
 
   onCategoryChange(): void {
@@ -112,6 +113,7 @@ export class ProductManageComponent implements OnInit {
 
     if (!selectedCategory) {
       this.filteredHsCodes = this.hsCodes;
+      this.productReq.hsCodeId = 0;
       return;
     }
 
@@ -119,34 +121,33 @@ export class ProductManageComponent implements OnInit {
       (hsCode) => hsCode.categoryName === selectedCategory.name,
     );
 
-    if (this.filteredHsCodes.length > 0) {
-      this.productReq.hsCodeId = this.filteredHsCodes[0].id;
-    } else {
-      this.productReq.hsCodeId = 0;
+    this.productReq.hsCodeId =
+      this.filteredHsCodes.length > 0 ? this.filteredHsCodes[0].id : 0;
+  }
+
+  onProductNameChange(): void {
+    const rule =
+      this.productRules[this.productReq.name as keyof typeof this.productRules];
+
+    if (!rule) {
+      return;
     }
-  }
 
-  loadHsCodes(): void {
-    this.apiService.getHsCodes().subscribe({
-      next: (response) => {
-        this.hsCodes = response;
-        this.filteredHsCodes = response;
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
-  }
+    const category = this.categories.find(
+      (item) => item.name === rule.category,
+    );
 
-  loadProducts(): void {
-    this.apiService.getProducts().subscribe({
-      next: (response) => {
-        this.products = response;
-      },
-      error: (error) => {
-        console.error(error);
-      },
-    });
+    const hsCode = this.hsCodes.find((item) => item.code === rule.hsCode);
+
+    if (category) {
+      this.productReq.categoryId = category.id;
+    }
+
+    this.onCategoryChange();
+
+    if (hsCode) {
+      this.productReq.hsCodeId = hsCode.id;
+    }
   }
 
   isValidProductRule(): boolean {
@@ -178,94 +179,19 @@ export class ProductManageComponent implements OnInit {
     return true;
   }
 
-<<<<<<< HEAD
-createProduct(): void {
-  if (!this.isValidProductRule()) {
-    return;
-  }
-=======
-  createProduct(): void {
-    if (!this.isValidProductRule()) {
-      return;
-    }
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
-
-  if (this.productReq.unitPrice === null) {
-    alert('請輸入價格');
-    return;
-  }
-
-  this.apiService.createProduct({
-    ...this.productReq,
-    unitPrice: this.productReq.unitPrice,
-  }).subscribe({
-    next: () => {
-      alert('新增成功');
-      this.loadProducts();
-      this.resetForm();
-    },
-    error: (error) => {
-      console.error(error);
-      alert('新增失敗');
-    },
-  });
-}
-
-  deleteProduct(productId: number): void {
-    const confirmed = confirm('確定要刪除嗎？');
-
-    if (!confirmed) {
-      return;
-    }
-
-    this.apiService.deleteProduct(productId).subscribe({
-      next: () => {
-        alert('刪除成功');
-
-        this.loadProducts();
-      },
-
-      error: (error) => {
-        console.error(error);
-      },
-    });
-  }
-
-editProduct(product: Product): void {
-  this.editingProductId = product.id;
-
-  const matchedCategory = this.categories.find(
-    (category) => category.name === product.categoryName
-  );
-
-  const matchedHsCode = this.hsCodes.find(
-    (hsCode) => hsCode.code === product.hsCode
-  );
-
-  this.productReq = {
-    name: product.productName,
-    categoryId: matchedCategory?.id ?? 0,
-    hsCodeId: matchedHsCode?.id ?? 0,
-    originCountry: product.productName.includes('台灣') ? 'TW' : 'JP',
-    unit: '箱',
-    unitPrice: product.unitPrice,
-  };
-
-  this.onCategoryChange();
-
-  if (matchedHsCode) {
-    this.productReq.hsCodeId = matchedHsCode.id;
-  }
-}
-
   submitProduct(): void {
-<<<<<<< HEAD
-  if (!this.productReq.name.trim()) {
-    alert('請輸入商品名稱');
-    return;
-=======
     if (!this.productReq.name.trim()) {
       alert('請輸入商品名稱');
+      return;
+    }
+
+    if (!this.productReq.categoryId) {
+      alert('請選擇分類');
+      return;
+    }
+
+    if (!this.productReq.hsCodeId) {
+      alert('請選擇 HS Code');
       return;
     }
 
@@ -279,6 +205,11 @@ editProduct(product: Product): void {
       return;
     }
 
+    if (!this.productReq.unitPrice || this.productReq.unitPrice <= 0) {
+      alert('價格必須大於 0');
+      return;
+    }
+
     const duplicateProduct = this.products.some(
       (product) =>
         product.productName.trim() === this.productReq.name.trim() &&
@@ -287,11 +218,6 @@ editProduct(product: Product): void {
 
     if (duplicateProduct) {
       alert('商品名稱已存在，請勿重複新增');
-      return;
-    }
-
-    if (!this.productReq.unitPrice || this.productReq.unitPrice <= 0) {
-      alert('單價不可小於 0');
       return;
     }
 
@@ -321,15 +247,11 @@ editProduct(product: Product): void {
         .subscribe({
           next: () => {
             alert('更新成功');
-
             this.loadProducts();
-
             this.resetForm();
           },
-
-          error: (error) => {
+          error: (error: unknown) => {
             console.error(error);
-
             alert('更新失敗');
           },
         });
@@ -338,95 +260,87 @@ editProduct(product: Product): void {
     }
 
     this.createProduct();
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
   }
 
-  if (!this.productReq.categoryId) {
-    alert('請選擇種類');
-    return;
+  createProduct(): void {
+    this.apiService.createProduct(this.productReq).subscribe({
+      next: () => {
+        alert('新增成功');
+        this.loadProducts();
+        this.resetForm();
+      },
+      error: (error: unknown) => {
+        console.error(error);
+        alert('新增失敗');
+      },
+    });
   }
 
-  if (!this.productReq.hsCodeId) {
-    alert('請選擇 HS Code');
-    return;
+  editProduct(product: Product): void {
+    this.editingProductId = product.id;
+
+    const matchedCategory = this.categories.find(
+      (category) => category.name === product.categoryName,
+    );
+
+    const matchedHsCode = this.hsCodes.find(
+      (hsCode) => hsCode.code === product.hsCode,
+    );
+
+    this.productReq = {
+      name: product.productName,
+      categoryId: matchedCategory?.id ?? 0,
+      hsCodeId: matchedHsCode?.id ?? 0,
+      originCountry: product.productName.includes('台灣') ? 'TW' : 'JP',
+      unit: '箱',
+      unitPrice: product.unitPrice,
+    };
+
+    this.onCategoryChange();
+
+    if (matchedHsCode) {
+      this.productReq.hsCodeId = matchedHsCode.id;
+    }
   }
 
-  if (!this.productReq.originCountry) {
-    alert('請選擇國別');
-    return;
+  deleteProduct(productId: number): void {
+    const confirmed = confirm('確定要刪除嗎？');
+
+    if (!confirmed) {
+      return;
+    }
+
+    this.apiService.deleteProduct(productId).subscribe({
+      next: () => {
+        alert('刪除成功');
+        this.loadProducts();
+      },
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
   }
-
-  if (!this.productReq.unit.trim()) {
-    alert('請輸入數量單位');
-    return;
-  }
-
-  if (this.productReq.unitPrice === null || this.productReq.unitPrice <= 0) {
-    alert('價格需大於 0');
-    return;
-  }
-
-  if (
-    this.productReq.name.includes('日本') &&
-    this.productReq.originCountry !== 'JP'
-  ) {
-    alert('商品名稱包含「日本」，來源國只能選 JP');
-    return;
-  }
-
-  if (
-    this.productReq.name.includes('台灣') &&
-    this.productReq.originCountry !== 'TW'
-  ) {
-    alert('商品名稱包含「台灣」，來源國只能選 TW');
-    return;
-  }
-
-  if (!this.isValidProductRule()) {
-    return;
-  }
-
-  if (this.editingProductId) {
-    this.apiService
-      .updateProduct(this.editingProductId, {
-        ...this.productReq,
-        unitPrice: this.productReq.unitPrice,
-      })
-      .subscribe({
-        next: () => {
-          alert('更新成功');
-          this.loadProducts();
-          this.resetForm();
-        },
-        error: (error) => {
-          console.error(error);
-          alert('更新失敗');
-        },
-      });
-
-    return;
-  }
-
-  this.createProduct();
-}
 
   resetForm(): void {
-  this.productReq = {
-    name: '',
-    categoryId: 0,
-    hsCodeId: 0,
-    originCountry: '',
-    unit: '',
-    unitPrice: null,
-  };
+    this.productReq = {
+      name: '',
+      categoryId: 0,
+      hsCodeId: 0,
+      originCountry: '',
+      unit: '',
+      unitPrice: null,
+    };
 
-  this.filteredHsCodes = this.hsCodes;
-  this.editingProductId = null;
-}
+    this.filteredHsCodes = this.hsCodes;
+    this.editingProductId = null;
+    this.openedActionId = null;
+  }
 
   filteredProducts(): Product[] {
     return this.products.filter((product) => {
-      const matchKeyword = product.productName.includes(this.keyword);
+      const matchKeyword = product.productName
+        .toLowerCase()
+        .includes(this.keyword.trim().toLowerCase());
 
       const matchCategory =
         !this.selectedCategory ||
@@ -434,30 +348,5 @@ editProduct(product: Product): void {
 
       return matchKeyword && matchCategory;
     });
-  }
-
-  onProductNameChange(): void {
-    const rule =
-      this.productRules[this.productReq.name as keyof typeof this.productRules];
-
-    if (!rule) {
-      return;
-    }
-
-    const category = this.categories.find(
-      (item) => item.name === rule.category,
-    );
-
-    const hsCode = this.hsCodes.find((item) => item.code === rule.hsCode);
-
-    if (category) {
-      this.productReq.categoryId = category.id;
-    }
-
-    this.onCategoryChange();
-
-    if (hsCode) {
-      this.productReq.hsCodeId = hsCode.id;
-    }
   }
 }

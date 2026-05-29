@@ -1,7 +1,6 @@
 <h1>商品管理</h1>
 
 <div class="search-filter-row">
-
   <input
     type="text"
     placeholder="搜尋商品名稱"
@@ -9,10 +8,7 @@
   />
 
   <select [(ngModel)]="selectedCategory">
-
-    <option value="">
-      全部分類
-    </option>
+    <option value="">全部分類</option>
 
     <option
       *ngFor="let category of categories"
@@ -20,117 +16,60 @@
     >
       {{ category.name }}
     </option>
-
   </select>
-
 </div>
 
 <div class="form-card">
-<<<<<<< HEAD
   <input
     type="text"
     placeholder="商品名稱"
-=======
-
-  <input
-    type="text"
-    placeholder="商品名稱"
-<<<<<<< HEAD
-    maxlength="6"
-=======
     maxlength="30"
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
->>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
     [(ngModel)]="productReq.name"
     (change)="onProductNameChange()"
   />
 
-<<<<<<< HEAD
-  <select [(ngModel)]="productReq.categoryId" (change)="onCategoryChange()">
-    <option [ngValue]="0" disabled>種類</option>
-
-    <option *ngFor="let category of categories" [ngValue]="category.id">
-=======
   <select
     [(ngModel)]="productReq.categoryId"
     (change)="onCategoryChange()"
   >
+    <option [ngValue]="0" disabled>請選擇分類</option>
 
     <option
       *ngFor="let category of categories"
       [ngValue]="category.id"
     >
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
       {{ category.name }}
     </option>
-
   </select>
 
   <select [(ngModel)]="productReq.hsCodeId">
-<<<<<<< HEAD
-    <option [ngValue]="0" disabled>HS Code</option>
-
-    <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
-=======
+    <option [ngValue]="0" disabled>請選擇 HS Code</option>
 
     <option
       *ngFor="let hsCode of filteredHsCodes"
       [ngValue]="hsCode.id"
     >
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
       {{ hsCode.code }} - {{ hsCode.name }}
     </option>
-
   </select>
 
   <select [(ngModel)]="productReq.originCountry">
-<<<<<<< HEAD
-    <option value="" disabled>國別</option>
+    <option value="" disabled>請選擇來源國</option>
     <option value="JP">JP</option>
     <option value="TW">TW</option>
-=======
-
-    <option value="">
-      選擇來源國
-    </option>
-
-    <option value="JP">
-      JP
-    </option>
-
-    <option value="TW">
-      TW
-    </option>
-
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
   </select>
 
   <input
     type="text"
-<<<<<<< HEAD
-    placeholder="數量單位"
-=======
     placeholder="單位"
-<<<<<<< HEAD
-    maxlength="6"
-=======
     maxlength="5"
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
->>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
     [(ngModel)]="productReq.unit"
   />
 
   <input
     type="number"
-<<<<<<< HEAD
-    placeholder="價格"
-=======
     placeholder="單價"
-<<<<<<< HEAD
-    maxlength="6"
-=======
->>>>>>> 328d606992eb357f7e086b711f9dad488f5a200a
->>>>>>> 9fb97bcea611e3a08836c2449632d801b056d309
+    min="1"
     [(ngModel)]="productReq.unitPrice"
   />
 
@@ -140,54 +79,32 @@
 </div>
 
 <table>
-
   <thead>
-
     <tr>
-
       <th>商品</th>
-
       <th>分類</th>
-
       <th>HS Code</th>
-
       <th>價格</th>
-
       <th>操作</th>
-
     </tr>
-
   </thead>
 
   <tbody>
-
     <tr *ngFor="let product of filteredProducts()">
-
       <td>
-
         <span
           class="product-name"
           [title]="product.productName"
         >
           {{ product.productName }}
         </span>
-
       </td>
 
-      <td>
-        {{ product.categoryName }}
-      </td>
-
-      <td>
-        {{ product.hsCode }}
-      </td>
-
-      <td>
-        {{ product.unitPrice }}
-      </td>
+      <td>{{ product.categoryName }}</td>
+      <td>{{ product.hsCode }}</td>
+      <td>{{ product.unitPrice }}</td>
 
       <td class="action-cell">
-
         <button
           class="edit-menu-btn"
           (click)="toggleActionMenu(product.id)"
@@ -199,7 +116,6 @@
           class="action-menu"
           *ngIf="openedActionId === product.id"
         >
-
           <button
             class="action-update"
             (click)="editProduct(product); openedActionId = null"
@@ -213,13 +129,8 @@
           >
             刪除
           </button>
-
         </div>
-
       </td>
-
     </tr>
-
   </tbody>
-
 </table>
