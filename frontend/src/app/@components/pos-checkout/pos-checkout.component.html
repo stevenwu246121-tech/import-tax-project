@@ -19,7 +19,7 @@
               (click)="toggleRegionMenu()"
               aria-label="選擇地區"
             >
-              {{ selectedRegion }}
+              {{ isLoadingExchangeRate ? '...' : selectedRegion }}
               <span class="chevron">⌄</span>
             </button>
 
@@ -88,7 +88,7 @@
         <strong>{{ product.productName }}</strong>
         <small>HS {{ product.hsCode }}</small>
         <span class="card-price">
-          {{ currencyLabel }} {{ product.unitPrice | number:'1.0-0' }}
+          {{ currencyLabel }} {{ convertCurrency(product.unitPrice) | number:'1.0-0' }}
         </span>
       </button>
     </div>
@@ -110,7 +110,7 @@
             <td>{{ item.product.productName }}</td>
             <td>{{ item.product.hsCode }}</td>
             <td>
-              {{ currencyLabel }} {{ item.product.unitPrice | number:'1.0-0' }}
+              {{ currencyLabel }} {{ convertCurrency(item.product.unitPrice) | number:'1.0-0' }}
             </td>
             <td>
               <div class="qty-counter">
@@ -121,7 +121,7 @@
             </td>
             <td>
               {{ currencyLabel }}
-              {{ item.product.unitPrice * item.quantity | number:'1.0-0' }}
+              {{ convertCurrency(item.product.unitPrice * item.quantity) | number:'1.0-0' }}
             </td>
           </tr>
 
@@ -155,7 +155,7 @@
         <span>Subtotal</span>
         <strong>
           {{ currencyLabel }}
-          {{ (calculationResult?.subtotal || 0) | number:'1.2-2' }}
+          {{ convertCurrency(calculationResult?.subtotal || 0) | number:'1.2-2' }}
         </strong>
       </div>
 
@@ -163,7 +163,7 @@
         <span>Duty Total</span>
         <strong>
           {{ currencyLabel }}
-          {{ (calculationResult?.dutyTotal || 0) | number:'1.2-2' }}
+          {{ convertCurrency(calculationResult?.dutyTotal || 0) | number:'1.2-2' }}
         </strong>
       </div>
 
@@ -171,7 +171,7 @@
         <span>VAT Total</span>
         <strong>
           {{ currencyLabel }}
-          {{ (calculationResult?.vatTotal || 0) | number:'1.2-2' }}
+          {{ convertCurrency(calculationResult?.vatTotal || 0) | number:'1.2-2' }}
         </strong>
       </div>
 
@@ -179,7 +179,7 @@
         <span>Landed Cost Total</span>
         <strong>
           {{ currencyLabel }}
-          {{ (calculationResult?.landedCostTotal || 0) | number:'1.2-2' }}
+          {{ convertCurrency(calculationResult?.landedCostTotal || 0) | number:'1.2-2' }}
         </strong>
       </div>
     </div>

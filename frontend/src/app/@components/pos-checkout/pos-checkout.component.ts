@@ -30,6 +30,9 @@ export class PosCheckoutComponent implements OnInit {
   selectedRegion: Region = 'TW';
   selectedDiningType: DiningType = 'DINE_IN';
 
+  exchangeRate = 1;
+  isLoadingExchangeRate = false;
+
   isRegionMenuOpen = false;
   isDiningMenuOpen = false;
 
@@ -67,12 +70,36 @@ export class PosCheckoutComponent implements OnInit {
     this.isRegionMenuOpen = false;
   }
 
-  selectRegion(region: Region): void {
-    this.selectedRegion = region;
-    this.isRegionMenuOpen = false;
+ selectRegion(region: Region): void {
+  this.selectedRegion = region;
+  this.isRegionMenuOpen = false;
+
+  if (region === 'TW') {
+    this.exchangeRate = 1;
     this.onCheckoutSettingChange();
+    return;
   }
 
+  this.loadJpyExchangeRate();
+}
+loadJpyExchangeRate(): void {
+  this.isLoadingExchangeRate = true;
+
+  this.apiService.getJpyExchangeRate().subscribe({
+    next: (rate: number) => {
+      this.exchangeRate = rate;
+      this.isLoadingExchangeRate = false;
+      this.onCheckoutSettingChange();
+    },
+    error: (error: unknown) => {
+      console.error('匯率取得失敗，使用預設匯率', error);
+
+      this.exchangeRate = 4.5;
+      this.isLoadingExchangeRate = false;
+      this.onCheckoutSettingChange();
+    },
+  });
+}
   selectDiningType(type: DiningType): void {
     this.selectedDiningType = type;
     this.isDiningMenuOpen = false;
@@ -93,7 +120,9 @@ export class PosCheckoutComponent implements OnInit {
       },
     });
   }
-
+convertCurrency(amount: number | null | undefined): number {
+  return (amount ?? 0) * this.exchangeRate;
+}
   addToCart(product: Product): void {
     const existingItem = this.cart.find(
       (item) => item.product.id === product.id,
