@@ -13,68 +13,38 @@
       <div class="checkout-settings">
         <div class="badge-group">
           <div class="custom-select" [class.open]="isRegionMenuOpen">
-            <button
-              type="button"
-              class="pill-trigger pill-region"
-              (click)="toggleRegionMenu($event)"
-              aria-label="選擇地區"
-            >
+            <button type="button" class="pill-trigger pill-region" (click)="toggleRegionMenu($event)" aria-label="選擇地區">
               {{ isLoadingExchangeRate ? '...' : selectedRegion }}
               <span class="chevron">⌄</span>
             </button>
 
-            <div class="pill-menu region-menu"
-            *ngIf="isRegionMenuOpen"
-            (click)="$event.stopPropagation()"
-            >
-              <button
-                type="button"
-                [class.selected]="selectedRegion === 'TW'"
-                (click)="selectRegion('TW')"
-              >
+            <div class="pill-menu region-menu" *ngIf="isRegionMenuOpen" (click)="$event.stopPropagation()">
+              <button type="button" [class.selected]="selectedRegion === 'TW'" (click)="selectRegion('TW')">
                 TW
               </button>
 
-              <button
-                type="button"
-                [class.selected]="selectedRegion === 'JP'"
-                (click)="selectRegion('JP')"
-              >
+              <button type="button" [class.selected]="selectedRegion === 'JP'" (click)="selectRegion('JP')">
                 JP
               </button>
             </div>
           </div>
 
           <div class="custom-select" [class.open]="isDiningMenuOpen">
-            <button
-              type="button"
-              class="pill-trigger pill-dining"
-              [class.dine-in]="selectedDiningType === 'DINE_IN'"
-              [class.take-out]="selectedDiningType === 'TAKE_OUT'"
-              (click)="toggleDiningMenu($event)"
-              aria-label="選擇用餐方式"
-            >
+            <button type="button" class="pill-trigger pill-dining" [class.dine-in]="selectedDiningType === 'DINE_IN'"
+              [class.take-out]="selectedDiningType === 'TAKE_OUT'" (click)="toggleDiningMenu($event)"
+              aria-label="選擇用餐方式">
               {{ diningTypeLabel }}
               <span class="chevron">⌄</span>
             </button>
 
-            <div class="pill-menu dining-menu"
-            *ngIf="isDiningMenuOpen"
-            (click)="$event.stopPropagation()"
-            >
-              <button
-                type="button"
-                [class.selected]="selectedDiningType === 'DINE_IN'"
-                (click)="selectDiningType('DINE_IN')"
-              >
+            <div class="pill-menu dining-menu" *ngIf="isDiningMenuOpen" (click)="$event.stopPropagation()">
+              <button type="button" [class.selected]="selectedDiningType === 'DINE_IN'"
+                (click)="selectDiningType('DINE_IN')">
                 內用
               </button>
 
-              <button
-                type="button"
-                [class.selected]="selectedDiningType === 'TAKE_OUT'"
-                (click)="selectDiningType('TAKE_OUT')"
-              >
+              <button type="button" [class.selected]="selectedDiningType === 'TAKE_OUT'"
+                (click)="selectDiningType('TAKE_OUT')">
                 外帶
               </button>
             </div>
@@ -84,18 +54,17 @@
     </div>
 
     <div class="product-cards-grid">
-      <button
-        type="button"
-        class="product-card"
-        *ngFor="let product of productList"
-        (click)="addToCart(product)"
-      >
+      <button type="button" class="product-card" *ngFor="let product of productList" (click)="addToCart(product)">
         <span class="card-category">{{ product.categoryName }}</span>
         <strong>{{ product.productName }}</strong>
         <small>HS {{ product.hsCode }}</small>
+        <p class="exchange-rate">
+          1 NTD = {{ twdToJpyRate | number:'1.2-2' }} JPY
+        </p>
         <span class="card-price">
           {{ currencyLabel }} {{ convertCurrency(product.unitPrice) | number:'1.0-0' }}
         </span>
+
       </button>
     </div>
 
@@ -190,12 +159,7 @@
       </div>
     </div>
 
-    <button
-      type="button"
-      class="secondary clear-button"
-      (click)="clearCart()"
-      [disabled]="cart.length === 0"
-    >
+    <button type="button" class="secondary clear-button" (click)="clearCart()" [disabled]="cart.length === 0">
       清空購物車
     </button>
   </aside>

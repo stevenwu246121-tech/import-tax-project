@@ -38,12 +38,17 @@ export class PosCheckoutComponent implements OnInit {
   isRegionMenuOpen = false;
   isDiningMenuOpen = false;
 
-  constructor(private apiService: ApiService,
-    private exchangeRateService: ExchangeRateService
+  twdToJpyRate = 0;
+  updateTime = '';
+
+  constructor(
+    private apiService: ApiService,
+    private exchangeRateService: ExchangeRateService,
   ) {}
 
   ngOnInit(): void {
     this.loadProducts();
+    this.loadExchangeRate();
   }
 
   get currencyLabel(): string {
@@ -65,79 +70,78 @@ export class PosCheckoutComponent implements OnInit {
   }
   @HostListener('document:click')
   closeDropdowns(): void {
-  this.isRegionMenuOpen = false;
-  this.isDiningMenuOpen = false;
-}
+    this.isRegionMenuOpen = false;
+    this.isDiningMenuOpen = false;
+  }
   toggleRegionMenu(event: MouseEvent): void {
-  event.stopPropagation();
+    event.stopPropagation();
 
-  this.isRegionMenuOpen = !this.isRegionMenuOpen;
-  this.isDiningMenuOpen = false;
-}
+    this.isRegionMenuOpen = !this.isRegionMenuOpen;
+    this.isDiningMenuOpen = false;
+  }
 
   toggleDiningMenu(event: MouseEvent): void {
-  event.stopPropagation();
+    event.stopPropagation();
 
-  this.isDiningMenuOpen = !this.isDiningMenuOpen;
-  this.isRegionMenuOpen = false;
+    this.isDiningMenuOpen = !this.isDiningMenuOpen;
+    this.isRegionMenuOpen = false;
   }
 
+  selectRegion(region: Region): void {
+    this.isRegionMenuOpen = false;
 
-selectRegion(region: Region): void {
-  this.isRegionMenuOpen = false;
+    if (region === this.selectedRegion) {
+      return;
+    }
 
-  if (region === this.selectedRegion) {
-    return;
-  }
-
-  if (region === 'TW') {
-    this.selectedRegion = 'TW';
-    this.exchangeRate = 1;
-    this.onCheckoutSettingChange();
-    return;
-  }
-
-  this.loadJpyExchangeRate();
-}
-
-loadJpyExchangeRate(): void {
-  if (this.cachedJpyRate) {
-    this.exchangeRate = this.cachedJpyRate;
-    this.selectedRegion = 'JP';
-    this.onCheckoutSettingChange();
-    return;
-  }
-
-  this.isLoadingExchangeRate = true;
-
-  this.apiService.getJpyExchangeRate().subscribe({
-    next: (rate: number) => {
-      this.cachedJpyRate = rate;
-      this.exchangeRate = rate;
-      this.selectedRegion = 'JP';
-      this.isLoadingExchangeRate = false;
+    if (region === 'TW') {
+      this.selectedRegion = 'TW';
+      this.exchangeRate = 1;
       this.onCheckoutSettingChange();
-    },
-    error: (error: unknown) => {
-      console.error('匯率取得失敗，使用預設匯率', error);
+      return;
+    }
 
-      this.exchangeRate = 4.5;
-      this.selectedRegion = 'JP';
-      this.isLoadingExchangeRate = false;
-      this.onCheckoutSettingChange();
-    },
-  });
-}
-selectDiningType(type: DiningType): void {
-  this.isDiningMenuOpen = false;
-
-  if (type === this.selectedDiningType) {
-    return;
+    this.loadJpyExchangeRate();
   }
 
-  this.selectedDiningType = type;
-  this.onCheckoutSettingChange();
-}
+  loadJpyExchangeRate(): void {
+    if (this.cachedJpyRate) {
+      this.exchangeRate = this.cachedJpyRate;
+      this.selectedRegion = 'JP';
+      this.onCheckoutSettingChange();
+      return;
+    }
+
+    this.isLoadingExchangeRate = true;
+
+    this.apiService.getJpyExchangeRate().subscribe({
+      next: (rate: number) => {
+        this.cachedJpyRate = rate;
+        this.exchangeRate = rate;
+        this.selectedRegion = 'JP';
+        this.isLoadingExchangeRate = false;
+        this.onCheckoutSettingChange();
+      },
+      error: (error: unknown) => {
+        console.error('匯率取得失敗，使用預設匯率', error);
+
+        this.exchangeRate = 4.5;
+        this.selectedRegion = 'JP';
+        this.isLoadingExchangeRate = false;
+        this.onCheckoutSettingChange();
+      },
+    });
+  }
+  selectDiningType(type: DiningType): void {
+    this.isDiningMenuOpen = false;
+
+    if (type === this.selectedDiningType) {
+      return;
+    }
+
+    this.selectedDiningType = type;
+    this.onCheckoutSettingChange();
+  }
 
   onCheckoutSettingChange(): void {
     this.calculate();
@@ -153,9 +157,9 @@ selectDiningType(type: DiningType): void {
       },
     });
   }
-convertCurrency(amount: number | null | undefined): number {
-  return (amount ?? 0) * this.exchangeRate;
-}
+  convertCurrency(amount: number | null | undefined): number {
+    return (amount ?? 0) * this.exchangeRate;
+  }
   addToCart(product: Product): void {
     const existingItem = this.cart.find(
       (item) => item.product.id === product.id,
@@ -208,4 +212,16 @@ convertCurrency(amount: number | null | undefined): number {
       },
     });
   }
+
+  loadExchangeRate(): void {
+  this.apiService.getJpyExchangeRate().subscribe({
+    next: (response: number) => {
+      this.twdToJpyRate = 1 / response;
+      this.updateTime = new Date().toLocaleString();
+    },
+    error: (error: unknown) => {
+      console.error(error);
+    },
+  });
+}
 }

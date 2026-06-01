@@ -216,28 +216,100 @@
 }
 
 /* 購物車表格 */
-.cart-table-container {
-  overflow-x: auto;
+.cart-table-container table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
 }
 
+.cart-table-container th,
+.cart-table-container td {
+  height: 72px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/* 商品 */
+.cart-table th:nth-child(1),
+.cart-table td:nth-child(1) {
+  width: 20%;
+  text-align: center;
+}
+
+/* HS Code */
+.cart-table th:nth-child(2),
+.cart-table td:nth-child(2) {
+  width: 22%;
+  text-align: center;
+}
+
+/* 單價 */
+.cart-table th:nth-child(3),
+.cart-table td:nth-child(3) {
+  width: 18%;
+  text-align: center;
+}
+
+/* 數量 */
+.cart-table th:nth-child(4),
+.cart-table td:nth-child(4) {
+  width: 20%;
+  text-align: center;
+}
+
+/* 小計 */
+.cart-table th:nth-child(5),
+.cart-table td:nth-child(5) {
+  width: 20%;
+  text-align: center;
+}
+
+/* 商品名稱過長防跑版 */
+.cart-table td:first-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 數量控制 */
 .qty-counter {
-  display: inline-flex;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
+}
+
+.qty-counter span {
+  width: 24px;
+  text-align: center;
+  font-weight: 700;
 }
 
 .qty-counter button {
-  min-width: 30px;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
   padding: 0;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .empty-cart {
   text-align: center;
   color: #64748b;
   padding: 28px;
+}
+
+.exchange-rate {
+  display: inline-block;
+  margin: 6px 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 800;
 }
 
 /* 右側結帳結果 */
@@ -337,3 +409,5 @@
     flex-wrap: wrap;
   }
 }
+
+
