@@ -181,3 +181,62 @@ td {
   color: #dc2626;
   background: #fef2f2;
 }
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.product-select {
+  width: 220px;
+  height: 44px;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 15px;
+  background: white;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-filters {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.chart-filters select {
+  width: 180px;
+  height: 44px;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 0 14px;
+  background: white;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.chart-desc {
+  color: #64748b;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.chart-box {
+  height: 340px;
+  position: relative;
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}

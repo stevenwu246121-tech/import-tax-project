@@ -13,19 +13,60 @@
     目前沒有商品資料，請先新增商品。
   </div>
 
-  <div class="chart-card">
-    <h2>商品 Import Duty 分析</h2>
+  <section
+    class="chart-card"
+    *ngIf="!isLoading && !errorMessage && products.length > 0"
+  >
+    <div class="chart-header">
+      <div>
+        <h2>進貨商品趨勢建議</h2>
 
-    <div class="chart-wrapper">
-      <canvas #dutyChart></canvas>
+        <p class="chart-desc">
+          選擇單一商品，查看近 7 / 30 / 90 天提前進貨建議趨勢。
+        </p>
+      </div>
+
+      <div class="chart-filters">
+        <select
+          [(ngModel)]="selectedProductId"
+          (change)="onProductChange()"
+        >
+          <option
+            *ngFor="let product of products"
+            [ngValue]="product.id"
+          >
+            {{ product.productName }}
+          </option>
+        </select>
+
+        <select
+          [(ngModel)]="selectedPeriod"
+          (change)="onPeriodChange()"
+        >
+          <option [ngValue]="7">近7天</option>
+          <option [ngValue]="30">近30天</option>
+          <option [ngValue]="90">近90天</option>
+        </select>
+      </div>
     </div>
-  </div>
 
-  <div class="chart-card">
-    <h2>分類平均 Import Duty 分析</h2>
-
-    <div class="chart-wrapper">
-      <canvas #categoryChart></canvas>
+    <div class="chart-box">
+      <canvas #purchaseTrendChart></canvas>
     </div>
-  </div>
+  </section>
+
+  <section
+    class="chart-card"
+    *ngIf="!isLoading && !errorMessage && products.length > 0"
+  >
+    <h2>目前庫存商品占比</h2>
+
+    <p class="chart-desc">
+      依目前商品單價加總推估各分類庫存金額占比。
+    </p>
+
+    <div class="chart-box">
+      <canvas #inventoryPieChart></canvas>
+    </div>
+  </section>
 </div>

@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import { Chart, ChartConfiguration, registerables } from 'chart.js';
 
 import { ApiService } from '../../@services/api.service';
@@ -18,25 +20,32 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
-  @ViewChild('dutyChart')
-  dutyChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('purchaseTrendChart')
+  purchaseTrendChartRef!: ElementRef<HTMLCanvasElement>;
 
-  @ViewChild('categoryChart')
-  categoryChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('inventoryPieChart')
+  inventoryPieChartRef!: ElementRef<HTMLCanvasElement>;
 
   products: Product[] = [];
 
+  selectedProductId: number | null = null;
+
+  selectedPeriod = 7;
+
   isLoading = false;
+
   errorMessage = '';
 
   private viewReady = false;
-  private dutyChart?: Chart;
-  private categoryChart?: Chart;
+
+  private purchaseTrendChart?: Chart;
+
+  private inventoryPieChart?: Chart;
 
   constructor(private apiService: ApiService) {}
 
@@ -46,6 +55,7 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     this.viewReady = true;
+
     this.renderCharts();
   }
 
@@ -55,135 +65,260 @@ export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadProducts(): void {
     this.isLoading = true;
+
     this.errorMessage = '';
 
     this.apiService.getProducts().subscribe({
       next: (response: Product[]) => {
         this.products = response ?? [];
+
+        if (this.products.length > 0 && !this.selectedProductId) {
+          this.selectedProductId = this.products[0].id;
+        }
+
         this.isLoading = false;
-        this.renderCharts();
+
+        setTimeout(() => {
+          this.renderCharts();
+        });
       },
+
       error: (error: unknown) => {
         console.error(error);
+
         this.products = [];
+
         this.isLoading = false;
+
         this.errorMessage = 'Dashboard 資料載入失敗，請確認後端 API 是否正常。';
+
         this.destroyCharts();
       },
     });
   }
 
-private renderCharts(): void {
-  if (
-    !this.viewReady ||
-    this.products.length === 0 ||
-    !this.dutyChartRef ||
-    !this.categoryChartRef
-  ) {
-    return;
+  onProductChange(): void {
+    this.createPurchaseTrendChart();
   }
 
-  this.createDutyChart();
-  this.createCategoryChart();
-}
+  onPeriodChange(): void {
+    this.createPurchaseTrendChart();
+  }
 
-  private createDutyChart(): void {
-  this.dutyChart?.destroy();
-  this.dutyChart = undefined;
+  private renderCharts(): void {
+    if (
+      !this.viewReady ||
+      this.products.length === 0 ||
+      !this.purchaseTrendChartRef ||
+      !this.inventoryPieChartRef
+    ) {
+      return;
+    }
 
-  const config: ChartConfiguration<'bar'> = {
-    type: 'bar',
-    data: {
-      labels: this.products.map((product) => product.productName),
-      datasets: [
-        {
-          label: 'Import Duty %',
-          data: this.products.map((product) => product.dutyRate ?? 0),
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-      plugins: {
-        legend: {
-          display: true,
-        },
+    this.createPurchaseTrendChart();
+
+    this.createInventoryPieChart();
+  }
+
+  private createPurchaseTrendChart(): void {
+    this.purchaseTrendChart?.destroy();
+
+    this.purchaseTrendChart = undefined;
+
+    const selectedProduct = this.products.find(
+      (product) => product.id === this.selectedProductId,
+    );
+
+    if (!selectedProduct || !this.purchaseTrendChartRef) {
+      return;
+    }
+
+    const baseScore = this.calculatePurchaseSuggestionScore(selectedProduct);
+
+    const labels = this.generateDateLabels(this.selectedPeriod);
+
+    const trendData = this.generateTrendData(baseScore, this.selectedPeriod);
+
+    const config: ChartConfiguration<'line'> = {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: `${selectedProduct.productName} 提前進貨建議指數`,
+            data: trendData,
+            borderColor: '#2563eb',
+            backgroundColor: 'rgba(37, 99, 235, 0.14)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 4,
+            pointHoverRadius: 7,
+          },
+        ],
       },
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: {
-            callback: (value) => `${value}%`,
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 200,
+        plugins: {
+          legend: {
+            display: true,
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                return `建議指數 ${context.raw}：可評估是否提前進貨`;
+              },
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            suggestedMax: 100,
+            ticks: {
+              callback: (value) => `${value}`,
+            },
           },
         },
       },
-    },
-  };
+    };
 
-  this.dutyChart = new Chart(this.dutyChartRef.nativeElement, config);
-}
-private createCategoryChart(): void {
-  this.categoryChart?.destroy();
-  this.categoryChart = undefined;
+    this.purchaseTrendChart = new Chart(
+      this.purchaseTrendChartRef.nativeElement,
+      config,
+    );
+  }
 
-  const categoryAverages = this.getCategoryDutyAverages();
+  private createInventoryPieChart(): void {
+    this.inventoryPieChart?.destroy();
 
-  const config: ChartConfiguration<'pie'> = {
-    type: 'pie',
-    data: {
-      labels: categoryAverages.map((item) => item.categoryName),
-      datasets: [
-        {
-          label: '分類平均 Duty %',
-          data: categoryAverages.map((item) => item.averageDutyRate),
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      resizeDelay: 200,
-    },
-  };
+    this.inventoryPieChart = undefined;
 
-  this.categoryChart = new Chart(
-    this.categoryChartRef.nativeElement,
-    config
-  );
-}
+    const inventoryShares = this.getInventoryShares();
 
-  private getCategoryDutyAverages(): Array<{
+    const config: ChartConfiguration<'pie'> = {
+      type: 'pie',
+      data: {
+        labels: inventoryShares.map((item) => item.categoryName),
+        datasets: [
+          {
+            label: '庫存商品占比',
+            data: inventoryShares.map((item) => item.totalValue),
+            backgroundColor: [
+              '#2563eb',
+              '#f43f5e',
+              '#fb923c',
+              '#facc15',
+              '#14b8a6',
+              '#8b5cf6',
+            ],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        resizeDelay: 200,
+      },
+    };
+
+    this.inventoryPieChart = new Chart(
+      this.inventoryPieChartRef.nativeElement,
+      config,
+    );
+  }
+
+  private calculatePurchaseSuggestionScore(product: Product): number {
+    const dutyRate = product.dutyRate ?? 0;
+
+    const vatRate = product.vatRate ?? 0;
+
+    const unitPrice = product.unitPrice ?? 0;
+
+    const taxRiskScore = dutyRate * 4 + vatRate * 2;
+
+    const priceImpactScore =
+      unitPrice >= 1000 ? 20 : unitPrice >= 500 ? 10 : 5;
+
+    return Math.min(
+      100,
+      Math.round(taxRiskScore + priceImpactScore),
+    );
+  }
+
+  private generateDateLabels(days: number): string[] {
+    const labels: string[] = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+
+      date.setDate(date.getDate() - i);
+
+      labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    }
+
+    return labels;
+  }
+
+  private generateTrendData(
+    baseScore: number,
+    days: number,
+  ): number[] {
+    const result: number[] = [];
+
+    for (let i = 0; i < days; i++) {
+      const wave = Math.sin(i / 2) * 6;
+
+      const growth = i * 0.25;
+
+      const value = baseScore + wave + growth;
+
+      result.push(
+        Math.max(
+          0,
+          Math.min(100, Math.round(value)),
+        ),
+      );
+    }
+
+    return result;
+  }
+
+  private getInventoryShares(): Array<{
     categoryName: string;
-    averageDutyRate: number;
+    totalValue: number;
   }> {
-    const categoryMap = new Map<string, number[]>();
+    const categoryMap = new Map<string, number>();
 
     this.products.forEach((product) => {
       const categoryName = product.categoryName || '未分類';
-      const dutyRate = product.dutyRate ?? 0;
 
-      const rates = categoryMap.get(categoryName) ?? [];
-      rates.push(dutyRate);
-      categoryMap.set(categoryName, rates);
-    });
+      const unitPrice = product.unitPrice ?? 0;
 
-    return Array.from(categoryMap.entries()).map(([categoryName, rates]) => {
-      const total = rates.reduce((sum, rate) => sum + rate, 0);
-
-      return {
+      categoryMap.set(
         categoryName,
-        averageDutyRate: rates.length > 0 ? total / rates.length : 0,
-      };
+        (categoryMap.get(categoryName) ?? 0) + unitPrice,
+      );
     });
+
+    return Array.from(categoryMap.entries()).map(
+      ([categoryName, totalValue]) => {
+        return {
+          categoryName,
+          totalValue,
+        };
+      },
+    );
   }
 
   private destroyCharts(): void {
-    this.dutyChart?.destroy();
-    this.categoryChart?.destroy();
+    this.purchaseTrendChart?.destroy();
 
-    this.dutyChart = undefined;
-    this.categoryChart = undefined;
+    this.inventoryPieChart?.destroy();
+
+    this.purchaseTrendChart = undefined;
+
+    this.inventoryPieChart = undefined;
   }
 }
