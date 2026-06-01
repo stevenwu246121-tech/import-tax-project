@@ -32,7 +32,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   previewProducts: Product[] = [];
 
-  countryTotals: { [key: string]: number } = {};
+  inventoryTotals: { [key: string]: number } = {};
 
   twdToJpyRate = 0;
 
@@ -52,9 +52,9 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   private trendChart?: Chart;
 
-  private countryChart?: Chart;
-
   private taxChart?: Chart;
+
+  private inventoryChart?: Chart;
 
   constructor(private apiService: ApiService) {}
 
@@ -92,15 +92,15 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
           0,
         );
 
-        this.countryTotals = this.products.reduce(
+        this.inventoryTotals = this.products.reduce(
           (acc: { [key: string]: number }, product: Product) => {
-            const category = product.categoryName || '未分類';
+            const categoryName = product.categoryName || '未分類';
 
-            if (!acc[category]) {
-              acc[category] = 0;
+            if (!acc[categoryName]) {
+              acc[categoryName] = 0;
             }
 
-            acc[category] += product.unitPrice;
+            acc[categoryName] += product.unitPrice ?? 0;
 
             return acc;
           },
@@ -114,7 +114,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         setTimeout(() => {
           this.createTrendChart();
 
-          this.createCountryChart();
+          this.createInventoryChart();
         });
       },
 
@@ -207,12 +207,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
     const taxRiskScore = dutyRate * 4 + vatRate * 2;
 
-    const priceImpactScore =
-      unitPrice >= 1000
-        ? 20
-        : unitPrice >= 500
-          ? 10
-          : 5;
+    const priceImpactScore = unitPrice >= 1000 ? 20 : unitPrice >= 500 ? 10 : 5;
 
     return Math.min(100, Math.round(taxRiskScore + priceImpactScore));
   }
@@ -247,33 +242,51 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     return result;
   }
 
-  createCountryChart(): void {
-    this.countryChart?.destroy();
+  createInventoryChart(): void {
+    this.inventoryChart?.destroy();
 
-    const labels = Object.keys(this.countryTotals);
+    const labels = Object.keys(this.inventoryTotals);
 
-    const data = Object.values(this.countryTotals);
+    const data = Object.values(this.inventoryTotals);
 
     if (labels.length === 0) {
       return;
     }
 
-    this.countryChart = new Chart('countryChart', {
-      type: 'doughnut',
+    this.inventoryChart = new Chart('inventoryChart', {
+      type: 'pie',
+
       data: {
         labels,
         datasets: [
           {
+            label: '庫存商品占比',
             data,
             backgroundColor: [
               '#2563eb',
-              '#22c55e',
-              '#f59e0b',
+              '#f43f5e',
+              '#fb923c',
+              '#facc15',
+              '#14b8a6',
               '#8b5cf6',
-              '#ec4899',
             ],
           },
         ],
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+        },
+
+        layout: {
+          padding: 8,
+        },
       },
     });
   }

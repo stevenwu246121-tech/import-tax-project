@@ -257,3 +257,14 @@ td {
   padding: 0 12px;
   font-weight: 700;
 }
+
+.pie-box {
+  height: 220px;
+  max-height: 220px;
+  position: relative;
+}
+
+.pie-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
