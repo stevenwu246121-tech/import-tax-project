@@ -1,115 +1,112 @@
 <h1>HS Code 管理</h1>
 
-<section class="panel">
+  <section class="panel">
 
-  <h2>食品類 HS Code 對照表</h2>
+    <h2>食品類 HS Code 對照表</h2>
 
-  <div class="search-filter-row">
-    <input type="text" placeholder="搜尋 HS Code / 商品 / 分類" [(ngModel)]="keyword" (input)="search()" />
-  </div>
+    <div class="search-filter-row">
+      <input type="text" placeholder="搜尋 HS Code / 商品 / 分類" [(ngModel)]="keyword" (input)="search()" />
+    </div>
 
-  <div class="form-card">
+    <br>
 
-    <input type="text" placeholder="HS Code" [(ngModel)]="hsCodeReq.code" />
-
-    <input type="text" placeholder="商品名稱" [(ngModel)]="hsCodeReq.name" />
-
-    <select [(ngModel)]="hsCodeReq.categoryId">
-    <option [ngValue]="null" disabled>選擇分類</option>
-
-    <option *ngFor="let category of categories" [ngValue]="category.id">
-    {{ category.name }}
-    </option>
-    </select>
-
-    <input type="number"
-    min="0"
-    placeholder="進口稅"
-    [(ngModel)]="hsCodeReq.dutyRate" />
-
-    <input type="number"
-    min="0"
-    placeholder="進口營業稅"
-    [(ngModel)]="hsCodeReq.vatRate" />
-
-    <input type="text" placeholder="說明" [(ngModel)]="hsCodeReq.description" />
-
-    <button (click)="submitHsCode()">
-      {{ editingHsCodeId ? '更新 HS Code' : '新增 HS Code' }}
+    <button class="toggle-btn" (click)="toggleForm()">
+      {{ showForm ? '收合表單' : '新增 HS Code' }}
     </button>
 
-  </div>
+    <div class="form-card" *ngIf="showForm">
 
-  <table>
-    <thead>
-      <tr>
-        <th>HS Code</th>
-        <th>商品類型</th>
-        <th>分類</th>
-        <th>進口稅</th>
-        <th>營業稅</th>
-        <th>說明</th>
-        <th>操作</th>
-      </tr>
-    </thead>
+      <input type="text" placeholder="HS Code" [(ngModel)]="hsCodeReq.code" />
 
-    <tbody>
-      <tr *ngFor="let item of filteredHsCodes">
-        <td>{{ item.code }}</td>
-        <td>{{ item.name }}</td>
-        <td>{{ item.categoryName }}</td>
-        <td>{{ item.dutyRate }}%</td>
-        <td>{{ item.vatRate }}%</td>
-        <td>{{ item.description }}</td>
+      <input type="text" placeholder="商品名稱" [(ngModel)]="hsCodeReq.name" />
 
-        <td class="action-cell">
+      <select [(ngModel)]="hsCodeReq.categoryId">
 
-          <button class="edit-menu-btn" (click)="toggleActionMenu(item.id)">
-            編輯
-          </button>
+        <option [ngValue]="null" disabled>
+          選擇分類
+        </option>
 
-          <div class="action-menu" *ngIf="openedActionId === item.id">
+        <option *ngFor="let category of categories" [ngValue]="category.id">
+          {{ category.name }}
+        </option>
 
-            <button class="action-update" (click)="editHsCode(item); openedActionId = null">
-              修改
+      </select>
+
+      <input type="number" min="0" placeholder="進口稅" [(ngModel)]="hsCodeReq.dutyRate" />
+
+      <input type="number" min="0" placeholder="進口營業稅" [(ngModel)]="hsCodeReq.vatRate" />
+
+      <input type="text" placeholder="說明" [(ngModel)]="hsCodeReq.description" />
+
+      <button (click)="submitHsCode()">
+        {{ editingHsCodeId ? '更新 HS Code' : '新增 HS Code' }}
+      </button>
+
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>HS Code</th>
+          <th>商品類型</th>
+          <th>分類</th>
+          <th>進口稅</th>
+          <th>營業稅</th>
+          <th>說明</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let item of filteredHsCodes">
+          <td>{{ item.code }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.categoryName }}</td>
+          <td>{{ item.dutyRate }}%</td>
+          <td>{{ item.vatRate }}%</td>
+          <td>{{ item.description }}</td>
+
+          <td class="action-cell">
+
+            <button class="edit-menu-btn" (click)="toggleActionMenu(item.id)">
+              編輯
             </button>
 
-            <button class="action-delete" (click)="deleteHsCode(item.id); openedActionId = null">
-              刪除
-            </button>
+            <div class="action-menu" *ngIf="openedActionId === item.id">
 
-          </div>
+              <button class="action-update" (click)="editHsCode(item); openedActionId = null">
+                修改
+              </button>
 
-        </td>
-      </tr>
-    </tbody>
-  </table>
+              <button class="action-delete" (click)="deleteHsCode(item.id); openedActionId = null">
+                刪除
+              </button>
 
-</section>
+            </div>
 
-<section class="official-links">
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-  <h3>官方 HS Code 查詢資源</h3>
+  </section>
 
-  <a
-    href="https://hscode.customs.gov.tw/"
-    target="_blank"
-  >
-    台灣海關 HS Code 智慧查詢系統
-  </a>
+  <section class="official-links">
 
-  <a
-    href="https://web.customs.gov.tw/etaipei/singlehtml/c12340eb38d94fd4bd5f4c8f743a95db?cntId=ed74683917a345f4b7af10363965dbeb"
-    target="_blank"
-  >
-    財政部關務署 Tariff Database Search
-  </a>
+    <h3>官方 HS Code 查詢資源</h3>
 
-  <a
-    href="https://portal.sw.nat.gov.tw/APGQ/LoginFree?breadCrumbs=JTdCJTIyYnJlYWRDcnVtYnMlMjIlM0ElNUIlN0IlMjJuYW1lJTIyJTNBJTIySW5mb3JtYXRpb24lMjBTZWFyY2glMjBTeXN0ZW0lMjIlMkMlMjJ1cmwlMjIlM0ElMjIlMjIlN0QlMkMlN0IlMjJuYW1lJTIyJTNBJTIyT25saW5lJTIwSW5mb3JtYXRpb24lMjBRdXJlaWVzJTIyJTJDJTIydXJsJTIyJTNBJTIyY2hhbmdlTWVudVVybDIoJ09ubGluZSUyMEluZm9ybWF0aW9uJTIwUXVyZWllcyclMkMnQVBHUV83X0VOJyklMjIlN0QlMkMlN0IlMjJuYW1lJTIyJTNBJTIyKEdDNDUxKVRhcmlmZiUyMERhdGFiYXNlJTIwU3lzdGVtJTIyJTJDJTIydXJsJTIyJTNBJTIyb3Blbk1lbnUoJyUyRkFQR1ElMkZHQzQ1MScpJTIyJTdEJTJDJTdCJTdEJTJDJTdCJTdEJTVEJTJDJTIycGF0aFVybCUyMiUzQSUyMiUyM01FTlVfQVBHUV9FTiUyQyUyM01FTlVfQVBHUV83X0VOJTJDJTJGQVBHUSUyRkdDNDUxJTIyJTdE"
-    target="_blank"
-  >
-    關港貿單一窗口 GC451 稅則查詢
-  </a>
+    <a href="https://hscode.customs.gov.tw/" target="_blank">
+      台灣海關 HS Code 智慧查詢系統
+    </a>
 
-</section>
+    <a href="https://web.customs.gov.tw/etaipei/singlehtml/c12340eb38d94fd4bd5f4c8f743a95db?cntId=ed74683917a345f4b7af10363965dbeb"
+      target="_blank">
+      財政部關務署 Tariff Database Search
+    </a>
+
+    <a href="https://portal.sw.nat.gov.tw/APGQ/LoginFree?breadCrumbs=JTdCJTIyYnJlYWRDcnVtYnMlMjIlM0ElNUIlN0IlMjJuYW1lJTIyJTNBJTIySW5mb3JtYXRpb24lMjBTZWFyY2glMjBTeXN0ZW0lMjIlMkMlMjJ1cmwlMjIlM0ElMjIlMjIlN0QlMkMlN0IlMjJuYW1lJTIyJTNBJTIyT25saW5lJTIwSW5mb3JtYXRpb24lMjBRdXJlaWVzJTIyJTJDJTIydXJsJTIyJTNBJTIyY2hhbmdlTWVudVVybDIoJ09ubGluZSUyMEluZm9ybWF0aW9uJTIwUXVyZWllcyclMkMnQVBHUV83X0VOJyklMjIlN0QlMkMlN0IlMjJuYW1lJTIyJTNBJTIyKEdDNDUxKVRhcmlmZiUyMERhdGFiYXNlJTIwU3lzdGVtJTIyJTJDJTIydXJsJTIyJTNBJTIyb3Blbk1lbnUoJyUyRkFQR1ElMkZHQzQ1MScpJTIyJTdEJTJDJTdCJTdEJTJDJTdCJTdEJTVEJTJDJTIycGF0aFVybCUyMiUzQSUyMiUyM01FTlVfQVBHUV9FTiUyQyUyM01FTlVfQVBHUV83X0VOJTJDJTJGQVBHUSUyRkdDNDUxJTIyJTdE"
+      target="_blank">
+      關港貿單一窗口 GC451 稅則查詢
+    </a>
+
+  </section>

@@ -30,29 +30,36 @@ export class HsCodeComponent implements OnInit {
   editingHsCodeId: number | null = null;
 
   hsCodeReq: {
-  code: string;
-  name: string;
-  categoryId: number | null;
-  dutyRate: number | null;
-  vatRate: number | null;
-  description: string;
-} = {
-  code: '',
-  name: '',
-  categoryId: null,
-  dutyRate: null,
-  vatRate: null,
-  description: '',
-};
+    code: string;
+    name: string;
+    categoryId: number | null;
+    dutyRate: number | null;
+    vatRate: number | null;
+    description: string;
+  } = {
+    code: '',
+    name: '',
+    categoryId: null,
+    dutyRate: null,
+    vatRate: null,
+    description: '',
+  };
 
   openedActionId: number | null = null;
+
+  showForm = false;
+
+  toggleForm(): void {
+    this.showForm = !this.showForm;
+  }
 
   toggleActionMenu(id: number): void {
     this.openedActionId = this.openedActionId === id ? null : id;
   }
 
-  constructor(private apiService: ApiService,
-    private exchangeRateService: ExchangeRateService
+  constructor(
+    private apiService: ApiService,
+    private exchangeRateService: ExchangeRateService,
   ) {}
 
   ngOnInit(): void {
@@ -107,42 +114,47 @@ export class HsCodeComponent implements OnInit {
   }
 
   submitHsCode(): void {
-
     const request = {
-    code: this.hsCodeReq.code,
-    name: this.hsCodeReq.name,
-    categoryId: this.hsCodeReq.categoryId,
-    dutyRate: this.hsCodeReq.dutyRate,
-    vatRate: this.hsCodeReq.vatRate,
-    description: this.hsCodeReq.description,
+      code: this.hsCodeReq.code,
+      name: this.hsCodeReq.name,
+      categoryId: this.hsCodeReq.categoryId,
+      dutyRate: this.hsCodeReq.dutyRate,
+      vatRate: this.hsCodeReq.vatRate,
+      description: this.hsCodeReq.description,
     };
     if (!this.isValidHsCode()) {
       return;
     }
 
     if (this.editingHsCodeId) {
-      this.apiService
-        .updateHsCode(this.editingHsCodeId, request)
-        .subscribe({
-          next: () => {
-            alert('更新成功');
-            this.loadHsCodes();
-            this.resetForm();
-          },
-          error: (error: unknown) => {
-            console.error(error);
-            alert('更新失敗');
-          },
-        });
+      this.apiService.updateHsCode(this.editingHsCodeId, request).subscribe({
+        next: () => {
+          alert('新增成功');
+
+          this.loadHsCodes();
+
+          this.resetForm();
+
+          this.showForm = false;
+        },
+        error: (error: unknown) => {
+          console.error(error);
+          alert('更新失敗');
+        },
+      });
 
       return;
     }
 
     this.apiService.createHsCode(request).subscribe({
       next: () => {
-        alert('新增成功');
+        alert('更新成功');
+
         this.loadHsCodes();
+
         this.resetForm();
+
+        this.showForm = false;
       },
       error: (error: unknown) => {
         console.error(error);
@@ -152,45 +164,47 @@ export class HsCodeComponent implements OnInit {
   }
 
   isValidHsCode(): boolean {
-  if (!this.hsCodeReq.code.trim()) {
-    alert('請輸入 HS Code');
-    return false;
-  }
+    if (!this.hsCodeReq.code.trim()) {
+      alert('請輸入 HS Code');
+      return false;
+    }
 
-  if (!this.hsCodeReq.name.trim()) {
-    alert('請輸入商品名稱');
-    return false;
-  }
+    if (!this.hsCodeReq.name.trim()) {
+      alert('請輸入商品名稱');
+      return false;
+    }
 
-  if (!this.hsCodeReq.categoryId) {
-    alert('請選擇分類');
-    return false;
-  }
+    if (!this.hsCodeReq.categoryId) {
+      alert('請選擇分類');
+      return false;
+    }
 
-  if (this.hsCodeReq.dutyRate === null) {
-    alert('請輸入 Import Duty');
-    return false;
-  }
+    if (this.hsCodeReq.dutyRate === null) {
+      alert('請輸入 Import Duty');
+      return false;
+    }
 
-  if (this.hsCodeReq.vatRate === null) {
-    alert('請輸入 VAT');
-    return false;
-  }
+    if (this.hsCodeReq.vatRate === null) {
+      alert('請輸入 VAT');
+      return false;
+    }
 
-  if (this.hsCodeReq.dutyRate < 0) {
-    alert('Import Duty 不可小於 0');
-    return false;
-  }
+    if (this.hsCodeReq.dutyRate < 0) {
+      alert('Import Duty 不可小於 0');
+      return false;
+    }
 
-  if (this.hsCodeReq.vatRate < 0) {
-    alert('VAT 不可小於 0');
-    return false;
-  }
+    if (this.hsCodeReq.vatRate < 0) {
+      alert('VAT 不可小於 0');
+      return false;
+    }
 
-  return true;
-}
+    return true;
+  }
 
   editHsCode(hsCode: HsCode): void {
+    this.showForm = true;
+
     this.editingHsCodeId = hsCode.id;
 
     this.hsCodeReq = {
@@ -222,16 +236,16 @@ export class HsCodeComponent implements OnInit {
     });
   }
 
-resetForm(): void {
-  this.hsCodeReq = {
-    code: '',
-    name: '',
-    categoryId: null,
-    dutyRate: null,
-    vatRate: null,
-    description: '',
-  };
+  resetForm(): void {
+    this.hsCodeReq = {
+      code: '',
+      name: '',
+      categoryId: null,
+      dutyRate: null,
+      vatRate: null,
+      description: '',
+    };
 
-  this.editingHsCodeId = null;
-}
+    this.editingHsCodeId = null;
+  }
 }

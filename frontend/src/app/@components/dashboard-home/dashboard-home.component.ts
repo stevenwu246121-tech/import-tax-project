@@ -2,6 +2,8 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
+import { FormsModule } from '@angular/forms';
+
 import { Chart, registerables } from 'chart.js';
 
 import { ApiService } from '../../@services/api.service';
@@ -9,7 +11,6 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 
 import { HsCode } from '../../models/hs-code';
-import { FormsModule } from '@angular/forms';
 
 Chart.register(...registerables);
 
@@ -45,6 +46,16 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   hsCodes: HsCode[] = [];
 
+  selectedProductId: number | null = null;
+
+  selectedPeriod = 7;
+
+  private trendChart?: Chart;
+
+  private countryChart?: Chart;
+
+  private taxChart?: Chart;
+
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
@@ -56,9 +67,61 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.createTrendChart();
-
     this.createTaxChart();
+  }
+
+  loadProducts(): void {
+    this.apiService.getProducts().subscribe({
+      next: (response: Product[]) => {
+        this.products = response ?? [];
+
+        this.previewProducts = this.products.slice(0, 3);
+
+        this.todayImportTotal = this.products.reduce(
+          (sum, product) => sum + product.unitPrice,
+          0,
+        );
+
+        this.totalDuty = this.products.reduce(
+          (sum, product) => sum + (product.unitPrice * product.dutyRate) / 100,
+          0,
+        );
+
+        this.totalVat = this.products.reduce(
+          (sum, product) => sum + (product.unitPrice * product.vatRate) / 100,
+          0,
+        );
+
+        this.countryTotals = this.products.reduce(
+          (acc: { [key: string]: number }, product: Product) => {
+            const category = product.categoryName || '未分類';
+
+            if (!acc[category]) {
+              acc[category] = 0;
+            }
+
+            acc[category] += product.unitPrice;
+
+            return acc;
+          },
+          {},
+        );
+
+        if (this.products.length > 0 && !this.selectedProductId) {
+          this.selectedProductId = this.products[0].id;
+        }
+
+        setTimeout(() => {
+          this.createTrendChart();
+
+          this.createCountryChart();
+        });
+      },
+
+      error: (error: unknown) => {
+        console.error(error);
+      },
+    });
   }
 
   loadHsCodes(): void {
@@ -66,54 +129,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
       next: (response: HsCode[]) => {
         this.hsCodes = response;
       },
-      error: (error: unknown) => {
-        console.error(error);
-      },
-    });
-  }
-
-  loadProducts(): void {
-    this.apiService.getProducts().subscribe({
-      next: (response: Product[]) => {
-        this.products = response;
-
-        this.previewProducts = response.slice(0, 3);
-
-        this.todayImportTotal = response.reduce(
-          (sum, product) => sum + product.unitPrice,
-          0
-        );
-
-        this.totalDuty = response.reduce(
-          (sum, product) =>
-            sum + (product.unitPrice * product.dutyRate) / 100,
-          0
-        );
-
-        this.totalVat = response.reduce(
-          (sum, product) =>
-            sum + (product.unitPrice * product.vatRate) / 100,
-          0
-        );
-
-        this.countryTotals = response.reduce(
-          (acc: { [key: string]: number }, product: Product) => {
-            const country = product.categoryName || 'Unknown';
-
-            if (!acc[country]) {
-              acc[country] = 0;
-            }
-
-            acc[country] += product.unitPrice;
-
-            return acc;
-          },
-          {}
-        );
-
-        this.createCountryChart();
-      },
-
       error: (error: unknown) => {
         console.error(error);
       },
@@ -134,46 +149,116 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  searchHsCode(): void {
-    const found = this.hsCodes.find(
-      (item) => item.code === this.selectedHsCode.trim()
-    );
-
-    if (!found) {
-      alert('查無此 HS Code');
-      return;
-    }
-
-    this.dutyRate = found.dutyRate;
-
-    this.vatRate = found.vatRate;
+  onTrendFilterChange(): void {
+    this.createTrendChart();
   }
 
   createTrendChart(): void {
-    new Chart('trendChart', {
+    this.trendChart?.destroy();
+
+    const selectedProduct = this.products.find(
+      (product) => product.id === this.selectedProductId,
+    );
+
+    if (!selectedProduct) {
+      return;
+    }
+
+    const baseScore = this.calculatePurchaseSuggestionScore(selectedProduct);
+
+    this.trendChart = new Chart('trendChart', {
       type: 'line',
+
       data: {
-        labels: ['05/14', '05/15', '05/16', '05/17', '05/18', '05/19', '05/20'],
+        labels: this.generateDateLabels(this.selectedPeriod),
+
         datasets: [
           {
-            label: '進貨成本',
-            data: [65000, 88000, 76000, 110000, 125000, 118000, 130000],
+            label: `${selectedProduct.productName} 提前進貨建議指數`,
+            data: this.generateTrendData(baseScore, this.selectedPeriod),
             borderColor: '#2563eb',
-            backgroundColor: 'rgba(37,99,235,0.12)',
-            tension: 0.4,
+            backgroundColor: 'rgba(37,99,235,0.15)',
             fill: true,
+            tension: 0.4,
           },
         ],
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+          },
+        },
       },
     });
   }
 
+  calculatePurchaseSuggestionScore(product: Product): number {
+    const dutyRate = product.dutyRate ?? 0;
+
+    const vatRate = product.vatRate ?? 0;
+
+    const unitPrice = product.unitPrice ?? 0;
+
+    const taxRiskScore = dutyRate * 4 + vatRate * 2;
+
+    const priceImpactScore =
+      unitPrice >= 1000
+        ? 20
+        : unitPrice >= 500
+          ? 10
+          : 5;
+
+    return Math.min(100, Math.round(taxRiskScore + priceImpactScore));
+  }
+
+  generateDateLabels(days: number): string[] {
+    const labels: string[] = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const date = new Date();
+
+      date.setDate(date.getDate() - i);
+
+      labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
+    }
+
+    return labels;
+  }
+
+  generateTrendData(baseScore: number, days: number): number[] {
+    const result: number[] = [];
+
+    for (let i = 0; i < days; i++) {
+      const wave = Math.sin(i / 2) * 6;
+
+      const growth = i * 0.3;
+
+      const value = baseScore + wave + growth;
+
+      result.push(Math.max(0, Math.min(100, Math.round(value))));
+    }
+
+    return result;
+  }
+
   createCountryChart(): void {
+    this.countryChart?.destroy();
+
     const labels = Object.keys(this.countryTotals);
 
     const data = Object.values(this.countryTotals);
 
-    new Chart('countryChart', {
+    if (labels.length === 0) {
+      return;
+    }
+
+    this.countryChart = new Chart('countryChart', {
       type: 'doughnut',
       data: {
         labels,
@@ -194,7 +279,9 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   }
 
   createTaxChart(): void {
-    new Chart('taxChart', {
+    this.taxChart?.destroy();
+
+    this.taxChart = new Chart('taxChart', {
       type: 'bar',
       data: {
         labels: ['05/14', '05/15', '05/16', '05/17', '05/18', '05/19', '05/20'],
@@ -212,5 +299,20 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         ],
       },
     });
+  }
+
+  searchHsCode(): void {
+    const found = this.hsCodes.find(
+      (item) => item.code === this.selectedHsCode.trim(),
+    );
+
+    if (!found) {
+      alert('查無此 HS Code');
+      return;
+    }
+
+    this.dutyRate = found.dutyRate;
+
+    this.vatRate = found.vatRate;
   }
 }

@@ -225,3 +225,42 @@ tbody tr:hover {
   color: #1d4ed8;
   text-decoration: underline;
 }
+
+.toggle-btn {
+  width: 220px;
+  height: 52px;
+  border: none;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 24px;
+}
+
+.toggle-btn:hover {
+  background: #1d4ed8;
+}
+
+.toggle-btn {
+  width: 220px;
+  height: 52px;
+
+  border: none;
+  border-radius: 14px;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  margin-bottom: 24px;
+}
+
+.toggle-btn:hover {
+  background: #1d4ed8;
+}
