@@ -11,6 +11,7 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 
 import { HsCode } from '../../models/hs-code';
+import { DialogService } from '../../@services/dialog.service';
 
 Chart.register(...registerables);
 
@@ -56,7 +57,10 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   private inventoryChart?: Chart;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private dialogService: DialogService,
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -320,7 +324,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     );
 
     if (!found) {
-      alert('查無此 HS Code');
+      this.dialogService.warning('查無此 HS Code');
       return;
     }
 

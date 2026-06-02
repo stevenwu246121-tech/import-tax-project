@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ApiService } from '../../@services/api.service';
+import { DialogService } from '../../@services/dialog.service';
 
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
@@ -60,7 +61,10 @@ export class ProductManageComponent implements OnInit {
   editingProductId: number | null = null;
   openedActionId: number | null = null;
 
-  constructor(private apiService: ApiService) {}
+  constructor(
+    private apiService: ApiService,
+    private dialogService: DialogService,
+  ) {}
 
   ngOnInit(): void {
     this.loadProducts();
@@ -75,6 +79,7 @@ export class ProductManageComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
+        this.dialogService.error('商品資料載入失敗');
       },
     });
   }
@@ -86,6 +91,7 @@ export class ProductManageComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
+        this.dialogService.error('分類資料載入失敗');
       },
     });
   }
@@ -98,6 +104,7 @@ export class ProductManageComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
+        this.dialogService.error('HS Code 資料載入失敗');
       },
     });
   }
@@ -167,12 +174,16 @@ export class ProductManageComponent implements OnInit {
     );
 
     if (selectedCategory?.name !== rule.category) {
-      alert(`${this.productReq.name} 的分類只能是「${rule.category}」`);
+      this.dialogService.warning(
+        `${this.productReq.name} 的分類只能是「${rule.category}」`,
+      );
       return false;
     }
 
     if (selectedHsCode?.code !== rule.hsCode) {
-      alert(`${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`);
+      this.dialogService.warning(
+        `${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`,
+      );
       return false;
     }
 
@@ -181,32 +192,32 @@ export class ProductManageComponent implements OnInit {
 
   submitProduct(): void {
     if (!this.productReq.name.trim()) {
-      alert('請輸入商品名稱');
+      this.dialogService.warning('請輸入商品名稱');
       return;
     }
 
     if (!this.productReq.categoryId) {
-      alert('請選擇分類');
+      this.dialogService.warning('請選擇分類');
       return;
     }
 
     if (!this.productReq.hsCodeId) {
-      alert('請選擇 HS Code');
+      this.dialogService.warning('請選擇 HS Code');
       return;
     }
 
     if (!this.productReq.originCountry) {
-      alert('請選擇來源國');
+      this.dialogService.warning('請選擇來源國');
       return;
     }
 
     if (!this.productReq.unit.trim()) {
-      alert('請輸入單位');
+      this.dialogService.warning('請輸入單位');
       return;
     }
 
     if (!this.productReq.unitPrice || this.productReq.unitPrice <= 0) {
-      alert('價格必須大於 0');
+      this.dialogService.warning('價格必須大於 0');
       return;
     }
 
@@ -217,7 +228,7 @@ export class ProductManageComponent implements OnInit {
     );
 
     if (duplicateProduct) {
-      alert('商品名稱已存在，請勿重複新增');
+      this.dialogService.warning('商品名稱已存在，請勿重複新增');
       return;
     }
 
@@ -225,7 +236,7 @@ export class ProductManageComponent implements OnInit {
       this.productReq.name.includes('日本') &&
       this.productReq.originCountry !== 'JP'
     ) {
-      alert('商品名稱包含「日本」，來源國只能選 JP');
+      this.dialogService.warning('商品名稱包含「日本」，來源國只能選 JP');
       return;
     }
 
@@ -233,7 +244,7 @@ export class ProductManageComponent implements OnInit {
       this.productReq.name.includes('台灣') &&
       this.productReq.originCountry !== 'TW'
     ) {
-      alert('商品名稱包含「台灣」，來源國只能選 TW');
+      this.dialogService.warning('商品名稱包含「台灣」，來源國只能選 TW');
       return;
     }
 
@@ -246,13 +257,14 @@ export class ProductManageComponent implements OnInit {
         .updateProduct(this.editingProductId, this.productReq)
         .subscribe({
           next: () => {
-            alert('更新成功');
-            this.loadProducts();
-            this.resetForm();
+            this.dialogService.success('更新成功').subscribe(() => {
+              this.loadProducts();
+              this.resetForm();
+            });
           },
           error: (error: unknown) => {
             console.error(error);
-            alert('更新失敗');
+            this.dialogService.error('更新失敗');
           },
         });
 
@@ -265,13 +277,14 @@ export class ProductManageComponent implements OnInit {
   createProduct(): void {
     this.apiService.createProduct(this.productReq).subscribe({
       next: () => {
-        alert('新增成功');
-        this.loadProducts();
-        this.resetForm();
+        this.dialogService.success('新增成功').subscribe(() => {
+          this.loadProducts();
+          this.resetForm();
+        });
       },
       error: (error: unknown) => {
         console.error(error);
-        alert('新增失敗');
+        this.dialogService.error('新增失敗');
       },
     });
   }
@@ -304,21 +317,25 @@ export class ProductManageComponent implements OnInit {
   }
 
   deleteProduct(productId: number): void {
-    const confirmed = confirm('確定要刪除嗎？');
+    this.dialogService
+      .confirm('確定要刪除此商品嗎？')
+      .subscribe((confirmed: boolean) => {
+        if (!confirmed) {
+          return;
+        }
 
-    if (!confirmed) {
-      return;
-    }
-
-    this.apiService.deleteProduct(productId).subscribe({
-      next: () => {
-        alert('刪除成功');
-        this.loadProducts();
-      },
-      error: (error: unknown) => {
-        console.error(error);
-      },
-    });
+        this.apiService.deleteProduct(productId).subscribe({
+          next: () => {
+            this.dialogService.success('商品刪除成功').subscribe(() => {
+              this.loadProducts();
+            });
+          },
+          error: (error: unknown) => {
+            console.error(error);
+            this.dialogService.error('商品刪除失敗');
+          },
+        });
+      });
   }
 
   resetForm(): void {

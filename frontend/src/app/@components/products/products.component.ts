@@ -6,6 +6,7 @@ import { Product } from '../../models/product';
 import { ApiService } from '../../@services/api.service';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
 import { ExchangeRateService } from '../../@services/exchange-rate.service';
+import { DialogService } from '../../@services/dialog.service';
 
 interface CartItem {
   productId: number;
@@ -52,6 +53,7 @@ export class ProductsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private exchangeRateService: ExchangeRateService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
@@ -136,7 +138,7 @@ export class ProductsComponent implements OnInit {
     const quantity = this.getQuantity(product.id);
 
     if (quantity <= 0) {
-      alert('請輸入正確數量');
+      this.dialogService.success('請輸入正確數量');
       this.quantities[product.id] = 1;
       return;
     }

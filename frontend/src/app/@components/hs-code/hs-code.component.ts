@@ -10,6 +10,7 @@ import { HsCode } from '../../models/hs-code';
 
 import { Category } from '../../models/category';
 import { ExchangeRateService } from '../../@services/exchange-rate.service';
+import { DialogService } from '../../@services/dialog.service';
 
 @Component({
   selector: 'app-hs-code',
@@ -60,6 +61,7 @@ export class HsCodeComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private exchangeRateService: ExchangeRateService,
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -129,7 +131,7 @@ export class HsCodeComponent implements OnInit {
     if (this.editingHsCodeId) {
       this.apiService.updateHsCode(this.editingHsCodeId, request).subscribe({
         next: () => {
-          alert('新增成功');
+          this.dialogService.success('新增成功');
 
           this.loadHsCodes();
 
@@ -139,7 +141,7 @@ export class HsCodeComponent implements OnInit {
         },
         error: (error: unknown) => {
           console.error(error);
-          alert('更新失敗');
+          this.dialogService.success('更新失敗');
         },
       });
 
@@ -148,7 +150,7 @@ export class HsCodeComponent implements OnInit {
 
     this.apiService.createHsCode(request).subscribe({
       next: () => {
-        alert('更新成功');
+        this.dialogService.success('更新成功');
 
         this.loadHsCodes();
 
@@ -158,44 +160,44 @@ export class HsCodeComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
-        alert('新增失敗');
+        this.dialogService.success('新增失敗');
       },
     });
   }
 
   isValidHsCode(): boolean {
     if (!this.hsCodeReq.code.trim()) {
-      alert('請輸入 HS Code');
+      this.dialogService.success('請輸入 HS Code');
       return false;
     }
 
     if (!this.hsCodeReq.name.trim()) {
-      alert('請輸入商品名稱');
+      this.dialogService.success('請輸入商品名稱');
       return false;
     }
 
     if (!this.hsCodeReq.categoryId) {
-      alert('請選擇分類');
+      this.dialogService.success('請選擇分類');
       return false;
     }
 
     if (this.hsCodeReq.dutyRate === null) {
-      alert('請輸入 Import Duty');
+      this.dialogService.success('請輸入 Import Duty');
       return false;
     }
 
     if (this.hsCodeReq.vatRate === null) {
-      alert('請輸入 VAT');
+      this.dialogService.success('請輸入 VAT');
       return false;
     }
 
     if (this.hsCodeReq.dutyRate < 0) {
-      alert('Import Duty 不可小於 0');
+      this.dialogService.success('Import Duty 不可小於 0');
       return false;
     }
 
     if (this.hsCodeReq.vatRate < 0) {
-      alert('VAT 不可小於 0');
+      this.dialogService.success('VAT 不可小於 0');
       return false;
     }
 
@@ -218,7 +220,7 @@ export class HsCodeComponent implements OnInit {
   }
 
   deleteHsCode(id: number): void {
-    const confirmed = confirm('確定要刪除嗎？');
+    const confirmed = this.dialogService.confirm('確定要刪除嗎？');
 
     if (!confirmed) {
       return;
@@ -226,12 +228,12 @@ export class HsCodeComponent implements OnInit {
 
     this.apiService.deleteHsCode(id).subscribe({
       next: () => {
-        alert('刪除成功');
+        this.dialogService.success('刪除成功');
         this.loadHsCodes();
       },
       error: (error: unknown) => {
         console.error(error);
-        alert('刪除失敗，可能已有商品使用此 HS Code');
+        this.dialogService.success('刪除失敗，可能已有商品使用此 HS Code');
       },
     });
   }
