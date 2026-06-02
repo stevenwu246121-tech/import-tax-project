@@ -45,6 +45,7 @@
 .main {
   flex: 1;
   padding: 48px;
+  min-width: 0;
 }
 
 .main h1 {
@@ -148,25 +149,11 @@ td {
 .filter-bar select {
   width: 240px;
 }
-.chart-wrapper {
-  position: relative;
-  width: 100%;
-  height: 360px;
-  max-height: 360px;
-  overflow: hidden;
-}
 
-.chart-wrapper canvas {
-  display: block;
-  width: 100% !important;
-  height: 100% !important;
-  max-height: 360px !important;
-}
-
-.chart-card {
+/* Dashboard */
+.dashboard-container {
   width: 100%;
-  max-width: 100%;
-  overflow: hidden;
+  min-width: 0;
 }
 
 .empty {
@@ -182,22 +169,10 @@ td {
   background: #fef2f2;
 }
 
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 24px;
-  margin-bottom: 24px;
-}
-
-.product-select {
-  width: 220px;
-  height: 44px;
-  border: 1px solid #dbe2ea;
-  border-radius: 12px;
-  padding: 0 14px;
-  font-size: 15px;
-  background: white;
+.chart-card {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .chart-header {
@@ -206,15 +181,37 @@ td {
   align-items: flex-start;
   gap: 24px;
   margin-bottom: 24px;
+}
+
+.chart-header > div:first-child {
+  min-width: 0;
+  flex: 1;
+}
+
+.chart-header h2 {
+  white-space: normal;
+  word-break: keep-all;
+  line-height: 1.35;
+}
+
+.chart-desc {
+  color: #64748b;
+  font-weight: 600;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .chart-filters {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-shrink: 0;
 }
 
-.chart-filters select {
+.chart-filters select,
+.product-select {
   width: 180px;
   height: 44px;
   border: 1px solid #dbe2ea;
@@ -225,18 +222,126 @@ td {
   font-weight: 700;
 }
 
-.chart-desc {
-  color: #64748b;
-  font-weight: 600;
-  margin-bottom: 24px;
-}
-
-.chart-box {
-  height: 340px;
+.chart-box,
+.chart-wrapper {
   position: relative;
+  width: 100%;
+  height: 340px;
+  max-height: 340px;
+  overflow: hidden;
 }
 
-.chart-box canvas {
+.chart-box canvas,
+.chart-wrapper canvas {
+  display: block;
   width: 100% !important;
   height: 100% !important;
+}
+
+/* 平板 */
+@media (max-width: 1024px) {
+  .main {
+    padding: 32px;
+  }
+
+  .chart-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chart-filters {
+    width: 100%;
+  }
+
+  .chart-filters select,
+  .product-select {
+    flex: 1;
+    width: 100%;
+  }
+
+  .chart-box,
+  .chart-wrapper {
+    height: 300px;
+  }
+}
+
+/* 手機 */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 20px;
+  }
+
+  .sidebar h2 {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .sidebar nav {
+    gap: 10px;
+  }
+
+  .sidebar nav a {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .main {
+    padding: 24px 16px;
+  }
+
+  .main h1 {
+    font-size: 32px;
+    margin-bottom: 24px;
+  }
+
+  .card,
+  .panel,
+  .chart-card,
+  .form-card {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .chart-header h2 {
+    font-size: 24px;
+  }
+
+  .chart-desc {
+    font-size: 15px;
+  }
+
+  .chart-filters {
+    flex-direction: column;
+  }
+
+  .chart-filters select,
+  .product-select {
+    width: 100%;
+  }
+
+  .chart-box,
+  .chart-wrapper {
+    height: 280px;
+  }
+}
+
+/* 超小螢幕 */
+@media (max-width: 480px) {
+  .main h1 {
+    font-size: 28px;
+  }
+
+  .chart-card {
+    padding: 20px;
+  }
+
+  .chart-box,
+  .chart-wrapper {
+    height: 240px;
+  }
 }
