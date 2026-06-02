@@ -11,6 +11,7 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 
 import { HsCode } from '../../models/hs-code';
+
 import { DialogService } from '../../@services/dialog.service';
 
 Chart.register(...registerables);
@@ -28,6 +29,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   totalDuty = 0;
 
   totalVat = 0;
+
+  averageTaxRate = 0;
 
   products: Product[] = [];
 
@@ -70,9 +73,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     this.loadHsCodes();
   }
 
-  ngAfterViewInit(): void {
-    this.createTaxChart();
-  }
+  ngAfterViewInit(): void {}
 
   loadProducts(): void {
     this.apiService.getProducts().subscribe({
@@ -82,19 +83,26 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         this.previewProducts = this.products.slice(0, 3);
 
         this.todayImportTotal = this.products.reduce(
-          (sum, product) => sum + product.unitPrice,
+          (sum, product) => sum + (product.unitPrice ?? 0),
           0,
         );
 
         this.totalDuty = this.products.reduce(
-          (sum, product) => sum + (product.unitPrice * product.dutyRate) / 100,
+          (sum, product) =>
+            sum + ((product.unitPrice ?? 0) * (product.dutyRate ?? 0)) / 100,
           0,
         );
 
         this.totalVat = this.products.reduce(
-          (sum, product) => sum + (product.unitPrice * product.vatRate) / 100,
+          (sum, product) =>
+            sum + ((product.unitPrice ?? 0) * (product.vatRate ?? 0)) / 100,
           0,
         );
+
+        this.averageTaxRate =
+          this.todayImportTotal > 0
+            ? ((this.totalDuty + this.totalVat) / this.todayImportTotal) * 100
+            : 0;
 
         this.inventoryTotals = this.products.reduce(
           (acc: { [key: string]: number }, product: Product) => {
@@ -119,11 +127,15 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
           this.createTrendChart();
 
           this.createInventoryChart();
+
+          this.createTaxRankingChart();
         });
       },
 
       error: (error: unknown) => {
         console.error(error);
+
+        this.dialogService.error('商品資料載入失敗');
       },
     });
   }
@@ -135,6 +147,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
       },
       error: (error: unknown) => {
         console.error(error);
+
+        this.dialogService.error('HS Code 資料載入失敗');
       },
     });
   }
@@ -149,6 +163,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
       error: (error: unknown) => {
         console.error(error);
+
+        this.dialogService.error('匯率資料載入失敗');
       },
     });
   }
@@ -202,6 +218,125 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     });
   }
 
+  createInventoryChart(): void {
+    this.inventoryChart?.destroy();
+
+    const canvas = document.getElementById(
+      'inventoryChart',
+    ) as HTMLCanvasElement | null;
+
+    if (!canvas) {
+      return;
+    }
+
+    const labels = Object.keys(this.inventoryTotals);
+
+    const data = Object.values(this.inventoryTotals);
+
+    if (labels.length === 0) {
+      return;
+    }
+
+    this.inventoryChart = new Chart(canvas, {
+      type: 'pie',
+
+      data: {
+        labels,
+
+        datasets: [
+          {
+            label: '庫存商品占比',
+            data,
+            backgroundColor: [
+              '#2563eb',
+              '#f43f5e',
+              '#fb923c',
+              '#facc15',
+              '#14b8a6',
+              '#8b5cf6',
+            ],
+          },
+        ],
+      },
+
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+
+        plugins: {
+          legend: {
+            position: 'right',
+          },
+        },
+
+        layout: {
+          padding: 8,
+        },
+      },
+    });
+  }
+
+  createTaxRankingChart(): void {
+    this.taxChart?.destroy();
+
+    const canvas = document.getElementById(
+      'taxRankingChart',
+    ) as HTMLCanvasElement | null;
+
+    if (!canvas) {
+      return;
+    }
+
+    const taxRanking = this.products
+      .map((product) => {
+        const unitPrice = product.unitPrice ?? 0;
+        const dutyRate = product.dutyRate ?? 0;
+        const vatRate = product.vatRate ?? 0;
+
+        return {
+          productName: product.productName,
+          totalTax: (unitPrice * dutyRate) / 100 + (unitPrice * vatRate) / 100,
+        };
+      })
+      .sort((a, b) => b.totalTax - a.totalTax)
+      .slice(0, 5);
+
+    if (taxRanking.length === 0) {
+      return;
+    }
+
+    this.taxChart = new Chart(canvas, {
+      type: 'bar',
+
+      data: {
+        labels: taxRanking.map((item) => item.productName),
+
+        datasets: [
+          {
+            label: '商品稅負金額',
+            data: taxRanking.map((item) => item.totalTax),
+            backgroundColor: '#2563eb',
+          },
+        ],
+      },
+
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+  }
   calculatePurchaseSuggestionScore(product: Product): number {
     const dutyRate = product.dutyRate ?? 0;
 
@@ -244,78 +379,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     }
 
     return result;
-  }
-
-  createInventoryChart(): void {
-    this.inventoryChart?.destroy();
-
-    const labels = Object.keys(this.inventoryTotals);
-
-    const data = Object.values(this.inventoryTotals);
-
-    if (labels.length === 0) {
-      return;
-    }
-
-    this.inventoryChart = new Chart('inventoryChart', {
-      type: 'pie',
-
-      data: {
-        labels,
-        datasets: [
-          {
-            label: '庫存商品占比',
-            data,
-            backgroundColor: [
-              '#2563eb',
-              '#f43f5e',
-              '#fb923c',
-              '#facc15',
-              '#14b8a6',
-              '#8b5cf6',
-            ],
-          },
-        ],
-      },
-
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-
-        plugins: {
-          legend: {
-            position: 'right',
-          },
-        },
-
-        layout: {
-          padding: 8,
-        },
-      },
-    });
-  }
-
-  createTaxChart(): void {
-    this.taxChart?.destroy();
-
-    this.taxChart = new Chart('taxChart', {
-      type: 'bar',
-      data: {
-        labels: ['05/14', '05/15', '05/16', '05/17', '05/18', '05/19', '05/20'],
-        datasets: [
-          {
-            label: 'Import Duty',
-            data: [10000, 12000, 14000, 9000, 11000, 10800, 10200],
-            backgroundColor: '#2563eb',
-          },
-          {
-            label: 'Import VAT',
-            data: [8000, 9500, 10200, 7600, 8500, 9200, 8800],
-            backgroundColor: '#22c55e',
-          },
-        ],
-      },
-    });
   }
 
   searchHsCode(): void {

@@ -268,3 +268,26 @@ td {
   width: 100% !important;
   height: 100% !important;
 }
+
+.panel-desc {
+  margin: -6px 0 12px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.tax-ranking-box {
+  height: 210px;
+  position: relative;
+}
+
+.tax-ranking-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.info {
+  color: #64748b;
+  font-weight: 600;
+}

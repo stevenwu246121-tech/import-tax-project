@@ -3,9 +3,9 @@
 <div class="home-summary-grid">
 
   <div class="home-card">
-    <span>今日進貨總額</span>
+    <span>目前商品總額</span>
     <strong>NT$ {{ todayImportTotal | number }}</strong>
-    <small class="up">▲ 12.5% 較昨日</small>
+    <small class="up">商品資料加總</small>
   </div>
 
   <div class="home-card">
@@ -21,9 +21,15 @@
   </div>
 
   <div class="home-card">
-    <span>平均毛利率</span>
-    <strong>42.6%</strong>
-    <small class="down">▼ 2.3% 較昨日</small>
+    <span>平均稅負率</span>
+
+    <strong>
+      {{ averageTaxRate | number:'1.1-1' }}%
+    </strong>
+
+    <small class="info">
+      Import Duty + VAT
+    </small>
   </div>
 
 </div>
@@ -57,16 +63,20 @@
   <section class="home-panel">
     <h2>目前庫存商品占比</h2>
 
-    <div class="chart-box small">
+    <div class="chart-box small pie-box">
       <canvas id="inventoryChart"></canvas>
     </div>
   </section>
 
   <section class="home-panel">
-    <h2>稅額分析（近7天）</h2>
+    <h2>商品稅負排名</h2>
 
-    <div class="chart-box small">
-      <canvas id="taxChart"></canvas>
+    <p class="panel-desc">
+      依目前商品單價、進口稅與營業稅計算稅務成本。
+    </p>
+
+    <div class="chart-box small tax-ranking-box">
+      <canvas id="taxRankingChart"></canvas>
     </div>
   </section>
 
