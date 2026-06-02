@@ -59,7 +59,7 @@
         <strong>{{ product.productName }}</strong>
         <small>HS {{ product.hsCode }}</small>
         <p class="exchange-rate">
-          1 NTD = {{ twdToJpyRate | number:'1.2-2' }} JPY
+          1 NT$ = {{ twdToJpyRate | number:'1.2-2' }} JP¥
         </p>
         <span class="card-price">
           {{ currencyLabel }} {{ convertCurrency(product.unitPrice) | number:'1.0-0' }}

@@ -48,6 +48,10 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   vatRate = 0;
 
+  dutyPercentage = 0;
+
+  vatPercentage = 0;
+
   hsCodes: HsCode[] = [];
 
   selectedProductId: number | null = null;
@@ -102,6 +106,15 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         this.averageTaxRate =
           this.todayImportTotal > 0
             ? ((this.totalDuty + this.totalVat) / this.todayImportTotal) * 100
+            : 0;
+        this.dutyPercentage =
+          this.todayImportTotal > 0
+            ? (this.totalDuty / this.todayImportTotal) * 100
+            : 0;
+
+        this.vatPercentage =
+          this.todayImportTotal > 0
+            ? (this.totalVat / this.todayImportTotal) * 100
             : 0;
 
         this.inventoryTotals = this.products.reduce(

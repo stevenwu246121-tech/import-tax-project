@@ -52,7 +52,7 @@ export class PosCheckoutComponent implements OnInit {
   }
 
   get currencyLabel(): string {
-    return this.selectedRegion === 'TW' ? 'NTD ' : 'JPY ';
+    return this.selectedRegion === 'TW' ? 'NT$ ' : 'JP¥ ';
   }
 
   get regionLabel(): string {

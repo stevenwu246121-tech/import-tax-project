@@ -4,20 +4,40 @@
 
   <div class="home-card">
     <span>目前商品總額</span>
-    <strong>NT$ {{ todayImportTotal | number }}</strong>
-    <small class="up">商品資料加總</small>
+
+    <strong>
+      NT$ {{ todayImportTotal | number }}
+    </strong>
+
+    <small class="info">
+      商品價格總額
+    </small>
   </div>
 
   <div class="home-card">
-    <span>Import Duty</span>
-    <strong>NT$ {{ totalDuty | number:'1.0-0' }}</strong>
-    <small class="up">▲ 8.2% 較昨日</small>
+    <span>進口稅</span>
+
+    <strong>
+      NT$ {{ totalDuty | number:'1.0-0' }}
+    </strong>
+
+    <small class="up">
+      占商品總額
+      {{ dutyPercentage | number:'1.1-1' }}%
+    </small>
   </div>
 
   <div class="home-card">
-    <span>Import VAT</span>
-    <strong>NT$ {{ totalVat | number:'1.0-0' }}</strong>
-    <small class="up">▲ 6.1% 較昨日</small>
+    <span>營業稅</span>
+
+    <strong>
+      NT$ {{ totalVat | number:'1.0-0' }}
+    </strong>
+
+    <small class="up">
+      占商品總額
+      {{ vatPercentage | number:'1.1-1' }}%
+    </small>
   </div>
 
   <div class="home-card">
@@ -28,7 +48,7 @@
     </strong>
 
     <small class="info">
-      Import Duty + VAT
+      進口稅 + 營業稅
     </small>
   </div>
 
@@ -102,10 +122,10 @@
 
     <div class="exchange-card">
 
-      <span>NTD → JPY</span>
+      <span>NT$ → JP¥</span>
 
       <strong>
-        1 NTD = {{ twdToJpyRate | number:'1.2-2' }} JPY
+        1 NT$ = {{ twdToJpyRate | number:'1.2-2' }} JP¥
       </strong>
 
       <small>
