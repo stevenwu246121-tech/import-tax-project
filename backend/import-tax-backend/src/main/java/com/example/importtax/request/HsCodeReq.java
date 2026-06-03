@@ -1,5 +1,7 @@
 package com.example.importtax.request;
 
+import java.math.BigDecimal;
+
 public class HsCodeReq {
 
     private String code;
@@ -8,9 +10,9 @@ public class HsCodeReq {
 
     private Long categoryId;
 
-    private Double dutyRate;
+    private BigDecimal dutyRate;
 
-    private Double vatRate;
+    private BigDecimal vatRate;
 
     private String description;
 
@@ -38,19 +40,19 @@ public class HsCodeReq {
         this.categoryId = categoryId;
     }
 
-    public Double getDutyRate() {
+    public BigDecimal getDutyRate() {
         return dutyRate;
     }
 
-    public void setDutyRate(Double dutyRate) {
+    public void setDutyRate(BigDecimal dutyRate) {
         this.dutyRate = dutyRate;
     }
 
-    public Double getVatRate() {
+    public BigDecimal getVatRate() {
         return vatRate;
     }
 
-    public void setVatRate(Double vatRate) {
+    public void setVatRate(BigDecimal vatRate) {
         this.vatRate = vatRate;
     }
 

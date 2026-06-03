@@ -72,6 +72,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadDashboardSummary();
+
     this.loadProducts();
 
     this.loadExchangeRate();
@@ -411,5 +413,35 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     this.dutyRate = found.dutyRate;
 
     this.vatRate = found.vatRate;
+  }
+
+  loadDashboardSummary(): void {
+    this.apiService.getDashboardSummary().subscribe({
+      next: (response) => {
+        this.todayImportTotal = response.totalImportAmount;
+
+        this.totalDuty = response.totalDuty;
+
+        this.totalVat = response.totalVat;
+
+        this.averageTaxRate = response.averageTaxRate;
+
+        this.landedCostTotal = response.landedCostTotal;
+
+        this.dutyPercentage =
+          this.todayImportTotal > 0
+            ? (this.totalDuty / this.todayImportTotal) * 100
+            : 0;
+
+        this.vatPercentage =
+          this.todayImportTotal > 0
+            ? (this.totalVat / this.todayImportTotal) * 100
+            : 0;
+      },
+
+      error: (error) => {
+        console.error(error);
+      },
+    });
   }
 }

@@ -5,53 +5,63 @@ import java.util.List;
 
 public class CreateOrderReq {
 
-	private List<OrderItemReq> items;
+    private List<OrderItemReq> items;
 
-	private String importCountry;
+    private String importCountry;
 
-	private String originCountry;
+    private String originCountry;
 
-	private String currencyCode;
+    private String currencyCode;
 
-	private BigDecimal exchangeRate;
+    private BigDecimal exchangeRate;
 
-	public List<OrderItemReq> getItems() {
-		return items;
-	}
+    private String supplierName;
 
-	public void setItems(List<OrderItemReq> items) {
-		this.items = items;
-	}
+    public List<OrderItemReq> getItems() {
+        return items;
+    }
 
-	public String getImportCountry() {
-		return importCountry;
-	}
+    public void setItems(List<OrderItemReq> items) {
+        this.items = items;
+    }
 
-	public void setImportCountry(String importCountry) {
-		this.importCountry = importCountry;
-	}
+    public String getImportCountry() {
+        return importCountry;
+    }
 
-	public String getOriginCountry() {
-		return originCountry;
-	}
+    public void setImportCountry(String importCountry) {
+        this.importCountry = importCountry;
+    }
 
-	public void setOriginCountry(String originCountry) {
-		this.originCountry = originCountry;
-	}
+    public String getOriginCountry() {
+        return originCountry;
+    }
 
-	public String getCurrencyCode() {
-		return currencyCode;
-	}
+    public void setOriginCountry(String originCountry) {
+        this.originCountry = originCountry;
+    }
 
-	public void setCurrencyCode(String currencyCode) {
-		this.currencyCode = currencyCode;
-	}
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
 
-	public BigDecimal getExchangeRate() {
-		return exchangeRate;
-	}
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
 
-	public void setExchangeRate(BigDecimal exchangeRate) {
-		this.exchangeRate = exchangeRate;
-	}
+    public BigDecimal getExchangeRate() {
+        return exchangeRate;
+    }
+
+    public void setExchangeRate(BigDecimal exchangeRate) {
+        this.exchangeRate = exchangeRate;
+    }
+
+    public String getSupplierName() {
+        return supplierName;
+    }
+
+    public void setSupplierName(String supplierName) {
+        this.supplierName = supplierName;
+    }
 }

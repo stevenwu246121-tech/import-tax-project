@@ -1,6 +1,5 @@
 package com.example.importtax.service;
 
-
 import com.example.importtax.dao.ProductDao;
 import com.example.importtax.dao.PurchaseOrderDao;
 import com.example.importtax.dao.PurchaseOrderItemDao;
@@ -17,172 +16,135 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 public class PurchaseOrderService {
 
-    private final PurchaseOrderDao purchaseOrderRepository;
+	private final PurchaseOrderDao purchaseOrderRepository;
 
-    private final PurchaseOrderItemDao purchaseOrderItemRepository;
+	private final PurchaseOrderItemDao purchaseOrderItemRepository;
 
-    private final ProductDao productRepository;
+	private final ProductDao productRepository;
 
-    public PurchaseOrderService(
-            PurchaseOrderDao purchaseOrderRepository,
-            PurchaseOrderItemDao purchaseOrderItemRepository,
-            ProductDao productRepository) {
+	public PurchaseOrderService(PurchaseOrderDao purchaseOrderRepository,
+			PurchaseOrderItemDao purchaseOrderItemRepository, ProductDao productRepository) {
 
-        this.purchaseOrderRepository = purchaseOrderRepository;
-        this.purchaseOrderItemRepository = purchaseOrderItemRepository;
-        this.productRepository = productRepository;
-    }
+		this.purchaseOrderRepository = purchaseOrderRepository;
+		this.purchaseOrderItemRepository = purchaseOrderItemRepository;
+		this.productRepository = productRepository;
+	}
 
-    @Transactional
-    public CreateOrderRes createOrder(
-            CreateOrderReq request) {
+	@Transactional
+	public CreateOrderRes createOrder(CreateOrderReq request) {
 
-        PurchaseOrder order = new PurchaseOrder();
+		PurchaseOrder order = new PurchaseOrder();
 
-        order.setOrderNo(generateOrderNo());
+		order.setOrderNo(generateOrderNo());
 
-        order.setSupplierName("SYSTEM");
+		order.setSupplierName("SYSTEM");
 
-        order.setImportCountry(
-                request.getImportCountry());
+		order.setImportCountry(request.getImportCountry());
 
-        order.setOriginCountry(
-                request.getOriginCountry());
+		order.setOriginCountry(request.getOriginCountry());
 
-        order.setCurrencyCode(
-                request.getCurrencyCode());
+		order.setCurrencyCode(request.getCurrencyCode());
 
-        order.setExchangeRate(
-                request.getExchangeRate());
+		order.setExchangeRate(request.getExchangeRate());
 
-        order.setStatus("CONFIRMED");
+		order.setStatus("CONFIRMED");
 
-        BigDecimal subtotal =
-                BigDecimal.ZERO;
+		BigDecimal subtotal = BigDecimal.ZERO;
 
-        BigDecimal dutyTotal =
-                BigDecimal.ZERO;
+		BigDecimal dutyTotal = BigDecimal.ZERO;
 
-        BigDecimal vatTotal =
-                BigDecimal.ZERO;
+		BigDecimal vatTotal = BigDecimal.ZERO;
 
-        BigDecimal landedCostTotal =
-                BigDecimal.ZERO;
+		BigDecimal landedCostTotal = BigDecimal.ZERO;
 
-        purchaseOrderRepository.save(order);
+		purchaseOrderRepository.save(order);
 
-        for (OrderItemReq itemRequest :
-                request.getItems()) {
+		for (OrderItemReq itemRequest : request.getItems()) {
 
-            Product product =
-                    productRepository
-                            .findById(
-                                    itemRequest.getProductId())
-                            .orElseThrow();
+			Product product = productRepository.findById(itemRequest.getProductId()).orElseThrow();
 
-            BigDecimal quantity =
-                    BigDecimal.valueOf(
-                            itemRequest.getQuantity());
+			BigDecimal quantity = BigDecimal.valueOf(itemRequest.getQuantity());
 
-            BigDecimal itemSubtotal =
-                    product.getUnitPrice()
-                            .multiply(quantity);
+			BigDecimal itemSubtotal = product.getUnitPrice().multiply(quantity);
 
-            /*
-             * 先寫死稅率
-             * 之後改 ImportTaxRule
-             */
-            BigDecimal dutyRate =
-                    BigDecimal.valueOf(5);
+			/*
+			 * 先寫死稅率 之後改 ImportTaxRule
+			 */
+			if (product.getHsCode() == null) {
+				throw new RuntimeException("Product " + product.getName() + " 未設定 HS Code");
+			}
 
-            BigDecimal vatRate =
-                    BigDecimal.valueOf(5);
+			BigDecimal dutyRate = product.getHsCode().getDutyRate();
 
-            BigDecimal dutyAmount =
-                    itemSubtotal.multiply(dutyRate)
-                            .divide(
-                                    BigDecimal.valueOf(100));
+			BigDecimal vatRate = product.getHsCode().getVatRate();
 
-            BigDecimal vatAmount =
-                    itemSubtotal.add(dutyAmount)
-                            .multiply(vatRate)
-                            .divide(
-                                    BigDecimal.valueOf(100));
+			BigDecimal dutyAmount = itemSubtotal.multiply(dutyRate).divide(BigDecimal.valueOf(100));
 
-            BigDecimal landedCost =
-                    itemSubtotal
-                            .add(dutyAmount)
-                            .add(vatAmount);
+			BigDecimal vatAmount = itemSubtotal.add(dutyAmount).multiply(vatRate).divide(BigDecimal.valueOf(100));
 
-            PurchaseOrderItem orderItem =
-                    new PurchaseOrderItem();
+			BigDecimal landedCost = itemSubtotal.add(dutyAmount).add(vatAmount);
 
-            orderItem.setPurchaseOrder(order);
+			PurchaseOrderItem orderItem = new PurchaseOrderItem();
 
-            orderItem.setProduct(product);
+			orderItem.setPurchaseOrder(order);
 
-            orderItem.setQuantity(
-                    itemRequest.getQuantity());
+			orderItem.setProduct(product);
 
-            orderItem.setUnitPrice(
-                    product.getUnitPrice());
+			orderItem.setQuantity(itemRequest.getQuantity());
 
-            orderItem.setSubtotal(itemSubtotal);
+			orderItem.setUnitPrice(product.getUnitPrice());
 
-            orderItem.setDutyRate(dutyRate);
+			orderItem.setSubtotal(itemSubtotal);
 
-            orderItem.setDutyAmount(dutyAmount);
+			orderItem.setDutyRate(dutyRate);
 
-            orderItem.setVatRate(vatRate);
+			orderItem.setDutyAmount(dutyAmount);
 
-            orderItem.setVatAmount(vatAmount);
+			orderItem.setVatRate(vatRate);
 
-            orderItem.setLandedCost(landedCost);
+			orderItem.setVatAmount(vatAmount);
 
-            purchaseOrderItemRepository.save(orderItem);
+			orderItem.setLandedCost(landedCost);
 
-            subtotal =
-                    subtotal.add(itemSubtotal);
+			purchaseOrderItemRepository.save(orderItem);
 
-            dutyTotal =
-                    dutyTotal.add(dutyAmount);
+			subtotal = subtotal.add(itemSubtotal);
 
-            vatTotal =
-                    vatTotal.add(vatAmount);
+			dutyTotal = dutyTotal.add(dutyAmount);
 
-            landedCostTotal =
-                    landedCostTotal.add(landedCost);
-        }
+			vatTotal = vatTotal.add(vatAmount);
 
-        order.setSubtotal(subtotal);
+			landedCostTotal = landedCostTotal.add(landedCost);
+		}
 
-        order.setDutyTotal(dutyTotal);
+		order.setSubtotal(subtotal);
 
-        order.setVatTotal(vatTotal);
+		order.setDutyTotal(dutyTotal);
 
-        order.setLandedCostTotal(
-                landedCostTotal);
+		order.setVatTotal(vatTotal);
 
-        purchaseOrderRepository.save(order);
+		order.setLandedCostTotal(landedCostTotal);
 
-        return new CreateOrderRes(
-                order.getId(),
-                order.getOrderNo(),
-                order.getLandedCostTotal());
-    }
+		purchaseOrderRepository.save(order);
 
-    private String generateOrderNo() {
+		return new CreateOrderRes(order.getId(), order.getOrderNo(), order.getLandedCostTotal());
+	}
 
-        DateTimeFormatter formatter =
-                DateTimeFormatter.ofPattern(
-                        "yyyyMMddHHmmss");
+	private String generateOrderNo() {
 
-        return "PO" +
-                LocalDateTime.now()
-                        .format(formatter);
-    }
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+
+		return "PO" + LocalDateTime.now().format(formatter);
+	}
+	
+	public List<PurchaseOrder> getOrders() {
+
+	    return purchaseOrderRepository
+	            .findAllByOrderByCreatedAtDesc();
+	}
 }

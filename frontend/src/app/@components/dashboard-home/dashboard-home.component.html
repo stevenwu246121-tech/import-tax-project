@@ -3,14 +3,14 @@
 <div class="home-summary-grid">
 
   <div class="home-card">
-    <span>目前商品總額</span>
+    <span>累積進口總額</span>
 
     <strong>
       NT$ {{ todayImportTotal | number }}
     </strong>
 
     <small class="info">
-      商品價格總額
+      來自進貨單資料
     </small>
   </div>
 
@@ -22,8 +22,8 @@
     </strong>
 
     <small class="up">
-      占商品總額
-      {{ dutyPercentage | number:'1.1-1' }}%
+      占總額
+      {{ dutyPercentage | number:'1.2-2' }}%
     </small>
   </div>
 
@@ -35,8 +35,8 @@
     </strong>
 
     <small class="up">
-      占商品總額
-      {{ vatPercentage | number:'1.1-1' }}%
+      占總額
+      {{ vatPercentage | number:'1.2-2' }}%
     </small>
   </div>
 

@@ -1,8 +1,11 @@
 package com.example.importtax.controller;
 
+import com.example.importtax.entity.PurchaseOrder;
 import com.example.importtax.request.CreateOrderReq;
 import com.example.importtax.response.CreateOrderRes;
 import com.example.importtax.service.PurchaseOrderService;
+
+import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -10,22 +13,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/orders")
 public class PurchaseOrderController {
 
-    private final PurchaseOrderService
-            purchaseOrderService;
+	private final PurchaseOrderService purchaseOrderService;
 
-    public PurchaseOrderController(
-            PurchaseOrderService purchaseOrderService) {
+	public PurchaseOrderController(PurchaseOrderService purchaseOrderService) {
 
-        this.purchaseOrderService =
-                purchaseOrderService;
-    }
+		this.purchaseOrderService = purchaseOrderService;
+	}
 
-    @PostMapping
-    public CreateOrderRes createOrder(
-            @RequestBody
-            CreateOrderReq request) {
+	@PostMapping
+	public CreateOrderRes createOrder(@RequestBody CreateOrderReq request) {
 
-        return purchaseOrderService
-                .createOrder(request);
-    }
+		return purchaseOrderService.createOrder(request);
+	}
+
+	@GetMapping
+	public List<PurchaseOrder> getOrders() {
+
+		return purchaseOrderService.getOrders();
+	}
 }

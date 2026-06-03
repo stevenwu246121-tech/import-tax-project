@@ -1,5 +1,6 @@
 package com.example.importtax.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -29,6 +30,14 @@ public class HsCodeService {
     }
 
     public void create(HsCodeReq req) {
+    	
+    	if (req.getDutyRate() == null || req.getDutyRate().compareTo(BigDecimal.ZERO) < 0) {
+    	    throw new RuntimeException("Duty rate cannot be negative");
+    	}
+
+    	if (req.getVatRate() == null || req.getVatRate().compareTo(BigDecimal.ZERO) < 0) {
+    	    throw new RuntimeException("VAT rate cannot be negative");
+    	}
 
         Category category = categoryDao.findById(req.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found"));
@@ -51,6 +60,14 @@ public class HsCodeService {
     }
 
     public void update(Long id, HsCodeReq req) {
+    	
+    	if (req.getDutyRate() == null || req.getDutyRate().compareTo(BigDecimal.ZERO) < 0) {
+    	    throw new RuntimeException("Duty rate cannot be negative");
+    	}
+
+    	if (req.getVatRate() == null || req.getVatRate().compareTo(BigDecimal.ZERO) < 0) {
+    	    throw new RuntimeException("VAT rate cannot be negative");
+    	}
 
         HsCode hsCode = hsCodeDao.findById(id)
                 .orElseThrow(() -> new RuntimeException("HsCode not found"));
