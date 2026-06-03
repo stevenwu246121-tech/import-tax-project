@@ -1,9 +1,18 @@
 export interface PurchaseOrder {
+
   id: number;
 
   orderNo: string;
 
   supplierName: string;
+
+  importCountry: string;
+
+  originCountry: string;
+
+  currencyCode: string;
+
+  exchangeRate: number;
 
   subtotal: number;
 
@@ -12,6 +21,8 @@ export interface PurchaseOrder {
   vatTotal: number;
 
   landedCostTotal: number;
+
+  status: string;
 
   createdAt: string;
 }

@@ -141,10 +141,15 @@ public class PurchaseOrderService {
 
 		return "PO" + LocalDateTime.now().format(formatter);
 	}
-	
+
 	public List<PurchaseOrder> getOrders() {
 
-	    return purchaseOrderRepository
-	            .findAllByOrderByCreatedAtDesc();
+		return purchaseOrderRepository.findAllByOrderByCreatedAtDesc();
 	}
+
+	public PurchaseOrder getOrderDetail(Long orderId) {
+
+		return purchaseOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+	}
+
 }

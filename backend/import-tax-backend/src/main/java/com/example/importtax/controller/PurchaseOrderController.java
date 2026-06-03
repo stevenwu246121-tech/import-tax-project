@@ -31,4 +31,9 @@ public class PurchaseOrderController {
 
 		return purchaseOrderService.getOrders();
 	}
+
+	@GetMapping("/{orderId}")
+	public PurchaseOrder getOrderDetail(@PathVariable Long orderId) {
+		return purchaseOrderService.getOrderDetail(orderId);
+	}
 }

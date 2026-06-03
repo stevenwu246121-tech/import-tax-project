@@ -1,0 +1,50 @@
+<h1>進貨紀錄</h1>
+
+<div class="card">
+
+  <table>
+
+    <thead>
+      <tr>
+        <th>訂單編號</th>
+        <th>建立時間</th>
+        <th>商品總額</th>
+        <th>進口稅</th>
+        <th>營業稅</th>
+        <th>到岸成本</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <tr *ngFor="let order of orders">
+
+        <td>{{ order.orderNo }}</td>
+
+        <td>
+          {{ order.createdAt | date:'yyyy/MM/dd HH:mm' }}
+        </td>
+
+        <td>
+          NT$ {{ order.subtotal | number }}
+        </td>
+
+        <td>
+          NT$ {{ order.dutyTotal | number }}
+        </td>
+
+        <td>
+          NT$ {{ order.vatTotal | number }}
+        </td>
+
+        <td>
+          NT$ {{ order.landedCostTotal | number }}
+        </td>
+
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>
