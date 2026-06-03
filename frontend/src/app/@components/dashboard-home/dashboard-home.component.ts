@@ -32,6 +32,12 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   averageTaxRate = 0;
 
+  landedCostTotal = 0;
+
+  dutyPercentage = 0;
+
+  vatPercentage = 0;
+
   products: Product[] = [];
 
   previewProducts: Product[] = [];
@@ -47,10 +53,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   dutyRate = 0;
 
   vatRate = 0;
-
-  dutyPercentage = 0;
-
-  vatPercentage = 0;
 
   hsCodes: HsCode[] = [];
 
@@ -116,6 +118,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
           this.todayImportTotal > 0
             ? (this.totalVat / this.todayImportTotal) * 100
             : 0;
+        this.landedCostTotal =
+          this.todayImportTotal + this.totalDuty + this.totalVat;
 
         this.inventoryTotals = this.products.reduce(
           (acc: { [key: string]: number }, product: Product) => {

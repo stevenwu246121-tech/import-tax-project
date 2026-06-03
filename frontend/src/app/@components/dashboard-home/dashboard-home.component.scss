@@ -122,11 +122,42 @@ h1 {
 }
 
 /* 商品列表預覽 */
-.preview-list {
-  display: grid;
-  gap: 10px;
-  max-height: 190px;
-  overflow-y: auto;
+.cost-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-row span {
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.summary-row strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.summary-row.total {
+  margin-top: 8px;
+  border-bottom: none;
+}
+
+.summary-row.total strong {
+  color: #2563eb;
+  font-size: 28px;
 }
 
 .preview-list div {

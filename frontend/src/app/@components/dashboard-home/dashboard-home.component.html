@@ -105,16 +105,42 @@
 <div class="home-grid lower">
 
   <section class="home-panel">
-    <h2>商品列表預覽</h2>
 
-    <div class="preview-list">
+    <h2>今日進口成本摘要</h2>
 
-      <div *ngFor="let product of previewProducts">
-        <strong>{{ product.productName }}</strong>
-        <span>HS Code：{{ product.hsCode }}</span>
+    <div class="cost-summary">
+
+      <div class="summary-row">
+        <span>商品總額</span>
+        <strong>
+          NT$ {{ todayImportTotal | number }}
+        </strong>
+      </div>
+
+      <div class="summary-row">
+        <span>進口稅</span>
+        <strong>
+          NT$ {{ totalDuty | number:'1.0-0' }}
+        </strong>
+      </div>
+
+      <div class="summary-row">
+        <span>營業稅</span>
+        <strong>
+          NT$ {{ totalVat | number:'1.0-0' }}
+        </strong>
+      </div>
+
+      <div class="summary-row total">
+        <span>預估到岸成本</span>
+
+        <strong>
+          NT$ {{ landedCostTotal | number:'1.0-0' }}
+        </strong>
       </div>
 
     </div>
+
   </section>
 
   <section class="home-panel">
