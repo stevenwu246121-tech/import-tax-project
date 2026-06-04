@@ -1,3 +1,6 @@
+import { PurchaseOrderItem }
+from './purchase-order-item';
+
 export interface PurchaseOrder {
 
   id: number;
@@ -25,4 +28,6 @@ export interface PurchaseOrder {
   status: string;
 
   createdAt: string;
+
+  items?: PurchaseOrderItem[];
 }

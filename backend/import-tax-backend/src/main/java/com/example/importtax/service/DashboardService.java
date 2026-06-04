@@ -2,11 +2,13 @@ package com.example.importtax.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.example.importtax.dao.PurchaseOrderDao;
 import com.example.importtax.response.DashboardSummaryRes;
+import com.example.importtax.response.DashboardTrendRes;
 
 @Service
 public class DashboardService {
@@ -42,5 +44,21 @@ public class DashboardService {
 		response.setAverageTaxRate(avgTaxRate);
 
 		return response;
+	}
+
+	public List<DashboardTrendRes> getTrend(int days) {
+
+		List<Object[]> results = purchaseOrderDao.getTrendData(days);
+
+		return results.stream().map(row -> {
+
+			DashboardTrendRes res = new DashboardTrendRes();
+
+			res.setDate(row[0].toString());
+
+			res.setAmount((BigDecimal) row[1]);
+
+			return res;
+		}).toList();
 	}
 }

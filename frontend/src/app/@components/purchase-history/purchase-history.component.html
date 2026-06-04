@@ -19,25 +19,33 @@
 
       <tr *ngFor="let order of orders">
 
-        <td>{{ order.orderNo }}</td>
+        <td data-label="訂單編號">
+          <button
+            type="button"
+            class="order-link"
+            (click)="openOrderDetail(order.id)"
+          >
+            {{ order.orderNo }}
+          </button>
+        </td>
 
-        <td>
+        <td data-label="建立時間">
           {{ order.createdAt | date:'yyyy/MM/dd HH:mm' }}
         </td>
 
-        <td>
+        <td data-label="商品總額">
           NT$ {{ order.subtotal | number }}
         </td>
 
-        <td>
+        <td data-label="進口稅">
           NT$ {{ order.dutyTotal | number }}
         </td>
 
-        <td>
+        <td data-label="營業稅">
           NT$ {{ order.vatTotal | number }}
         </td>
 
-        <td>
+        <td data-label="到岸成本">
           NT$ {{ order.landedCostTotal | number }}
         </td>
 

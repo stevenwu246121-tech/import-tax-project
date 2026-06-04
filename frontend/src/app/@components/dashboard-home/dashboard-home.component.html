@@ -56,62 +56,79 @@
 
 <div class="home-grid">
 
+  <!-- 真實進貨趨勢圖 -->
   <section class="home-panel wide">
+
     <div class="panel-header">
-      <h2>進貨商品趨勢建議</h2>
+
+      <h2>進貨金額趨勢</h2>
 
       <div class="trend-filters">
-        <select [(ngModel)]="selectedProductId" (change)="onTrendFilterChange()">
-          <option *ngFor="let product of products" [ngValue]="product.id">
-            {{ product.productName }}
+
+        <select [(ngModel)]="selectedPeriod" (change)="onTrendFilterChange()">
+          <option [ngValue]="7">
+            近7天
+          </option>
+
+          <option [ngValue]="30">
+            近30天
+          </option>
+
+          <option [ngValue]="90">
+            近90天
           </option>
         </select>
 
-        <select [(ngModel)]="selectedPeriod" (change)="onTrendFilterChange()">
-          <option [ngValue]="7">近7天</option>
-          <option [ngValue]="30">近30天</option>
-          <option [ngValue]="90">近90天</option>
-        </select>
       </div>
+
     </div>
 
     <div class="chart-box">
       <canvas id="trendChart"></canvas>
     </div>
+
   </section>
 
+  <!-- 商品占比 -->
   <section class="home-panel">
+
     <h2>目前庫存商品占比</h2>
 
     <div class="chart-box small pie-box">
       <canvas id="inventoryChart"></canvas>
     </div>
+
   </section>
 
+  <!-- 商品稅負排名 -->
   <section class="home-panel">
+
     <h2>商品稅負排名</h2>
 
     <p class="panel-desc">
-      依目前商品單價、進口稅與營業稅計算稅務成本。
+      依商品單價、進口稅與營業稅計算。
     </p>
 
     <div class="chart-box small tax-ranking-box">
       <canvas id="taxRankingChart"></canvas>
     </div>
+
   </section>
 
 </div>
 
 <div class="home-grid lower">
 
+  <!-- 進口成本摘要 -->
   <section class="home-panel">
 
-    <h2>今日進口成本摘要</h2>
+    <h2>進口成本摘要</h2>
 
     <div class="cost-summary">
 
       <div class="summary-row">
         <span>商品總額</span>
+
         <strong>
           NT$ {{ todayImportTotal | number }}
         </strong>
@@ -119,6 +136,7 @@
 
       <div class="summary-row">
         <span>進口稅</span>
+
         <strong>
           NT$ {{ totalDuty | number:'1.0-0' }}
         </strong>
@@ -126,24 +144,29 @@
 
       <div class="summary-row">
         <span>營業稅</span>
+
         <strong>
           NT$ {{ totalVat | number:'1.0-0' }}
         </strong>
       </div>
 
       <div class="summary-row total">
-        <span>預估到岸成本</span>
+
+        <span>到岸成本</span>
 
         <strong>
           NT$ {{ landedCostTotal | number:'1.0-0' }}
         </strong>
+
       </div>
 
     </div>
 
   </section>
 
+  <!-- 即時匯率 -->
   <section class="home-panel">
+
     <h2>即時匯率</h2>
 
     <div class="exchange-card">
@@ -151,28 +174,39 @@
       <span>NT$ → JP¥</span>
 
       <strong>
-        1 NT$ = {{ twdToJpyRate | number:'1.2-2' }} JP¥
+        1 NT$ =
+        {{ twdToJpyRate | number:'1.2-2' }}
+        JP¥
       </strong>
 
       <small>
-        更新時間：{{ updateTime }}
+        更新時間：
+        {{ updateTime }}
       </small>
 
     </div>
+
   </section>
 
+  <!-- HS Code -->
   <section class="home-panel">
-    <h2>HS Code 快速試算</h2>
+
+    <h2>HS Code 快速查詢</h2>
 
     <div class="hs-result" *ngIf="dutyRate || vatRate">
+
       <p>
         進口稅：
-        <strong>{{ dutyRate }}%</strong>
+        <strong>
+          {{ dutyRate }}%
+        </strong>
       </p>
 
       <p>
         營業稅：
-        <strong>{{ vatRate }}%</strong>
+        <strong>
+          {{ vatRate }}%
+        </strong>
       </p>
 
     </div>
@@ -186,7 +220,9 @@
         </option>
 
         <option *ngFor="let hs of hsCodes" [value]="hs.code">
-          {{ hs.code }} - {{ hs.name }}
+          {{ hs.code }}
+          -
+          {{ hs.name }}
         </option>
 
       </select>
@@ -196,6 +232,7 @@
       </button>
 
     </div>
+
   </section>
 
 </div>

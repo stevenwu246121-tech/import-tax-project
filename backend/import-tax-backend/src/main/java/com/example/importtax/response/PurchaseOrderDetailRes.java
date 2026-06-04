@@ -1,64 +1,45 @@
-package com.example.importtax.entity;
-
-import jakarta.persistence.*;
+package com.example.importtax.response;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+public class PurchaseOrderDetailRes {
 
-@Entity
-@Table(name = "purchase_order")
-public class PurchaseOrder {
-
-	@JsonManagedReference
-	@OneToMany(mappedBy = "purchaseOrder")
-	private List<PurchaseOrderItem> items;
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "order_no")
 	private String orderNo;
 
-	@Column(name = "supplier_name")
 	private String supplierName;
 
-	@Column(name = "import_country")
 	private String importCountry;
 
-	@Column(name = "origin_country")
 	private String originCountry;
 
-	@Column(name = "currency_code")
 	private String currencyCode;
 
-	@Column(name = "exchange_rate")
 	private BigDecimal exchangeRate;
 
 	private BigDecimal subtotal;
 
-	@Column(name = "duty_total")
 	private BigDecimal dutyTotal;
 
-	@Column(name = "vat_total")
 	private BigDecimal vatTotal;
 
-	@Column(name = "landed_cost_total")
 	private BigDecimal landedCostTotal;
 
 	private String status;
 
-	@Column(name = "created_at")
 	private Timestamp createdAt;
 
-	public PurchaseOrder() {
-	}
+	private List<PurchaseOrderItemRes> items;
 
 	public Long getId() {
 		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getOrderNo() {
@@ -151,5 +132,17 @@ public class PurchaseOrder {
 
 	public Timestamp getCreatedAt() {
 		return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public List<PurchaseOrderItemRes> getItems() {
+		return items;
+	}
+
+	public void setItems(List<PurchaseOrderItemRes> items) {
+		this.items = items;
 	}
 }

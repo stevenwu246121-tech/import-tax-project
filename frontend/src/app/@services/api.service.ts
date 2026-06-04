@@ -15,6 +15,7 @@ import { HsCode } from '../models/hs-code';
 import { Category } from '../models/category';
 import { PurchaseOrder } from '../models/purchase-order';
 import { DashboardSummary } from '../models/dashboard-summary';
+import { DashboardTrend } from '../models/dashboard-trend';
 
 @Injectable({
   providedIn: 'root',
@@ -81,7 +82,17 @@ export class ApiService {
     return this.http.get<PurchaseOrder[]>(`${this.baseUrl}/orders`);
   }
 
+  getOrderDetail(orderId: number): Observable<PurchaseOrder> {
+    return this.http.get<PurchaseOrder>(`${this.baseUrl}/orders/${orderId}`);
+  }
+
   getDashboardSummary(): Observable<DashboardSummary> {
     return this.http.get<DashboardSummary>(`${this.baseUrl}/dashboard/summary`);
+  }
+
+  getDashboardTrend(days: number): Observable<DashboardTrend[]> {
+    return this.http.get<DashboardTrend[]>(
+      `${this.baseUrl}/dashboard/trend?days=${days}`,
+    );
   }
 }

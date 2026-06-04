@@ -1,0 +1,48 @@
+.order-info {
+  margin-bottom: 16px;
+}
+
+.item-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.item-table th,
+.item-table td {
+  padding: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.item-table th {
+  text-align: left;
+}
+
+.summary {
+  margin-top: 16px;
+}
+
+.summary p {
+  margin: 8px 0;
+}
+
+.landed {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+@media (max-width: 768px) {
+
+  .item-table {
+    font-size: 14px;
+  }
+
+  .item-table th,
+  .item-table td {
+    padding: 8px;
+  }
+
+  .landed {
+    font-size: 24px;
+  }
+}

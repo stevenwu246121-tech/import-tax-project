@@ -9,6 +9,9 @@ import com.example.importtax.entity.PurchaseOrderItem;
 import com.example.importtax.request.CreateOrderReq;
 import com.example.importtax.request.OrderItemReq;
 import com.example.importtax.response.CreateOrderRes;
+import com.example.importtax.response.PurchaseOrderDetailRes;
+import com.example.importtax.response.PurchaseOrderItemRes;
+import com.example.importtax.response.PurchaseOrderListRes;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,14 +145,85 @@ public class PurchaseOrderService {
 		return "PO" + LocalDateTime.now().format(formatter);
 	}
 
-	public List<PurchaseOrder> getOrders() {
+	public List<PurchaseOrderListRes> getOrders() {
 
-		return purchaseOrderRepository.findAllByOrderByCreatedAtDesc();
+	    return purchaseOrderRepository
+	            .findAllByOrderByCreatedAtDesc()
+	            .stream()
+	            .map(order -> {
+	                PurchaseOrderListRes res =
+	                        new PurchaseOrderListRes();
+
+	                res.setId(order.getId());
+	                res.setOrderNo(order.getOrderNo());
+	                res.setSupplierName(order.getSupplierName());
+	                res.setImportCountry(order.getImportCountry());
+	                res.setOriginCountry(order.getOriginCountry());
+	                res.setCurrencyCode(order.getCurrencyCode());
+	                res.setExchangeRate(order.getExchangeRate());
+	                res.setSubtotal(order.getSubtotal());
+	                res.setDutyTotal(order.getDutyTotal());
+	                res.setVatTotal(order.getVatTotal());
+	                res.setLandedCostTotal(order.getLandedCostTotal());
+	                res.setStatus(order.getStatus());
+	                res.setCreatedAt(order.getCreatedAt());
+
+	                return res;
+	            })
+	            .toList();
 	}
 
-	public PurchaseOrder getOrderDetail(Long orderId) {
+	public PurchaseOrderDetailRes getOrderDetail(Long orderId) {
 
-		return purchaseOrderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+	    PurchaseOrder order = purchaseOrderRepository.findById(orderId)
+	            .orElseThrow(() -> new RuntimeException("Order not found"));
+
+	    List<PurchaseOrderItem> items =
+	            purchaseOrderItemRepository.findByPurchaseOrder_Id(orderId);
+
+	    PurchaseOrderDetailRes res = new PurchaseOrderDetailRes();
+
+	    res.setId(order.getId());
+	    res.setOrderNo(order.getOrderNo());
+	    res.setSupplierName(order.getSupplierName());
+	    res.setImportCountry(order.getImportCountry());
+	    res.setOriginCountry(order.getOriginCountry());
+	    res.setCurrencyCode(order.getCurrencyCode());
+	    res.setExchangeRate(order.getExchangeRate());
+	    res.setSubtotal(order.getSubtotal());
+	    res.setDutyTotal(order.getDutyTotal());
+	    res.setVatTotal(order.getVatTotal());
+	    res.setLandedCostTotal(order.getLandedCostTotal());
+	    res.setStatus(order.getStatus());
+	    res.setCreatedAt(order.getCreatedAt());
+
+	    List<PurchaseOrderItemRes> itemResList = items.stream()
+	            .map(item -> {
+	                PurchaseOrderItemRes itemRes = new PurchaseOrderItemRes();
+
+	                itemRes.setProductId(item.getProduct().getId());
+	                itemRes.setProductName(item.getProduct().getName());
+
+	                if (item.getProduct().getHsCode() != null) {
+	                    itemRes.setHsCode(item.getProduct().getHsCode().getCode());
+	                }
+
+	                itemRes.setQuantity(item.getQuantity());
+	                itemRes.setUnitPrice(item.getUnitPrice());
+	                itemRes.setSubtotal(item.getSubtotal());
+	                itemRes.setDutyRate(item.getDutyRate());
+	                itemRes.setDutyAmount(item.getDutyAmount());
+	                itemRes.setVatRate(item.getVatRate());
+	                itemRes.setVatAmount(item.getVatAmount());
+	                itemRes.setLandedCost(item.getLandedCost());
+
+	                return itemRes;
+	            })
+	            .toList();
+
+	    res.setItems(itemResList);
+
+	    return res;
 	}
 
 }

@@ -8,6 +8,7 @@ import { HsCodeComponent } from './@components/hs-code/hs-code.component';
 import { DashboardComponent } from './@components/dashboard/dashboard.component';
 import { ProductsComponent } from './@components/products/products.component';
 import { PosCheckoutComponent } from './@components/pos-checkout/pos-checkout.component';
+import { PurchaseHistoryComponent } from './@components/purchase-history/purchase-history.component';
 
 export const routes: Routes = [
   {
@@ -42,6 +43,10 @@ export const routes: Routes = [
       {
         path: 'report',
         component: DashboardComponent,
+      },
+      {
+        path: 'purchase-history',
+        component: PurchaseHistoryComponent,
       },
     ],
   },

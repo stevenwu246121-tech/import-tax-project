@@ -1,0 +1,105 @@
+.card {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th,
+td {
+  height: 64px;
+  padding: 0 18px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background: #eef2f7;
+  font-weight: 800;
+}
+
+.order-link {
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0;
+}
+
+.order-link:hover {
+  text-decoration: underline;
+}
+
+/* 平板以下：改成卡片 */
+@media (max-width: 900px) {
+  .card {
+    overflow-x: visible;
+    padding: 20px;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+    width: 100%;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  tr {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    height: auto;
+    min-height: 44px;
+
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+
+    text-align: right;
+    white-space: normal;
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 800;
+    color: #64748b;
+    text-align: left;
+    padding-right: 16px;
+  }
+
+  .order-link {
+    text-align: right;
+  }
+}

@@ -13,6 +13,7 @@ import { Product } from '../../models/product';
 import { HsCode } from '../../models/hs-code';
 
 import { DialogService } from '../../@services/dialog.service';
+import { DashboardTrend } from '../../models/dashboard-trend';
 
 Chart.register(...registerables);
 
@@ -60,6 +61,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   selectedPeriod = 7;
 
+  trendData: DashboardTrend[] = [];
+
   private trendChart?: Chart;
 
   private taxChart?: Chart;
@@ -75,6 +78,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     this.loadDashboardSummary();
 
     this.loadProducts();
+
+    this.loadDashboardTrend();
 
     this.loadExchangeRate();
 
@@ -189,32 +194,30 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   }
 
   onTrendFilterChange(): void {
-    this.createTrendChart();
+    this.loadDashboardTrend();
   }
 
   createTrendChart(): void {
     this.trendChart?.destroy();
 
-    const selectedProduct = this.products.find(
-      (product) => product.id === this.selectedProductId,
-    );
+    const canvas = document.getElementById(
+      'trendChart',
+    ) as HTMLCanvasElement | null;
 
-    if (!selectedProduct) {
+    if (!canvas) {
       return;
     }
 
-    const baseScore = this.calculatePurchaseSuggestionScore(selectedProduct);
-
-    this.trendChart = new Chart('trendChart', {
+    this.trendChart = new Chart(canvas, {
       type: 'line',
 
       data: {
-        labels: this.generateDateLabels(this.selectedPeriod),
+        labels: this.trendData.map((item) => item.date),
 
         datasets: [
           {
-            label: `${selectedProduct.productName} 提前進貨建議指數`,
-            data: this.generateTrendData(baseScore, this.selectedPeriod),
+            label: `近 ${this.selectedPeriod} 天進貨金額`,
+            data: this.trendData.map((item) => item.amount),
             borderColor: '#2563eb',
             backgroundColor: 'rgba(37,99,235,0.15)',
             fill: true,
@@ -230,7 +233,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         scales: {
           y: {
             beginAtZero: true,
-            max: 100,
           },
         },
       },
@@ -439,6 +441,18 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
             : 0;
       },
 
+      error: (error) => {
+        console.error(error);
+      },
+    });
+  }
+
+  loadDashboardTrend(): void {
+    this.apiService.getDashboardTrend(this.selectedPeriod).subscribe({
+      next: (response) => {
+        this.trendData = response;
+        this.createTrendChart();
+      },
       error: (error) => {
         console.error(error);
       },
