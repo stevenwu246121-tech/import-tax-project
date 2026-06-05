@@ -12,7 +12,9 @@ CREATE TABLE category (
     name VARCHAR(100) NOT NULL,
     storage_type VARCHAR(50),
     description VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE hs_code (
@@ -23,7 +25,9 @@ CREATE TABLE hs_code (
     duty_rate DECIMAL(5,2),
     vat_rate DECIMAL(5,2),
     description VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE product (
@@ -34,8 +38,11 @@ CREATE TABLE product (
     origin_country VARCHAR(10) NOT NULL DEFAULT 'JP',
     unit VARCHAR(20),
     unit_price DECIMAL(15,2) NOT NULL,
+    stock_qty INT DEFAULT 0,
     enabled BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_product_category
         FOREIGN KEY (category_id)
@@ -57,6 +64,8 @@ CREATE TABLE import_tax_rule (
     effective_to DATE,
     enabled BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_tax_rule_hs_code
         FOREIGN KEY (hs_code_id)
@@ -70,19 +79,22 @@ CREATE TABLE purchase_order (
     import_country VARCHAR(10) DEFAULT 'TW',
     origin_country VARCHAR(10) DEFAULT 'JP',
     currency_code VARCHAR(10) DEFAULT 'TWD',
-exchange_rate DECIMAL(12,6) DEFAULT 1.000000,
+    exchange_rate DECIMAL(12,6) DEFAULT 1.000000,
     subtotal DECIMAL(15,2),
     duty_total DECIMAL(15,2),
     vat_total DECIMAL(15,2),
     landed_cost_total DECIMAL(15,2),
-    status VARCHAR(30),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    status VARCHAR(30) DEFAULT 'CONFIRMED',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE purchase_order_item (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     purchase_order_id BIGINT NOT NULL,
     product_id BIGINT NOT NULL,
+    product_name VARCHAR(100),
     quantity INT NOT NULL,
     unit_price DECIMAL(15,2) NOT NULL,
     subtotal DECIMAL(15,2),
@@ -94,7 +106,8 @@ CREATE TABLE purchase_order_item (
 
     CONSTRAINT fk_purchase_order_item_order
         FOREIGN KEY (purchase_order_id)
-        REFERENCES purchase_order(id),
+        REFERENCES purchase_order(id)
+        ON DELETE CASCADE,
 
     CONSTRAINT fk_purchase_order_item_product
         FOREIGN KEY (product_id)
@@ -121,16 +134,16 @@ VALUES
 ('0702.00.0000', '番茄', '生鮮', 8.00, 5.00, '新鮮番茄');
 
 INSERT INTO product
-(name, category_id, hs_code_id, origin_country, unit, unit_price)
+(name, category_id, hs_code_id, origin_country, unit, unit_price, stock_qty)
 VALUES
-('日本咖啡豆', 1, 1, 'JP', 'kg', 500.00),
-('日本白米', 1, 2, 'JP', 'kg', 120.00),
-('日本即食拉麵', 1, 3, 'JP', '箱', 1200.00),
-('日本抹茶粉', 1, 4, 'JP', 'kg', 800.00),
-('日本和牛', 4, 5, 'JP', 'kg', 2500.00),
-('日本鮭魚', 5, 6, 'JP', 'kg', 900.00),
-('日本冷凍蝦', 3, 7, 'JP', 'kg', 650.00),
-('日本番茄', 2, 8, 'JP', 'kg', 180.00);
+('日本咖啡豆', 1, 1, 'JP', 'kg', 500.00, 100),
+('日本白米', 1, 2, 'JP', 'kg', 120.00, 200),
+('日本即食拉麵', 1, 3, 'JP', '箱', 1200.00, 50),
+('日本抹茶粉', 1, 4, 'JP', 'kg', 800.00, 80),
+('日本和牛', 4, 5, 'JP', 'kg', 2500.00, 30),
+('日本鮭魚', 5, 6, 'JP', 'kg', 900.00, 60),
+('日本冷凍蝦', 3, 7, 'JP', 'kg', 650.00, 70),
+('日本番茄', 2, 8, 'JP', 'kg', 180.00, 150);
 
 INSERT INTO import_tax_rule
 (import_country, origin_country, hs_code_id, duty_rate, vat_rate, effective_from, effective_to)
@@ -148,27 +161,38 @@ INSERT INTO purchase_order
 (
     order_no,
     supplier_name,
+    import_country,
+    origin_country,
+    currency_code,
+    exchange_rate,
     subtotal,
     duty_total,
     vat_total,
     landed_cost_total,
-    status
+    status,
+    created_at
 )
 VALUES
 (
     'PO20250519001',
     'Japan Foods Supplier',
+    'TW',
+    'JP',
+    'TWD',
+    1.000000,
     7400.00,
     538.00,
     396.90,
     8334.90,
-    'CONFIRMED'
+    'CONFIRMED',
+    '2026-06-03 11:02:48'
 );
 
 INSERT INTO purchase_order_item
 (
     purchase_order_id,
     product_id,
+    product_name,
     quantity,
     unit_price,
     subtotal,
@@ -179,8 +203,8 @@ INSERT INTO purchase_order_item
     landed_cost
 )
 VALUES
-(1, 1, 10, 500.00, 5000.00, 5.00, 250.00, 5.00, 262.50, 5512.50),
-(1, 3, 2, 1200.00, 2400.00, 12.00, 288.00, 5.00, 134.40, 2822.40);
+(1, 1, '日本咖啡豆', 10, 500.00, 5000.00, 5.00, 250.00, 5.00, 262.50, 5512.50),
+(1, 3, '日本即食拉麵', 2, 1200.00, 2400.00, 12.00, 288.00, 5.00, 134.40, 2822.40);
 
 SELECT
     p.id AS product_id,
@@ -191,9 +215,37 @@ SELECT
     r.duty_rate,
     r.vat_rate,
     p.unit,
-    p.unit_price
+    p.unit_price,
+    p.stock_qty
 FROM product p
 JOIN category c ON p.category_id = c.id
 JOIN hs_code h ON p.hs_code_id = h.id
 JOIN import_tax_rule r ON p.hs_code_id = r.hs_code_id
 ORDER BY p.id;
+
+SELECT
+    po.id,
+    po.order_no,
+    po.supplier_name,
+    po.subtotal,
+    po.duty_total,
+    po.vat_total,
+    po.landed_cost_total,
+    po.status,
+    po.created_at
+FROM purchase_order po
+ORDER BY po.created_at DESC;
+
+SELECT
+    poi.id,
+    po.order_no,
+    poi.product_name,
+    poi.quantity,
+    poi.unit_price,
+    poi.subtotal,
+    poi.duty_amount,
+    poi.vat_amount,
+    poi.landed_cost
+FROM purchase_order_item poi
+JOIN purchase_order po ON poi.purchase_order_id = po.id
+ORDER BY poi.id;
