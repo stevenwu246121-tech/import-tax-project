@@ -150,6 +150,10 @@ public class PurchaseOrder {
 	}
 
 	public Timestamp getCreatedAt() {
-		return createdAt;
+	    return createdAt;
+	}
+
+	public void setCreatedAt(Timestamp createdAt) {
+	    this.createdAt = createdAt;
 	}
 }

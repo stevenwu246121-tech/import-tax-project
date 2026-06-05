@@ -10,6 +10,8 @@ import { PurchaseOrder } from '../../models/purchase-order';
 
 import { OrderDetailDialogComponent } from '../../shared/dialogs/order-detail-dialog/order-detail-dialog.component';
 
+import { DialogService } from '../../@services/dialog.service';
+
 @Component({
   selector: 'app-purchase-history',
   standalone: true,
@@ -22,7 +24,8 @@ export class PurchaseHistoryComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -31,10 +34,10 @@ export class PurchaseHistoryComponent implements OnInit {
 
   loadOrders(): void {
     this.apiService.getOrders().subscribe({
-      next: (response) => {
+      next: (response: PurchaseOrder[]) => {
         this.orders = response;
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error(error);
       },
     });
@@ -42,16 +45,39 @@ export class PurchaseHistoryComponent implements OnInit {
 
   openOrderDetail(orderId: number): void {
     this.apiService.getOrderDetail(orderId).subscribe({
-      next: (order) => {
+      next: (order: PurchaseOrder) => {
         this.dialog.open(OrderDetailDialogComponent, {
           width: '760px',
           maxWidth: '95vw',
           data: order,
         });
       },
-      error: (error) => {
+      error: (error: unknown) => {
         console.error(error);
       },
     });
+  }
+
+  deleteOrder(orderId: number): void {
+    this.dialogService
+      .confirm('確定要刪除此進貨紀錄嗎？')
+      .subscribe((confirmed: boolean) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this.apiService.deleteOrder(orderId).subscribe({
+          next: () => {
+            this.dialogService.success('進貨紀錄已刪除');
+
+            this.loadOrders();
+          },
+          error: (error: unknown) => {
+            console.error(error);
+
+            this.dialogService.error('刪除失敗');
+          },
+        });
+      });
   }
 }

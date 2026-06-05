@@ -57,8 +57,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   hsCodes: HsCode[] = [];
 
-  selectedProductId: number | null = null;
-
   selectedPeriod = 7;
 
   trendData: DashboardTrend[] = [];
@@ -95,39 +93,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
         this.previewProducts = this.products.slice(0, 3);
 
-        this.todayImportTotal = this.products.reduce(
-          (sum, product) => sum + (product.unitPrice ?? 0),
-          0,
-        );
-
-        this.totalDuty = this.products.reduce(
-          (sum, product) =>
-            sum + ((product.unitPrice ?? 0) * (product.dutyRate ?? 0)) / 100,
-          0,
-        );
-
-        this.totalVat = this.products.reduce(
-          (sum, product) =>
-            sum + ((product.unitPrice ?? 0) * (product.vatRate ?? 0)) / 100,
-          0,
-        );
-
-        this.averageTaxRate =
-          this.todayImportTotal > 0
-            ? ((this.totalDuty + this.totalVat) / this.todayImportTotal) * 100
-            : 0;
-        this.dutyPercentage =
-          this.todayImportTotal > 0
-            ? (this.totalDuty / this.todayImportTotal) * 100
-            : 0;
-
-        this.vatPercentage =
-          this.todayImportTotal > 0
-            ? (this.totalVat / this.todayImportTotal) * 100
-            : 0;
-        this.landedCostTotal =
-          this.todayImportTotal + this.totalDuty + this.totalVat;
-
         this.inventoryTotals = this.products.reduce(
           (acc: { [key: string]: number }, product: Product) => {
             const categoryName = product.categoryName || '未分類';
@@ -143,13 +108,7 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
           {},
         );
 
-        if (this.products.length > 0 && !this.selectedProductId) {
-          this.selectedProductId = this.products[0].id;
-        }
-
         setTimeout(() => {
-          this.createTrendChart();
-
           this.createInventoryChart();
 
           this.createTaxRankingChart();
@@ -212,27 +171,61 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
       type: 'line',
 
       data: {
-        labels: this.trendData.map((item) => item.date),
+        labels: this.trendData.map((item) => {
+          const date = new Date(item.date);
+
+          return `${date.getMonth() + 1}/${date.getDate()}`;
+        }),
 
         datasets: [
           {
             label: `近 ${this.selectedPeriod} 天進貨金額`,
+
             data: this.trendData.map((item) => item.amount),
+
             borderColor: '#2563eb',
+
             backgroundColor: 'rgba(37,99,235,0.15)',
+
             fill: true,
+
             tension: 0.4,
+
+            borderWidth: 3,
+
+            pointRadius: 5,
+
+            pointHoverRadius: 8,
+
+            pointBackgroundColor: '#2563eb',
+
+            pointBorderColor: '#ffffff',
+
+            pointBorderWidth: 2,
           },
         ],
       },
 
       options: {
         responsive: true,
+
         maintainAspectRatio: false,
+
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+        },
 
         scales: {
           y: {
             beginAtZero: true,
+
+            ticks: {
+              callback: function (value) {
+                return 'NT$ ' + value;
+              },
+            },
           },
         },
       },
@@ -358,49 +351,6 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
       },
     });
   }
-  calculatePurchaseSuggestionScore(product: Product): number {
-    const dutyRate = product.dutyRate ?? 0;
-
-    const vatRate = product.vatRate ?? 0;
-
-    const unitPrice = product.unitPrice ?? 0;
-
-    const taxRiskScore = dutyRate * 4 + vatRate * 2;
-
-    const priceImpactScore = unitPrice >= 1000 ? 20 : unitPrice >= 500 ? 10 : 5;
-
-    return Math.min(100, Math.round(taxRiskScore + priceImpactScore));
-  }
-
-  generateDateLabels(days: number): string[] {
-    const labels: string[] = [];
-
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-
-      date.setDate(date.getDate() - i);
-
-      labels.push(`${date.getMonth() + 1}/${date.getDate()}`);
-    }
-
-    return labels;
-  }
-
-  generateTrendData(baseScore: number, days: number): number[] {
-    const result: number[] = [];
-
-    for (let i = 0; i < days; i++) {
-      const wave = Math.sin(i / 2) * 6;
-
-      const growth = i * 0.3;
-
-      const value = baseScore + wave + growth;
-
-      result.push(Math.max(0, Math.min(100, Math.round(value))));
-    }
-
-    return result;
-  }
 
   searchHsCode(): void {
     const found = this.hsCodes.find(
@@ -451,10 +401,13 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     this.apiService.getDashboardTrend(this.selectedPeriod).subscribe({
       next: (response) => {
         this.trendData = response;
+
         this.createTrendChart();
       },
       error: (error) => {
         console.error(error);
+
+        this.dialogService.error('進貨趨勢資料載入失敗');
       },
     });
   }

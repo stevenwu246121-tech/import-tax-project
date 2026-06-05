@@ -82,6 +82,9 @@ export class ApiService {
     return this.http.get<PurchaseOrder[]>(`${this.baseUrl}/orders`);
   }
 
+  deleteOrder(orderId: number) {
+    return this.http.delete(`${this.baseUrl}/orders/${orderId}`);
+  }
   getOrderDetail(orderId: number): Observable<PurchaseOrder> {
     return this.http.get<PurchaseOrder>(`${this.baseUrl}/orders/${orderId}`);
   }

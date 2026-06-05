@@ -7,6 +7,7 @@ import { ApiService } from '../../@services/api.service';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
 import { ExchangeRateService } from '../../@services/exchange-rate.service';
 import { DialogService } from '../../@services/dialog.service';
+import { Router } from '@angular/router';
 
 interface CartItem {
   productId: number;
@@ -53,7 +54,8 @@ export class ProductsComponent implements OnInit {
   constructor(
     private apiService: ApiService,
     private exchangeRateService: ExchangeRateService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -183,7 +185,6 @@ export class ProductsComponent implements OnInit {
       this.resetCalculation();
       return;
     }
-
     const request = this.buildCalculateRequest();
 
     this.isCalculating = true;
@@ -225,5 +226,41 @@ export class ProductsComponent implements OnInit {
     this.dutyTotal = 0;
     this.vatTotal = 0;
     this.landedCostTotal = 0;
+  }
+
+  createPurchaseOrder(): void {
+    if (this.cartItems.length === 0) {
+      this.dialogService.warning('請先加入商品');
+
+      return;
+    }
+
+    const request = {
+      importCountry: 'TW',
+      originCountry: 'JP',
+      currencyCode: 'JPY',
+      exchangeRate: 1,
+
+      items: this.cartItems.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    };
+
+    this.apiService.createOrder(request).subscribe({
+      next: (response) => {
+        this.dialogService.success(`進貨成功：${response.orderNo}`);
+
+        this.clearCart();
+
+        this.router.navigate(['/purchase-history']);
+      },
+
+      error: (error) => {
+        console.error(error);
+
+        this.dialogService.error('建立進貨單失敗');
+      },
+    });
   }
 }

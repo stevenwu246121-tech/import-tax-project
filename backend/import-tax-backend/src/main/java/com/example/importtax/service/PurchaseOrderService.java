@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -44,6 +45,10 @@ public class PurchaseOrderService {
 		PurchaseOrder order = new PurchaseOrder();
 
 		order.setOrderNo(generateOrderNo());
+		
+		order.setCreatedAt(
+			    new Timestamp(System.currentTimeMillis())
+			);
 
 		order.setSupplierName("SYSTEM");
 
@@ -224,6 +229,12 @@ public class PurchaseOrderService {
 	    res.setItems(itemResList);
 
 	    return res;
+	}
+	
+	@Transactional
+	public void deleteOrder(Long orderId) {
+
+	    purchaseOrderRepository.deleteById(orderId);
 	}
 
 }

@@ -109,12 +109,15 @@
         進貨試算
       </button>
 
+      <button class="success" *ngIf="calculateResponse" (click)="createPurchaseOrder()">
+        確認進貨
+      </button>
+
       <button class="secondary" (click)="clearCart()">
         清空
       </button>
 
     </div>
-
     <div class="summary" *ngIf="calculateResponse">
 
       <h3>試算總額</h3>

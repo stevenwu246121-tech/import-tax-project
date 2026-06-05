@@ -35,4 +35,11 @@ public class PurchaseOrderController {
 	public PurchaseOrderDetailRes getOrderDetail(@PathVariable("orderId") Long orderId) {
 		return purchaseOrderService.getOrderDetail(orderId);
 	}
+	
+	@DeleteMapping("/{orderId}")
+	public void deleteOrder(
+	        @PathVariable("orderId") Long orderId
+	) {
+	    purchaseOrderService.deleteOrder(orderId);
+	}
 }
