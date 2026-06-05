@@ -10,4 +10,6 @@ public interface PurchaseOrderItemDao
         extends JpaRepository<PurchaseOrderItem, Long> {
 
     List<PurchaseOrderItem> findByPurchaseOrder_Id(Long purchaseOrderId);
+
+    void deleteByPurchaseOrder_Id(Long purchaseOrderId);
 }

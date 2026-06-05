@@ -12,6 +12,7 @@
         <th>進口稅</th>
         <th>營業稅</th>
         <th>到岸成本</th>
+        <th>操作</th>
       </tr>
     </thead>
 
@@ -49,6 +50,30 @@
           NT$ {{ order.landedCostTotal | number }}
         </td>
 
+        <td data-label="操作" class="action-cell">
+          <button
+            type="button"
+            class="detail-btn"
+            (click)="openOrderDetail(order.id)"
+          >
+            明細
+          </button>
+
+          <button
+            type="button"
+            class="delete-btn"
+            (click)="deleteOrder(order.id)"
+          >
+            刪除
+          </button>
+        </td>
+
+      </tr>
+
+      <tr *ngIf="orders.length === 0">
+        <td colspan="7" class="empty-row">
+          尚無進貨紀錄
+        </td>
       </tr>
 
     </tbody>

@@ -234,6 +234,8 @@ public class PurchaseOrderService {
 	@Transactional
 	public void deleteOrder(Long orderId) {
 
+	    purchaseOrderItemRepository.deleteByPurchaseOrder_Id(orderId);
+
 	    purchaseOrderRepository.deleteById(orderId);
 	}
 

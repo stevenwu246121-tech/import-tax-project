@@ -103,3 +103,36 @@ th {
     text-align: right;
   }
 }
+
+.detail-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.detail-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.empty-row {
+  text-align: center;
+  padding: 24px;
+  color: #666;
+}
