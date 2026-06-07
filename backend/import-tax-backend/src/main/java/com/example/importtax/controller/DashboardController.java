@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.importtax.response.DashboardSummaryRes;
 import com.example.importtax.response.DashboardTrendRes;
+import com.example.importtax.response.LowStockRes;
 import com.example.importtax.service.DashboardService;
 
 @RestController
@@ -29,5 +30,10 @@ public class DashboardController {
 	@GetMapping("/trend")
 	public List<DashboardTrendRes> getTrend(@RequestParam("days") int days) {
 		return dashboardService.getTrend(days);
+	}
+
+	@GetMapping("/low-stock")
+	public List<LowStockRes> getLowStockProducts() {
+		return dashboardService.getLowStockProducts();
 	}
 }

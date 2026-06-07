@@ -16,6 +16,7 @@ import { Category } from '../models/category';
 import { PurchaseOrder } from '../models/purchase-order';
 import { DashboardSummary } from '../models/dashboard-summary';
 import { DashboardTrend } from '../models/dashboard-trend';
+import { LowStock } from '../models/low-stock';
 
 @Injectable({
   providedIn: 'root',
@@ -97,5 +98,9 @@ export class ApiService {
     return this.http.get<DashboardTrend[]>(
       `${this.baseUrl}/dashboard/trend?days=${days}`,
     );
+  }
+
+  getLowStockProducts() {
+    return this.http.get<LowStock[]>(`${this.baseUrl}/dashboard/low-stock`);
   }
 }

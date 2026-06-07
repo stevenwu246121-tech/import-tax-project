@@ -40,23 +40,34 @@
     </small>
   </div>
 
-  <div class="home-card">
-    <span>平均稅負率</span>
+  <div class="home-card cost-tax-card">
 
-    <strong>
-      {{ averageTaxRate | number:'1.1-1' }}%
-    </strong>
+    <div class="cost-section">
+      <span>成本與稅負率</span>
 
-    <small class="info">
-      進口稅 + 營業稅
-    </small>
+      <strong>
+        NT$ {{ landedCostTotal | number:'1.0-0' }}
+      </strong>
+
+      <small class="info">
+        落地成本
+      </small>
+    </div>
+
+    <div class="tax-section">
+      <span>平均稅負率</span>
+
+      <strong>
+        {{ averageTaxRate | number:'1.1-1' }}%
+      </strong>
+    </div>
+
   </div>
 
 </div>
 
 <div class="home-grid">
 
-  <!-- 真實進貨趨勢圖 -->
   <section class="home-panel wide">
 
     <div class="panel-header">
@@ -64,7 +75,6 @@
       <h2>進貨金額趨勢</h2>
 
       <div class="trend-filters">
-
         <select [(ngModel)]="selectedPeriod" (change)="onTrendFilterChange()">
           <option [ngValue]="7">
             近7天
@@ -78,7 +88,6 @@
             近90天
           </option>
         </select>
-
       </div>
 
     </div>
@@ -89,7 +98,6 @@
 
   </section>
 
-  <!-- 商品占比 -->
   <section class="home-panel">
 
     <h2>目前庫存商品占比</h2>
@@ -100,7 +108,32 @@
 
   </section>
 
-  <!-- 商品稅負排名 -->
+  <section class="home-panel">
+
+    <h2>⚠ 庫存警示</h2>
+
+    <div class="empty-stock" *ngIf="lowStockProducts.length === 0">
+      目前沒有低庫存商品
+    </div>
+
+    <div class="low-stock-list" *ngIf="lowStockProducts.length > 0">
+      <div class="low-stock-item" *ngFor="let product of lowStockProducts">
+        <span>
+          {{ product.productName }}
+        </span>
+
+        <strong>
+          {{ product.stockQty }}
+        </strong>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<div class="home-grid lower">
+
   <section class="home-panel">
 
     <h2>商品稅負排名</h2>
@@ -115,56 +148,6 @@
 
   </section>
 
-</div>
-
-<div class="home-grid lower">
-
-  <!-- 進口成本摘要 -->
-  <section class="home-panel">
-
-    <h2>進口成本摘要</h2>
-
-    <div class="cost-summary">
-
-      <div class="summary-row">
-        <span>商品總額</span>
-
-        <strong>
-          NT$ {{ todayImportTotal | number }}
-        </strong>
-      </div>
-
-      <div class="summary-row">
-        <span>進口稅</span>
-
-        <strong>
-          NT$ {{ totalDuty | number:'1.0-0' }}
-        </strong>
-      </div>
-
-      <div class="summary-row">
-        <span>營業稅</span>
-
-        <strong>
-          NT$ {{ totalVat | number:'1.0-0' }}
-        </strong>
-      </div>
-
-      <div class="summary-row total">
-
-        <span>到岸成本</span>
-
-        <strong>
-          NT$ {{ landedCostTotal | number:'1.0-0' }}
-        </strong>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- 即時匯率 -->
   <section class="home-panel">
 
     <h2>即時匯率</h2>
@@ -188,13 +171,11 @@
 
   </section>
 
-  <!-- HS Code -->
   <section class="home-panel">
 
     <h2>HS Code 快速查詢</h2>
 
     <div class="hs-result" *ngIf="dutyRate || vatRate">
-
       <p>
         進口稅：
         <strong>
@@ -208,23 +189,18 @@
           {{ vatRate }}%
         </strong>
       </p>
-
     </div>
 
     <div class="quick-calc">
 
       <select [(ngModel)]="selectedHsCode">
-
         <option value="">
           請選擇 HS Code
         </option>
 
         <option *ngFor="let hs of hsCodes" [value]="hs.code">
-          {{ hs.code }}
-          -
-          {{ hs.name }}
+          {{ hs.code }} - {{ hs.name }}
         </option>
-
       </select>
 
       <button (click)="searchHsCode()">

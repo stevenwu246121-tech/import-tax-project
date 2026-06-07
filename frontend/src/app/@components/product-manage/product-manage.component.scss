@@ -1,33 +1,39 @@
-.layout {
-  display: flex;
-  min-height: 100vh;
-  background: #f4f7fb;
-  color: #0f172a;
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
 }
 
-.sidebar {
-  width: 260px;
-  background: #07122c;
-  color: white;
-  padding: 36px 28px;
-  flex-shrink: 0;
-}
-
-.main {
-  flex: 1;
-  padding: 48px;
-}
-
-.main h1 {
+h1 {
   font-size: 42px;
   font-weight: 900;
-  margin-bottom: 32px;
+  margin: 0 0 24px;
 }
 
-.card,
-.panel,
-.chart-card,
+/* 搜尋區塊 */
+.search-filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.search-filter-row input {
+  width: 420px;
+  max-width: 100%;
+}
+
+.search-filter-row select {
+  width: 240px;
+  max-width: 100%;
+}
+
+/* 表單卡片 */
 .form-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
   background: white;
   border-radius: 24px;
   padding: 32px;
@@ -36,9 +42,20 @@
   overflow: visible;
 }
 
+.form-card input,
+.form-card select,
+.form-card button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-card button {
+  grid-column: 1 / 2;
+}
+
+/* 共用輸入樣式 */
 input,
 select {
-  width: 100%;
   height: 56px;
   border-radius: 16px;
   border: 1px solid #dbe2ea;
@@ -55,6 +72,7 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
+/* 按鈕 */
 button {
   height: 46px;
   padding: 0 22px;
@@ -81,37 +99,19 @@ button.danger:hover,
   background: #b91c1c;
 }
 
-/* 搜尋區塊 */
-.search-filter-row {
-  display: flex;
-  align-items: center;
-  gap: 28px;
-  margin-bottom: 28px;
-}
-
-.search-filter-row input {
-  width: 420px;
-}
-
-.search-filter-row select {
-  width: 240px;
-}
-
-/* 表單 */
-.form-card {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-.form-card button {
-  grid-column: 1 / 2;
+/* 表格外層 */
+.table-scroll {
   width: 100%;
+  overflow-x: auto;
+  background: white;
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
-/* Table */
+/* 表格 */
 table {
   width: 100%;
+  min-width: 900px;
   border-collapse: separate;
   border-spacing: 0;
   background: white;
@@ -126,10 +126,12 @@ thead {
 
 th,
 td {
-  padding: 18px 28px;
+  padding: 16px 18px;
   border-bottom: 1px solid #e5e7eb;
   font-size: 16px;
   vertical-align: middle;
+  white-space: nowrap;
+  word-break: keep-all;
   overflow: visible;
 }
 
@@ -139,7 +141,7 @@ th {
 }
 
 td {
-  height: 68px;
+  height: 64px;
 }
 
 tbody,
@@ -151,30 +153,36 @@ tbody tr:hover {
   background: #f8fafc;
 }
 
+/* 欄位寬度：商品 / 分類 / HS Code / 價格 / 庫存 / 操作 */
 th:nth-child(1),
 td:nth-child(1) {
-  width: 28%;
+  width: 22%;
 }
 
 th:nth-child(2),
 td:nth-child(2) {
-  width: 18%;
+  width: 13%;
 }
 
 th:nth-child(3),
 td:nth-child(3) {
-  width: 24%;
+  width: 20%;
 }
 
 th:nth-child(4),
 td:nth-child(4) {
-  width: 14%;
+  width: 13%;
 }
 
 th:nth-child(5),
 td:nth-child(5) {
-  width: 16%;
-  text-align: left;
+  width: 10%;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+  width: 120px;
+  text-align: center;
 }
 
 /* 商品名稱過長防跑版 */
@@ -187,11 +195,12 @@ td:nth-child(5) {
   vertical-align: middle;
 }
 
-/* 操作下拉選單 */
+/* 操作欄 */
 .action-cell {
+  width: 120px;
+  min-width: 120px;
+  text-align: center;
   position: relative;
-  width: 140px;
-  text-align: left;
   overflow: visible;
   z-index: 20;
 }
@@ -201,15 +210,19 @@ td:nth-child(5) {
 }
 
 .edit-menu-btn {
+  width: 86px;
   min-width: 86px;
   height: 44px;
+  padding: 0;
   background: #2563eb;
 }
 
+/* 操作下拉選單 */
 .action-menu {
   position: absolute;
-  top: 54px;
-  left: 28px;
+  top: 52px;
+  right: 14px;
+  left: auto;
   z-index: 9999;
 
   display: flex;
@@ -232,74 +245,6 @@ td:nth-child(5) {
   background: #2563eb;
 }
 
-/* Product Manage RWD */
-:host {
-  display: block;
-  width: 100%;
-  min-width: 0;
-}
-
-.search-filter-row {
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.search-filter-row input {
-  width: 420px;
-  max-width: 100%;
-}
-
-.search-filter-row select {
-  width: 240px;
-  max-width: 100%;
-}
-
-.form-card {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
-}
-
-.form-card input,
-.form-card select,
-.form-card button {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* 表格 RWD：不要壓縮成直排，改成橫向滑動 */
-table {
-  min-width: 820px;
-  table-layout: fixed;
-}
-
-th,
-td {
-  white-space: nowrap;
-  word-break: keep-all;
-}
-
-td:first-child {
-  max-width: 220px;
-}
-
-.product-name {
-  display: inline-block;
-  max-width: 220px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;
-}
-
-.action-cell {
-  min-width: 140px;
-  position: relative;
-  overflow: visible;
-}
-
 /* 平板 */
 @media (max-width: 1024px) {
   h1 {
@@ -311,7 +256,7 @@ td:first-child {
   }
 
   table {
-    min-width: 780px;
+    min-width: 860px;
   }
 }
 
@@ -344,12 +289,12 @@ td:first-child {
   }
 
   table {
-    min-width: 760px;
+    min-width: 820px;
   }
 
   th,
   td {
-    padding: 16px 18px;
+    padding: 14px 16px;
     font-size: 15px;
   }
 }
@@ -365,17 +310,12 @@ td:first-child {
   }
 
   table {
-    min-width: 720px;
+    min-width: 780px;
   }
 
   th,
   td {
-    padding: 14px 16px;
+    padding: 12px 14px;
     font-size: 14px;
   }
-}
-
-.table-scroll {
-  width: 100%;
-  overflow-x: auto;
 }

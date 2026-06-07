@@ -2,7 +2,6 @@
   display: block;
 }
 
-/* 上方標題留白縮小 */
 h1 {
   margin: 0 0 20px;
   font-size: 36px;
@@ -10,7 +9,6 @@ h1 {
   line-height: 1.2;
 }
 
-/* 四張摘要卡 */
 .home-summary-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -51,6 +49,11 @@ h1 {
   font-weight: 700;
 }
 
+.info {
+  color: #64748b;
+  font-weight: 600;
+}
+
 .up {
   color: #16a34a;
 }
@@ -59,7 +62,39 @@ h1 {
   color: #dc2626;
 }
 
-/* 中下方區塊 */
+.cost-tax-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 22px;
+}
+
+.cost-section {
+  flex: 1;
+}
+
+.tax-section {
+  min-width: 130px;
+  padding-left: 22px;
+  border-left: 1px solid #dbe3ef;
+  text-align: center;
+}
+
+.tax-section span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tax-section strong {
+  color: #2563eb;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .home-grid {
   display: grid;
   grid-template-columns: 1.45fr 1fr 1fr;
@@ -91,16 +126,22 @@ h1 {
   gap: 12px;
 }
 
-.panel-header select {
+.panel-header select,
+.trend-filters select {
   height: 36px;
   border-radius: 10px;
-  border: 1px solid #d1d5db;
-  padding: 0 12px;
+  border: 1px solid #dbe2ea;
   background: white;
+  padding: 0 12px;
   font-weight: 700;
 }
 
-/* 圖表高度縮小 */
+.trend-filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .chart-box {
   height: 200px;
   position: relative;
@@ -110,142 +151,63 @@ h1 {
   height: 190px;
 }
 
-.chart-box canvas {
+.chart-box canvas,
+.pie-box canvas,
+.tax-ranking-box canvas {
   width: 100% !important;
   height: 100% !important;
 }
 
-#countryChart {
-  max-width: 220px;
-  max-height: 185px;
-  margin: 0 auto;
+.pie-box {
+  height: 220px;
+  max-height: 220px;
+  position: relative;
 }
 
-/* 商品列表預覽 */
-.cost-summary {
+.tax-ranking-box {
+  height: 210px;
+  position: relative;
+}
+
+.panel-desc {
+  margin: -6px 0 12px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.low-stock-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-.summary-row {
+.low-stock-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-
-  padding: 12px 0;
-
-  border-bottom: 1px solid #e5e7eb;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 700;
 }
 
-.summary-row span {
-  color: #64748b;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.summary-row strong {
-  font-size: 22px;
-  font-weight: 800;
+.low-stock-item span {
   color: #0f172a;
 }
 
-.summary-row.total {
-  margin-top: 8px;
-  border-bottom: none;
-}
-
-.summary-row.total strong {
-  color: #2563eb;
-  font-size: 28px;
-}
-
-.preview-list div {
-  padding: 11px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-}
-
-.preview-list strong,
-.preview-list span {
-  display: block;
-}
-
-.preview-list span {
-  color: #64748b;
-  margin-top: 3px;
-  font-size: 13px;
-}
-
-/* 快速試算 */
-.quick-calc {
-  display: grid;
-  gap: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.quick-calc input,
-.quick-calc select {
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  padding: 0 12px;
-}
-
-.quick-calc button {
-  height: 40px;
-  border: none;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  font-weight: 800;
-}
-
-/* 表格區也縮小 */
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 12px 14px;
-  font-size: 14px;
-}
-
-.total {
-  display: block;
-  margin-top: 14px;
+.low-stock-item strong {
+  color: #dc2626;
   font-size: 20px;
-  color: #2563eb;
 }
 
-/* RWD */
-@media (max-width: 1200px) {
-  .home-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .home-grid,
-  .home-grid.lower {
-    grid-template-columns: 1fr;
-  }
-
-  .home-panel {
-    min-height: auto;
-  }
-}
-
-@media (max-width: 640px) {
-  h1 {
-    font-size: 30px;
-    margin-bottom: 16px;
-  }
-
-  .home-summary-grid {
-    grid-template-columns: 1fr;
-  }
+.empty-stock {
+  margin-top: 16px;
+  color: #64748b;
+  font-weight: 600;
 }
 
 .exchange-card {
@@ -274,51 +236,95 @@ td {
   font-weight: 600;
 }
 
-.trend-filters {
-  display: flex;
+.quick-calc {
+  display: grid;
   gap: 10px;
-  align-items: center;
+  max-height: 200px;
+  overflow-y: auto;
 }
 
-.trend-filters select {
-  height: 36px;
+.quick-calc input,
+.quick-calc select {
+  height: 40px;
   border-radius: 10px;
-  border: 1px solid #dbe2ea;
-  background: white;
+  border: 1px solid #d1d5db;
   padding: 0 12px;
+}
+
+.quick-calc button {
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: white;
+  font-weight: 800;
+}
+
+.hs-result {
+  margin-bottom: 12px;
+}
+
+.hs-result p {
+  margin: 6px 0;
+  color: #334155;
   font-weight: 700;
 }
 
-.pie-box {
-  height: 220px;
-  max-height: 220px;
-  position: relative;
+table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.pie-box canvas {
-  width: 100% !important;
-  height: 100% !important;
+th,
+td {
+  padding: 12px 14px;
+  font-size: 14px;
 }
 
-.panel-desc {
-  margin: -6px 0 12px;
-  color: #64748b;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.5;
+.total {
+  display: block;
+  margin-top: 14px;
+  font-size: 20px;
+  color: #2563eb;
 }
 
-.tax-ranking-box {
-  height: 210px;
-  position: relative;
+
+//RWD
+@media (max-width: 1200px) {
+  .home-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-grid,
+  .home-grid.lower {
+    grid-template-columns: 1fr;
+  }
+
+  .home-panel {
+    min-height: auto;
+  }
 }
 
-.tax-ranking-box canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
+@media (max-width: 640px) {
+  h1 {
+    font-size: 30px;
+    margin-bottom: 16px;
+  }
 
-.info {
-  color: #64748b;
-  font-weight: 600;
+  .home-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cost-tax-card {
+    align-items: flex-start;
+  }
+
+  .tax-section {
+    min-width: 110px;
+    padding-left: 14px;
+  }
+
+  .tax-section strong {
+    font-size: 26px;
+  }
 }

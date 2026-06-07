@@ -45,10 +45,8 @@ public class PurchaseOrderService {
 		PurchaseOrder order = new PurchaseOrder();
 
 		order.setOrderNo(generateOrderNo());
-		
-		order.setCreatedAt(
-			    new Timestamp(System.currentTimeMillis())
-			);
+
+		order.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
 		order.setSupplierName("SYSTEM");
 
@@ -113,13 +111,18 @@ public class PurchaseOrderService {
 
 			orderItem.setDutyAmount(dutyAmount);
 
-			orderItem.setVatRate(vatRate);
-
 			orderItem.setVatAmount(vatAmount);
 
 			orderItem.setLandedCost(landedCost);
 
 			purchaseOrderItemRepository.save(orderItem);
+
+			// 進貨成功後，自動增加商品庫存
+			Integer currentStock = product.getStockQty() == null ? 0 : product.getStockQty();
+
+			product.setStockQty(currentStock + itemRequest.getQuantity());
+
+			productRepository.save(product);
 
 			subtotal = subtotal.add(itemSubtotal);
 
@@ -152,91 +155,83 @@ public class PurchaseOrderService {
 
 	public List<PurchaseOrderListRes> getOrders() {
 
-	    return purchaseOrderRepository
-	            .findAllByOrderByCreatedAtDesc()
-	            .stream()
-	            .map(order -> {
-	                PurchaseOrderListRes res =
-	                        new PurchaseOrderListRes();
+		return purchaseOrderRepository.findAllByOrderByCreatedAtDesc().stream().map(order -> {
+			PurchaseOrderListRes res = new PurchaseOrderListRes();
 
-	                res.setId(order.getId());
-	                res.setOrderNo(order.getOrderNo());
-	                res.setSupplierName(order.getSupplierName());
-	                res.setImportCountry(order.getImportCountry());
-	                res.setOriginCountry(order.getOriginCountry());
-	                res.setCurrencyCode(order.getCurrencyCode());
-	                res.setExchangeRate(order.getExchangeRate());
-	                res.setSubtotal(order.getSubtotal());
-	                res.setDutyTotal(order.getDutyTotal());
-	                res.setVatTotal(order.getVatTotal());
-	                res.setLandedCostTotal(order.getLandedCostTotal());
-	                res.setStatus(order.getStatus());
-	                res.setCreatedAt(order.getCreatedAt());
+			res.setId(order.getId());
+			res.setOrderNo(order.getOrderNo());
+			res.setSupplierName(order.getSupplierName());
+			res.setImportCountry(order.getImportCountry());
+			res.setOriginCountry(order.getOriginCountry());
+			res.setCurrencyCode(order.getCurrencyCode());
+			res.setExchangeRate(order.getExchangeRate());
+			res.setSubtotal(order.getSubtotal());
+			res.setDutyTotal(order.getDutyTotal());
+			res.setVatTotal(order.getVatTotal());
+			res.setLandedCostTotal(order.getLandedCostTotal());
+			res.setStatus(order.getStatus());
+			res.setCreatedAt(order.getCreatedAt());
 
-	                return res;
-	            })
-	            .toList();
+			return res;
+		}).toList();
 	}
 
 	public PurchaseOrderDetailRes getOrderDetail(Long orderId) {
 
-	    PurchaseOrder order = purchaseOrderRepository.findById(orderId)
-	            .orElseThrow(() -> new RuntimeException("Order not found"));
+		PurchaseOrder order = purchaseOrderRepository.findById(orderId)
+				.orElseThrow(() -> new RuntimeException("Order not found"));
 
-	    List<PurchaseOrderItem> items =
-	            purchaseOrderItemRepository.findByPurchaseOrder_Id(orderId);
+		List<PurchaseOrderItem> items = purchaseOrderItemRepository.findByPurchaseOrder_Id(orderId);
 
-	    PurchaseOrderDetailRes res = new PurchaseOrderDetailRes();
+		PurchaseOrderDetailRes res = new PurchaseOrderDetailRes();
 
-	    res.setId(order.getId());
-	    res.setOrderNo(order.getOrderNo());
-	    res.setSupplierName(order.getSupplierName());
-	    res.setImportCountry(order.getImportCountry());
-	    res.setOriginCountry(order.getOriginCountry());
-	    res.setCurrencyCode(order.getCurrencyCode());
-	    res.setExchangeRate(order.getExchangeRate());
-	    res.setSubtotal(order.getSubtotal());
-	    res.setDutyTotal(order.getDutyTotal());
-	    res.setVatTotal(order.getVatTotal());
-	    res.setLandedCostTotal(order.getLandedCostTotal());
-	    res.setStatus(order.getStatus());
-	    res.setCreatedAt(order.getCreatedAt());
+		res.setId(order.getId());
+		res.setOrderNo(order.getOrderNo());
+		res.setSupplierName(order.getSupplierName());
+		res.setImportCountry(order.getImportCountry());
+		res.setOriginCountry(order.getOriginCountry());
+		res.setCurrencyCode(order.getCurrencyCode());
+		res.setExchangeRate(order.getExchangeRate());
+		res.setSubtotal(order.getSubtotal());
+		res.setDutyTotal(order.getDutyTotal());
+		res.setVatTotal(order.getVatTotal());
+		res.setLandedCostTotal(order.getLandedCostTotal());
+		res.setStatus(order.getStatus());
+		res.setCreatedAt(order.getCreatedAt());
 
-	    List<PurchaseOrderItemRes> itemResList = items.stream()
-	            .map(item -> {
-	                PurchaseOrderItemRes itemRes = new PurchaseOrderItemRes();
+		List<PurchaseOrderItemRes> itemResList = items.stream().map(item -> {
+			PurchaseOrderItemRes itemRes = new PurchaseOrderItemRes();
 
-	                itemRes.setProductId(item.getProduct().getId());
-	                itemRes.setProductName(item.getProduct().getName());
+			itemRes.setProductId(item.getProduct().getId());
+			itemRes.setProductName(item.getProduct().getName());
 
-	                if (item.getProduct().getHsCode() != null) {
-	                    itemRes.setHsCode(item.getProduct().getHsCode().getCode());
-	                }
+			if (item.getProduct().getHsCode() != null) {
+				itemRes.setHsCode(item.getProduct().getHsCode().getCode());
+			}
 
-	                itemRes.setQuantity(item.getQuantity());
-	                itemRes.setUnitPrice(item.getUnitPrice());
-	                itemRes.setSubtotal(item.getSubtotal());
-	                itemRes.setDutyRate(item.getDutyRate());
-	                itemRes.setDutyAmount(item.getDutyAmount());
-	                itemRes.setVatRate(item.getVatRate());
-	                itemRes.setVatAmount(item.getVatAmount());
-	                itemRes.setLandedCost(item.getLandedCost());
+			itemRes.setQuantity(item.getQuantity());
+			itemRes.setUnitPrice(item.getUnitPrice());
+			itemRes.setSubtotal(item.getSubtotal());
+			itemRes.setDutyRate(item.getDutyRate());
+			itemRes.setDutyAmount(item.getDutyAmount());
+			itemRes.setVatRate(item.getVatRate());
+			itemRes.setVatAmount(item.getVatAmount());
+			itemRes.setLandedCost(item.getLandedCost());
 
-	                return itemRes;
-	            })
-	            .toList();
+			return itemRes;
+		}).toList();
 
-	    res.setItems(itemResList);
+		res.setItems(itemResList);
 
-	    return res;
+		return res;
 	}
-	
+
 	@Transactional
 	public void deleteOrder(Long orderId) {
 
-	    purchaseOrderItemRepository.deleteByPurchaseOrder_Id(orderId);
+		purchaseOrderItemRepository.deleteByPurchaseOrder_Id(orderId);
 
-	    purchaseOrderRepository.deleteById(orderId);
+		purchaseOrderRepository.deleteById(orderId);
 	}
 
 }

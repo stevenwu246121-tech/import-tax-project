@@ -1,4 +1,5 @@
 export interface Product {
+  unit?: string;
 
   id: number;
 
@@ -13,4 +14,6 @@ export interface Product {
   vatRate: number;
 
   unitPrice: number;
+
+  stockQty: number;
 }

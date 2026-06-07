@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
+import { Router } from '@angular/router';
+
 import { Product } from '../../models/product';
 import { ApiService } from '../../@services/api.service';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
-import { ExchangeRateService } from '../../@services/exchange-rate.service';
 import { DialogService } from '../../@services/dialog.service';
-import { Router } from '@angular/router';
 
 interface CartItem {
   productId: number;
@@ -53,7 +53,6 @@ export class ProductsComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private exchangeRateService: ExchangeRateService,
     private dialogService: DialogService,
     private router: Router,
   ) {}
@@ -69,13 +68,18 @@ export class ProductsComponent implements OnInit {
     this.apiService.getProducts().subscribe({
       next: (response: Product[]) => {
         this.products = response ?? [];
+
         this.initializeQuantities();
+
         this.isLoadingProducts = false;
       },
       error: (error: unknown) => {
         console.error('商品載入失敗:', error);
+
         this.products = [];
+
         this.isLoadingProducts = false;
+
         this.errorMessage = '商品資料載入失敗，請確認後端服務是否正常。';
       },
     });
@@ -94,12 +98,16 @@ export class ProductsComponent implements OnInit {
   changeCountry(): void {
     if (this.selectedCountry === 'TW') {
       this.currency = 'NT$ ';
+
       this.exchangeRate = 1;
+
       this.recalculateIfCartHasItems();
+
       return;
     }
 
     this.currency = 'JP¥ ';
+
     this.loadJpyExchangeRate();
   }
 
@@ -109,14 +117,16 @@ export class ProductsComponent implements OnInit {
     this.apiService.getJpyExchangeRate().subscribe({
       next: (rate: number) => {
         this.exchangeRate = rate;
+
         this.isLoadingExchangeRate = false;
+
         this.recalculateIfCartHasItems();
       },
       error: (error: unknown) => {
         console.error('匯率取得失敗:', error);
 
-        // 備援匯率，避免畫面完全不能用
         this.exchangeRate = 4.5;
+
         this.isLoadingExchangeRate = false;
 
         this.recalculateIfCartHasItems();
@@ -136,12 +146,36 @@ export class ProductsComponent implements OnInit {
     return this.quantities[productId] || 1;
   }
 
+  private getProductStock(productId: number): number {
+    const product = this.products.find((item) => item.id === productId);
+
+    return product?.stockQty ?? 0;
+  }
+
   addToCart(product: Product): void {
+    const stockQty = product.stockQty ?? 0;
+
+    if (stockQty <= 0) {
+      this.dialogService.warning('此商品目前沒有庫存');
+
+      return;
+    }
+
     const quantity = this.getQuantity(product.id);
 
     if (quantity <= 0) {
-      this.dialogService.success('請輸入正確數量');
+      this.dialogService.warning('請輸入正確數量');
+
       this.quantities[product.id] = 1;
+
+      return;
+    }
+
+    if (quantity > stockQty) {
+      this.dialogService.warning(`加入數量不可超過目前庫存 ${stockQty}`);
+
+      this.quantities[product.id] = stockQty;
+
       return;
     }
 
@@ -150,7 +184,15 @@ export class ProductsComponent implements OnInit {
     );
 
     if (existItem) {
-      existItem.quantity += quantity;
+      const newQuantity = existItem.quantity + quantity;
+
+      if (newQuantity > stockQty) {
+        this.dialogService.warning(`購物車數量不可超過目前庫存 ${stockQty}`);
+
+        return;
+      }
+
+      existItem.quantity = newQuantity;
     } else {
       this.cartItems.push({
         productId: product.id,
@@ -160,6 +202,7 @@ export class ProductsComponent implements OnInit {
     }
 
     this.quantities[product.id] = 1;
+
     this.calculate();
   }
 
@@ -177,28 +220,36 @@ export class ProductsComponent implements OnInit {
 
   clearCart(): void {
     this.cartItems = [];
+
     this.resetCalculation();
   }
 
   calculate(): void {
     if (this.cartItems.length === 0) {
       this.resetCalculation();
+
       return;
     }
+
     const request = this.buildCalculateRequest();
 
     this.isCalculating = true;
+
     this.errorMessage = '';
 
     this.apiService.calculatePurchase(request).subscribe({
       next: (response: PurchaseCalculateResponse) => {
         this.calculateResponse = response;
+
         this.applyCalculationResult(response);
+
         this.isCalculating = false;
       },
       error: (error: unknown) => {
         console.error('進貨試算失敗:', error);
+
         this.isCalculating = false;
+
         this.errorMessage = '進貨試算失敗，請確認商品資料或後端服務。';
       },
     });
@@ -215,23 +266,50 @@ export class ProductsComponent implements OnInit {
 
   private applyCalculationResult(response: PurchaseCalculateResponse): void {
     this.subtotal = response.subtotal ?? 0;
+
     this.dutyTotal = response.dutyTotal ?? 0;
+
     this.vatTotal = response.vatTotal ?? 0;
+
     this.landedCostTotal = response.landedCostTotal ?? 0;
   }
 
   resetCalculation(): void {
     this.calculateResponse = undefined;
+
     this.subtotal = 0;
+
     this.dutyTotal = 0;
+
     this.vatTotal = 0;
+
     this.landedCostTotal = 0;
+  }
+
+  private isCartStockValid(): boolean {
+    for (const item of this.cartItems) {
+      const stockQty = this.getProductStock(item.productId);
+
+      if (item.quantity > stockQty) {
+        this.dialogService.warning(
+          `${item.productName} 庫存不足，目前庫存 ${stockQty}`,
+        );
+
+        return false;
+      }
+    }
+
+    return true;
   }
 
   createPurchaseOrder(): void {
     if (this.cartItems.length === 0) {
       this.dialogService.warning('請先加入商品');
 
+      return;
+    }
+
+    if (!this.isCartStockValid()) {
       return;
     }
 
@@ -253,10 +331,12 @@ export class ProductsComponent implements OnInit {
 
         this.clearCart();
 
+        this.loadProducts();
+
         this.router.navigate(['/purchase-history']);
       },
 
-      error: (error) => {
+      error: (error: unknown) => {
         console.error(error);
 
         this.dialogService.error('建立進貨單失敗');

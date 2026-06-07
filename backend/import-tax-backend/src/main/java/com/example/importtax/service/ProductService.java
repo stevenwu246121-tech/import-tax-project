@@ -44,28 +44,30 @@ public class ProductService {
 
 		for (Product product : products) {
 
-			ProductRes response = new ProductRes();
+			ProductRes res = new ProductRes();
 
-			response.setId(product.getId());
+			res.setId(product.getId());
 
-			response.setProductName(product.getName());
+			res.setProductName(product.getName());
 
-			response.setCategoryName(product.getCategory().getName());
+			res.setCategoryName(product.getCategory().getName());
 
-			response.setHsCode(product.getHsCode().getCode());
+			res.setHsCode(product.getHsCode().getCode());
 
-			response.setUnitPrice(product.getUnitPrice());
+			res.setUnitPrice(product.getUnitPrice());
+
+			res.setStockQty(product.getStockQty());
 
 			ImportTaxRule taxRule = importTaxRuleDao.findByHsCode(product.getHsCode()).orElse(null);
 
 			if (taxRule != null) {
 
-				response.setDutyRate(taxRule.getDutyRate());
+				res.setDutyRate(taxRule.getDutyRate());
 
-				response.setVatRate(taxRule.getVatRate());
+				res.setVatRate(taxRule.getVatRate());
 			}
 
-			responseList.add(response);
+			responseList.add(res);
 		}
 
 		return responseList;
@@ -92,6 +94,8 @@ public class ProductService {
 		product.setUnit(req.getUnit());
 
 		product.setUnitPrice(req.getUnitPrice());
+
+		product.setStockQty(req.getStockQty() == null ? 0 : req.getStockQty());
 
 		product.setEnabled(true);
 
@@ -122,6 +126,8 @@ public class ProductService {
 		product.setUnit(req.getUnit());
 
 		product.setUnitPrice(req.getUnitPrice());
+
+		product.setStockQty(req.getStockQty() == null ? 0 : req.getStockQty());
 
 		productDao.save(product);
 	}

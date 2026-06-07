@@ -32,7 +32,9 @@
     [(ngModel)]="productReq.categoryId"
     (change)="onCategoryChange()"
   >
-    <option [ngValue]="0" disabled>請選擇分類</option>
+    <option [ngValue]="0" disabled>
+      請選擇分類
+    </option>
 
     <option
       *ngFor="let category of categories"
@@ -43,7 +45,9 @@
   </select>
 
   <select [(ngModel)]="productReq.hsCodeId">
-    <option [ngValue]="0" disabled>請選擇 HS Code</option>
+    <option [ngValue]="0" disabled>
+      請選擇 HS Code
+    </option>
 
     <option
       *ngFor="let hsCode of filteredHsCodes"
@@ -54,9 +58,17 @@
   </select>
 
   <select [(ngModel)]="productReq.originCountry">
-    <option value="" disabled>請選擇來源國</option>
-    <option value="JP">JP</option>
-    <option value="TW">TW</option>
+    <option value="" disabled>
+      請選擇來源國
+    </option>
+
+    <option value="JP">
+      JP
+    </option>
+
+    <option value="TW">
+      TW
+    </option>
   </select>
 
   <input
@@ -73,66 +85,105 @@
     [(ngModel)]="productReq.unitPrice"
   />
 
+  <input
+    type="number"
+    min="0"
+    placeholder="庫存數量"
+    [(ngModel)]="productReq.stockQty"
+  />
+
   <button (click)="submitProduct()">
     {{ editingProductId ? '更新商品' : '新增商品' }}
   </button>
 </div>
 
 <div class="table-scroll">
-<table>
-  <thead>
-    <tr>
-      <th>商品</th>
-      <th>分類</th>
-      <th>HS Code</th>
-      <th>價格</th>
-      <th>操作</th>
-    </tr>
-  </thead>
 
-  <tbody>
-    <tr *ngFor="let product of filteredProducts()">
-      <td>
-        <span
-          class="product-name"
-          [title]="product.productName"
-        >
-          {{ product.productName }}
-        </span>
-      </td>
+  <table>
 
-      <td>{{ product.categoryName }}</td>
-      <td>{{ product.hsCode }}</td>
-      <td>{{ product.unitPrice }}</td>
+    <thead>
+      <tr>
+        <th>商品</th>
+        <th>分類</th>
+        <th>HS Code</th>
+        <th>價格</th>
+        <th>庫存</th>
+        <th>操作</th>
+      </tr>
+    </thead>
 
-      <td class="action-cell">
-        <button
-          class="edit-menu-btn"
-          (click)="toggleActionMenu(product.id)"
-        >
-          編輯
-        </button>
+    <tbody>
 
-        <div
-          class="action-menu"
-          *ngIf="openedActionId === product.id"
-        >
-          <button
-            class="action-update"
-            (click)="editProduct(product); openedActionId = null"
+      <tr *ngFor="let product of filteredProducts()">
+
+        <td>
+          <span
+            class="product-name"
+            [title]="product.productName"
           >
-            修改
+            {{ product.productName }}
+          </span>
+        </td>
+
+        <td>
+          {{ product.categoryName }}
+        </td>
+
+        <td>
+          {{ product.hsCode }}
+        </td>
+
+        <td>
+          NT$ {{ product.unitPrice | number }}
+        </td>
+
+        <td>
+          <span
+            class="stock-badge"
+            [class.low-stock]="(product.stockQty) <= 10"
+          >
+            {{ product.stockQty }}
+          </span>
+        </td>
+
+        <td class="action-cell">
+          <button
+            class="edit-menu-btn"
+            (click)="toggleActionMenu(product.id)"
+          >
+            編輯
           </button>
 
-          <button
-            class="action-delete"
-            (click)="deleteProduct(product.id); openedActionId = null"
+          <div
+            class="action-menu"
+            *ngIf="openedActionId === product.id"
           >
-            刪除
-          </button>
-        </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+            <button
+              class="action-update"
+              (click)="editProduct(product); openedActionId = null"
+            >
+              修改
+            </button>
+
+            <button
+              class="action-delete"
+              (click)="deleteProduct(product.id); openedActionId = null"
+            >
+              刪除
+            </button>
+          </div>
+        </td>
+
+      </tr>
+
+      <tr *ngIf="filteredProducts().length === 0">
+        <td colspan="6" class="empty-row">
+          查無商品資料
+        </td>
+      </tr>
+
+    </tbody>
+
+  </table>
+
 </div>

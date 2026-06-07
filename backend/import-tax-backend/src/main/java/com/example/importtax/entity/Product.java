@@ -8,89 +8,100 @@ import jakarta.persistence.*;
 @Table(name = "product")
 public class Product {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String name;
+	private String name;
 
-    @Column(name = "origin_country")
-    private String originCountry;
+	@Column(name = "origin_country")
+	private String originCountry;
 
-    private String unit;
+	private String unit;
 
-    @Column(name = "unit_price")
-    private BigDecimal unitPrice;
+	@Column(name = "unit_price")
+	private BigDecimal unitPrice;
 
-    private Boolean enabled;
+	@Column(name = "stock_qty")
+	private Integer stockQty;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+	private Boolean enabled;
 
-    @ManyToOne
-    @JoinColumn(name = "hs_code_id")
-    private HsCode hsCode;
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private Category category;
 
-    // Getter Setter
+	@ManyToOne
+	@JoinColumn(name = "hs_code_id")
+	private HsCode hsCode;
 
-    public Long getId() {
-        return id;
-    }
+	// Getter Setter
 
-    public String getName() {
-        return name;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getOriginCountry() {
-        return originCountry;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setOriginCountry(String originCountry) {
-        this.originCountry = originCountry;
-    }
+	public String getOriginCountry() {
+		return originCountry;
+	}
 
-    public String getUnit() {
-        return unit;
-    }
+	public void setOriginCountry(String originCountry) {
+		this.originCountry = originCountry;
+	}
 
-    public void setUnit(String unit) {
-        this.unit = unit;
-    }
+	public String getUnit() {
+		return unit;
+	}
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
+	public BigDecimal getUnitPrice() {
+		return unitPrice;
+	}
 
-    public Boolean getEnabled() {
-        return enabled;
-    }
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
+	}
 
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
+	public Integer getStockQty() {
+		return stockQty;
+	}
 
-    public Category getCategory() {
-        return category;
-    }
+	public void setStockQty(Integer stockQty) {
+		this.stockQty = stockQty;
+	}
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+	public Boolean getEnabled() {
+		return enabled;
+	}
 
-    public HsCode getHsCode() {
-        return hsCode;
-    }
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
 
-    public void setHsCode(HsCode hsCode) {
-        this.hsCode = hsCode;
-    }
+	public Category getCategory() {
+		return category;
+	}
+
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+
+	public HsCode getHsCode() {
+		return hsCode;
+	}
+
+	public void setHsCode(HsCode hsCode) {
+		this.hsCode = hsCode;
+	}
 }

@@ -17,6 +17,8 @@ public class ProductRes {
 
     private BigDecimal unitPrice;
 
+    private Integer stockQty;
+    
     // Getter Setter
 
     public Long getId() {
@@ -74,4 +76,13 @@ public class ProductRes {
     public void setUnitPrice(BigDecimal unitPrice) {
         this.unitPrice = unitPrice;
     }
+
+	public Integer getStockQty() {
+		return stockQty;
+	}
+
+	public void setStockQty(Integer stockQty) {
+		this.stockQty = stockQty;
+	}
+    
 }

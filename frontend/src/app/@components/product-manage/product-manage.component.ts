@@ -1,21 +1,33 @@
 import { Component, OnInit } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 import { ApiService } from '../../@services/api.service';
+
 import { DialogService } from '../../@services/dialog.service';
 
 import { Product } from '../../models/product';
+
 import { Category } from '../../models/category';
+
 import { HsCode } from '../../models/hs-code';
 
 interface ProductReq {
   name: string;
+
   categoryId: number;
+
   hsCodeId: number;
+
   originCountry: string;
+
   unit: string;
+
   unitPrice: number | null;
+
+  stockQty: number;
 }
 
 @Component({
@@ -27,11 +39,15 @@ interface ProductReq {
 })
 export class ProductManageComponent implements OnInit {
   products: Product[] = [];
+
   categories: Category[] = [];
+
   hsCodes: HsCode[] = [];
+
   filteredHsCodes: HsCode[] = [];
 
   keyword = '';
+
   selectedCategory = '';
 
   productReq: ProductReq = {
@@ -41,6 +57,7 @@ export class ProductManageComponent implements OnInit {
     originCountry: '',
     unit: '',
     unitPrice: null,
+    stockQty: 0,
   };
 
   productRules = {
@@ -59,16 +76,19 @@ export class ProductManageComponent implements OnInit {
   };
 
   editingProductId: number | null = null;
+
   openedActionId: number | null = null;
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService,
+    private dialogService: DialogService
   ) {}
 
   ngOnInit(): void {
     this.loadProducts();
+
     this.loadCategories();
+
     this.loadHsCodes();
   }
 
@@ -79,6 +99,7 @@ export class ProductManageComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
+
         this.dialogService.error('商品資料載入失敗');
       },
     });
@@ -91,6 +112,7 @@ export class ProductManageComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
+
         this.dialogService.error('分類資料載入失敗');
       },
     });
@@ -100,51 +122,62 @@ export class ProductManageComponent implements OnInit {
     this.apiService.getHsCodes().subscribe({
       next: (response: HsCode[]) => {
         this.hsCodes = response;
+
         this.filteredHsCodes = response;
       },
       error: (error: unknown) => {
         console.error(error);
+
         this.dialogService.error('HS Code 資料載入失敗');
       },
     });
   }
 
   toggleActionMenu(id: number): void {
-    this.openedActionId = this.openedActionId === id ? null : id;
+    this.openedActionId =
+      this.openedActionId === id ? null : id;
   }
 
   onCategoryChange(): void {
     const selectedCategory = this.categories.find(
-      (category) => category.id === this.productReq.categoryId,
+      (category) => category.id === this.productReq.categoryId
     );
 
     if (!selectedCategory) {
       this.filteredHsCodes = this.hsCodes;
+
       this.productReq.hsCodeId = 0;
+
       return;
     }
 
     this.filteredHsCodes = this.hsCodes.filter(
-      (hsCode) => hsCode.categoryName === selectedCategory.name,
+      (hsCode) => hsCode.categoryName === selectedCategory.name
     );
 
     this.productReq.hsCodeId =
-      this.filteredHsCodes.length > 0 ? this.filteredHsCodes[0].id : 0;
+      this.filteredHsCodes.length > 0
+        ? this.filteredHsCodes[0].id
+        : 0;
   }
 
   onProductNameChange(): void {
     const rule =
-      this.productRules[this.productReq.name as keyof typeof this.productRules];
+      this.productRules[
+        this.productReq.name as keyof typeof this.productRules
+      ];
 
     if (!rule) {
       return;
     }
 
     const category = this.categories.find(
-      (item) => item.name === rule.category,
+      (item) => item.name === rule.category
     );
 
-    const hsCode = this.hsCodes.find((item) => item.code === rule.hsCode);
+    const hsCode = this.hsCodes.find(
+      (item) => item.code === rule.hsCode
+    );
 
     if (category) {
       this.productReq.categoryId = category.id;
@@ -159,31 +192,35 @@ export class ProductManageComponent implements OnInit {
 
   isValidProductRule(): boolean {
     const rule =
-      this.productRules[this.productReq.name as keyof typeof this.productRules];
+      this.productRules[
+        this.productReq.name as keyof typeof this.productRules
+      ];
 
     if (!rule) {
       return true;
     }
 
     const selectedCategory = this.categories.find(
-      (category) => category.id === this.productReq.categoryId,
+      (category) => category.id === this.productReq.categoryId
     );
 
     const selectedHsCode = this.hsCodes.find(
-      (hsCode) => hsCode.id === this.productReq.hsCodeId,
+      (hsCode) => hsCode.id === this.productReq.hsCodeId
     );
 
     if (selectedCategory?.name !== rule.category) {
       this.dialogService.warning(
-        `${this.productReq.name} 的分類只能是「${rule.category}」`,
+        `${this.productReq.name} 的分類只能是「${rule.category}」`
       );
+
       return false;
     }
 
     if (selectedHsCode?.code !== rule.hsCode) {
       this.dialogService.warning(
-        `${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`,
+        `${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`
       );
+
       return false;
     }
 
@@ -193,42 +230,55 @@ export class ProductManageComponent implements OnInit {
   submitProduct(): void {
     if (!this.productReq.name.trim()) {
       this.dialogService.warning('請輸入商品名稱');
+
       return;
     }
 
     if (!this.productReq.categoryId) {
       this.dialogService.warning('請選擇分類');
+
       return;
     }
 
     if (!this.productReq.hsCodeId) {
       this.dialogService.warning('請選擇 HS Code');
+
       return;
     }
 
     if (!this.productReq.originCountry) {
       this.dialogService.warning('請選擇來源國');
+
       return;
     }
 
     if (!this.productReq.unit.trim()) {
       this.dialogService.warning('請輸入單位');
+
       return;
     }
 
     if (!this.productReq.unitPrice || this.productReq.unitPrice <= 0) {
       this.dialogService.warning('價格必須大於 0');
+
+      return;
+    }
+
+    if (this.productReq.stockQty < 0) {
+      this.dialogService.warning('庫存數量不可小於 0');
+
       return;
     }
 
     const duplicateProduct = this.products.some(
       (product) =>
         product.productName.trim() === this.productReq.name.trim() &&
-        product.id !== this.editingProductId,
+        product.id !== this.editingProductId
     );
 
     if (duplicateProduct) {
       this.dialogService.warning('商品名稱已存在，請勿重複新增');
+
       return;
     }
 
@@ -237,6 +287,7 @@ export class ProductManageComponent implements OnInit {
       this.productReq.originCountry !== 'JP'
     ) {
       this.dialogService.warning('商品名稱包含「日本」，來源國只能選 JP');
+
       return;
     }
 
@@ -245,6 +296,7 @@ export class ProductManageComponent implements OnInit {
       this.productReq.originCountry !== 'TW'
     ) {
       this.dialogService.warning('商品名稱包含「台灣」，來源國只能選 TW');
+
       return;
     }
 
@@ -259,11 +311,13 @@ export class ProductManageComponent implements OnInit {
           next: () => {
             this.dialogService.success('更新成功').subscribe(() => {
               this.loadProducts();
+
               this.resetForm();
             });
           },
           error: (error: unknown) => {
             console.error(error);
+
             this.dialogService.error('更新失敗');
           },
         });
@@ -279,11 +333,13 @@ export class ProductManageComponent implements OnInit {
       next: () => {
         this.dialogService.success('新增成功').subscribe(() => {
           this.loadProducts();
+
           this.resetForm();
         });
       },
       error: (error: unknown) => {
         console.error(error);
+
         this.dialogService.error('新增失敗');
       },
     });
@@ -293,11 +349,11 @@ export class ProductManageComponent implements OnInit {
     this.editingProductId = product.id;
 
     const matchedCategory = this.categories.find(
-      (category) => category.name === product.categoryName,
+      (category) => category.name === product.categoryName
     );
 
     const matchedHsCode = this.hsCodes.find(
-      (hsCode) => hsCode.code === product.hsCode,
+      (hsCode) => hsCode.code === product.hsCode
     );
 
     this.productReq = {
@@ -305,8 +361,9 @@ export class ProductManageComponent implements OnInit {
       categoryId: matchedCategory?.id ?? 0,
       hsCodeId: matchedHsCode?.id ?? 0,
       originCountry: product.productName.includes('台灣') ? 'TW' : 'JP',
-      unit: '箱',
+      unit: product.unit ?? '箱',
       unitPrice: product.unitPrice,
+      stockQty: product.stockQty ?? 0,
     };
 
     this.onCategoryChange();
@@ -332,6 +389,7 @@ export class ProductManageComponent implements OnInit {
           },
           error: (error: unknown) => {
             console.error(error);
+
             this.dialogService.error('商品刪除失敗');
           },
         });
@@ -346,10 +404,13 @@ export class ProductManageComponent implements OnInit {
       originCountry: '',
       unit: '',
       unitPrice: null,
+      stockQty: 0,
     };
 
     this.filteredHsCodes = this.hsCodes;
+
     this.editingProductId = null;
+
     this.openedActionId = null;
   }
 

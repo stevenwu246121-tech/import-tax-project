@@ -6,59 +6,115 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.importtax.dao.ProductDao;
 import com.example.importtax.dao.PurchaseOrderDao;
+import com.example.importtax.entity.Product;
 import com.example.importtax.response.DashboardSummaryRes;
 import com.example.importtax.response.DashboardTrendRes;
+import com.example.importtax.response.LowStockRes;
 
 @Service
 public class DashboardService {
 
-	private final PurchaseOrderDao purchaseOrderDao;
+    private final PurchaseOrderDao purchaseOrderDao;
 
-	public DashboardService(PurchaseOrderDao purchaseOrderDao) {
-		this.purchaseOrderDao = purchaseOrderDao;
-	}
+    private final ProductDao productDao;
 
-	public DashboardSummaryRes getSummary() {
+    public DashboardService(
+            PurchaseOrderDao purchaseOrderDao,
+            ProductDao productDao
+    ) {
+        this.purchaseOrderDao = purchaseOrderDao;
+        this.productDao = productDao;
+    }
 
-		BigDecimal totalImport = purchaseOrderDao.getTotalImportAmount();
+    public DashboardSummaryRes getSummary() {
 
-		BigDecimal totalDuty = purchaseOrderDao.getTotalDuty();
+        BigDecimal totalImport =
+                purchaseOrderDao.getTotalImportAmount();
 
-		BigDecimal totalVat = purchaseOrderDao.getTotalVat();
+        BigDecimal totalDuty =
+                purchaseOrderDao.getTotalDuty();
 
-		DashboardSummaryRes response = new DashboardSummaryRes();
+        BigDecimal totalVat =
+                purchaseOrderDao.getTotalVat();
 
-		response.setTotalImportAmount(totalImport);
+        DashboardSummaryRes response =
+                new DashboardSummaryRes();
 
-		response.setTotalDuty(totalDuty);
+        response.setTotalImportAmount(totalImport);
 
-		response.setTotalVat(totalVat);
+        response.setTotalDuty(totalDuty);
 
-		response.setLandedCostTotal(totalImport.add(totalDuty).add(totalVat));
+        response.setTotalVat(totalVat);
 
-		double avgTaxRate = totalImport.compareTo(BigDecimal.ZERO) == 0 ? 0
-				: totalDuty.add(totalVat).divide(totalImport, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
-						.doubleValue();
+        response.setLandedCostTotal(
+                totalImport
+                        .add(totalDuty)
+                        .add(totalVat)
+        );
 
-		response.setAverageTaxRate(avgTaxRate);
+        double avgTaxRate =
+                totalImport.compareTo(BigDecimal.ZERO) == 0
+                        ? 0
+                        : totalDuty
+                                .add(totalVat)
+                                .divide(
+                                        totalImport,
+                                        4,
+                                        RoundingMode.HALF_UP
+                                )
+                                .multiply(
+                                        BigDecimal.valueOf(100)
+                                )
+                                .doubleValue();
 
-		return response;
-	}
+        response.setAverageTaxRate(avgTaxRate);
 
-	public List<DashboardTrendRes> getTrend(int days) {
+        return response;
+    }
 
-		List<Object[]> results = purchaseOrderDao.getTrendData(days);
+    public List<DashboardTrendRes> getTrend(int days) {
 
-		return results.stream().map(row -> {
+        List<Object[]> results =
+                purchaseOrderDao.getTrendData(days);
 
-			DashboardTrendRes res = new DashboardTrendRes();
+        return results.stream()
+                .map(row -> {
+                    DashboardTrendRes res =
+                            new DashboardTrendRes();
 
-			res.setDate(row[0].toString());
+                    res.setDate(row[0].toString());
 
-			res.setAmount((BigDecimal) row[1]);
+                    res.setAmount((BigDecimal) row[1]);
 
-			return res;
-		}).toList();
-	}
+                    return res;
+                })
+                .toList();
+    }
+
+    public List<LowStockRes> getLowStockProducts() {
+
+        List<Product> products =
+                productDao.findByStockQtyLessThanEqual(10);
+
+        return products.stream()
+                .map(product -> {
+                    LowStockRes res =
+                            new LowStockRes();
+
+                    res.setProductId(product.getId());
+
+                    res.setProductName(product.getName());
+
+                    res.setStockQty(
+                            product.getStockQty() == null
+                                    ? 0
+                                    : product.getStockQty()
+                    );
+
+                    return res;
+                })
+                .toList();
+    }
 }

@@ -1,0 +1,1 @@
+SELECT * FROM import_tax_db.hs_code;

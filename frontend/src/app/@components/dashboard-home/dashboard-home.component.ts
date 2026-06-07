@@ -14,6 +14,7 @@ import { HsCode } from '../../models/hs-code';
 
 import { DialogService } from '../../@services/dialog.service';
 import { DashboardTrend } from '../../models/dashboard-trend';
+import { LowStock } from '../../models/low-stock';
 
 Chart.register(...registerables);
 
@@ -61,6 +62,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   trendData: DashboardTrend[] = [];
 
+  lowStockProducts: LowStock[] = [];
+
   private trendChart?: Chart;
 
   private taxChart?: Chart;
@@ -82,6 +85,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     this.loadExchangeRate();
 
     this.loadHsCodes();
+
+    this.loadLowStockProducts();
   }
 
   ngAfterViewInit(): void {}
@@ -408,6 +413,18 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
         console.error(error);
 
         this.dialogService.error('進貨趨勢資料載入失敗');
+      },
+    });
+  }
+
+  loadLowStockProducts(): void {
+    this.apiService.getLowStockProducts().subscribe({
+      next: (response) => {
+        this.lowStockProducts = response;
+      },
+
+      error: (error) => {
+        console.error(error);
       },
     });
   }
