@@ -9,6 +9,7 @@ import com.example.importtax.entity.Category;
 import com.example.importtax.dao.HsCodeDao;
 import com.example.importtax.entity.HsCode;
 import com.example.importtax.request.HsCodeReq;
+import com.example.importtax.response.HsCodeRes;
 
 @Service
 public class HsCodeService {
@@ -17,77 +18,111 @@ public class HsCodeService {
 
 	private final CategoryDao categoryDao;
 
-	public HsCodeService(
-	        HsCodeDao hsCodeDao,
-	        CategoryDao categoryDao
-	) {
-	    this.hsCodeDao = hsCodeDao;
-	    this.categoryDao = categoryDao;
+	public HsCodeService(HsCodeDao hsCodeDao, CategoryDao categoryDao) {
+		this.hsCodeDao = hsCodeDao;
+		this.categoryDao = categoryDao;
 	}
 
-    public List<HsCode> getAll() {
-        return hsCodeDao.findAll();
-    }
+	public List<HsCode> getAll() {
+		return hsCodeDao.findAll();
+	}
 
-    public void create(HsCodeReq req) {
-    	
-    	if (req.getDutyRate() == null || req.getDutyRate().compareTo(BigDecimal.ZERO) < 0) {
-    	    throw new RuntimeException("Duty rate cannot be negative");
-    	}
+	public void create(HsCodeReq req) {
 
-    	if (req.getVatRate() == null || req.getVatRate().compareTo(BigDecimal.ZERO) < 0) {
-    	    throw new RuntimeException("VAT rate cannot be negative");
-    	}
+		if (req.getDutyRate() == null || req.getDutyRate().compareTo(BigDecimal.ZERO) < 0) {
+			throw new RuntimeException("Duty rate cannot be negative");
+		}
 
-        Category category = categoryDao.findById(req.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+		if (req.getVatRate() == null || req.getVatRate().compareTo(BigDecimal.ZERO) < 0) {
+			throw new RuntimeException("VAT rate cannot be negative");
+		}
 
-        HsCode hsCode = new HsCode();
+		Category category = categoryDao.findById(req.getCategoryId())
+				.orElseThrow(() -> new RuntimeException("Category not found"));
 
-        hsCode.setCode(req.getCode());
+		HsCode hsCode = new HsCode();
 
-        hsCode.setName(req.getName());
+		hsCode.setCode(req.getCode());
 
-        hsCode.setCategoryName(category.getName());
+		hsCode.setName(req.getName());
 
-        hsCode.setDutyRate(req.getDutyRate());
+		hsCode.setCategoryName(category.getName());
 
-        hsCode.setVatRate(req.getVatRate());
+		hsCode.setDutyRate(req.getDutyRate());
 
-        hsCode.setDescription(req.getDescription());
+		hsCode.setVatRate(req.getVatRate());
 
-        hsCodeDao.save(hsCode);
-    }
+		hsCode.setDescription(req.getDescription());
 
-    public void update(Long id, HsCodeReq req) {
-    	
-    	if (req.getDutyRate() == null || req.getDutyRate().compareTo(BigDecimal.ZERO) < 0) {
-    	    throw new RuntimeException("Duty rate cannot be negative");
-    	}
+		hsCodeDao.save(hsCode);
+	}
 
-    	if (req.getVatRate() == null || req.getVatRate().compareTo(BigDecimal.ZERO) < 0) {
-    	    throw new RuntimeException("VAT rate cannot be negative");
-    	}
+	public void update(Long id, HsCodeReq req) {
 
-        HsCode hsCode = hsCodeDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("HsCode not found"));
+		if (req.getDutyRate() == null || req.getDutyRate().compareTo(BigDecimal.ZERO) < 0) {
+			throw new RuntimeException("Duty rate cannot be negative");
+		}
 
-        Category category = categoryDao.findById(req.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found"));
+		if (req.getVatRate() == null || req.getVatRate().compareTo(BigDecimal.ZERO) < 0) {
+			throw new RuntimeException("VAT rate cannot be negative");
+		}
 
-        hsCode.setCode(req.getCode());
-        hsCode.setName(req.getName());
-        hsCode.setCategoryName(category.getName());
-        hsCode.setDutyRate(req.getDutyRate());
-        hsCode.setVatRate(req.getVatRate());
-        hsCode.setDescription(req.getDescription());
+		HsCode hsCode = hsCodeDao.findById(id).orElseThrow(() -> new RuntimeException("HsCode not found"));
 
-        hsCodeDao.save(hsCode);
-    }
+		Category category = categoryDao.findById(req.getCategoryId())
+				.orElseThrow(() -> new RuntimeException("Category not found"));
 
-    public void delete(Long id) {
-        hsCodeDao.deleteById(id);
-    }
-    
-    
+		hsCode.setCode(req.getCode());
+		hsCode.setName(req.getName());
+		hsCode.setCategoryName(category.getName());
+		hsCode.setDutyRate(req.getDutyRate());
+		hsCode.setVatRate(req.getVatRate());
+		hsCode.setDescription(req.getDescription());
+
+		hsCodeDao.save(hsCode);
+	}
+
+	public void delete(Long id) {
+		hsCodeDao.deleteById(id);
+	}
+
+	public List<HsCodeRes> searchHsCodes(String keyword) {
+
+		return hsCodeDao.findByCodeContainingOrNameContainingOrCategoryNameContaining(keyword, keyword, keyword)
+				.stream().map(this::toRes).toList();
+	}
+
+	public HsCodeRes recommendHsCode(String keyword) {
+
+		String normalizedKeyword = keyword == null ? "" : keyword.trim();
+
+		if (normalizedKeyword.isEmpty()) {
+			return null;
+		}
+
+		List<HsCode> allHsCodes = hsCodeDao.findAll();
+
+		return allHsCodes.stream()
+				.filter(hsCode -> normalizedKeyword.contains(hsCode.getName())
+						|| hsCode.getName().contains(normalizedKeyword)
+						|| normalizedKeyword.contains(hsCode.getCategoryName())
+						|| normalizedKeyword.contains(hsCode.getDescription()))
+				.findFirst().map(this::toRes).orElse(null);
+	}
+
+	private HsCodeRes toRes(HsCode hsCode) {
+
+		HsCodeRes res = new HsCodeRes();
+
+		res.setId(hsCode.getId());
+		res.setCode(hsCode.getCode());
+		res.setName(hsCode.getName());
+		res.setCategoryName(hsCode.getCategoryName());
+		res.setDutyRate(hsCode.getDutyRate());
+		res.setVatRate(hsCode.getVatRate());
+		res.setDescription(hsCode.getDescription());
+
+		return res;
+	}
+
 }

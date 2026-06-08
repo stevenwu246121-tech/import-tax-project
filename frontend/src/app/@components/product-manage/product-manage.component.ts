@@ -50,6 +50,10 @@ export class ProductManageComponent implements OnInit {
 
   selectedCategory = '';
 
+  recommendMessage = '';
+
+  isAutoRecommendEnabled = true;
+
   productReq: ProductReq = {
     name: '',
     categoryId: 0,
@@ -61,17 +65,61 @@ export class ProductManageComponent implements OnInit {
   };
 
   productRules = {
-    日本咖啡豆: {
+    咖啡: {
       category: '乾貨',
       hsCode: '0901.11.0000',
     },
-    日本白米: {
+    咖啡豆: {
+      category: '乾貨',
+      hsCode: '0901.11.0000',
+    },
+    白米: {
       category: '乾貨',
       hsCode: '1006.30.0000',
     },
-    日本和牛: {
+    米: {
+      category: '乾貨',
+      hsCode: '1006.30.0000',
+    },
+    拉麵: {
+      category: '乾貨',
+      hsCode: '1902.30.0000',
+    },
+    即食麵: {
+      category: '乾貨',
+      hsCode: '1902.30.0000',
+    },
+    抹茶: {
+      category: '乾貨',
+      hsCode: '0902.10.0000',
+    },
+    抹茶粉: {
+      category: '乾貨',
+      hsCode: '0902.10.0000',
+    },
+    和牛: {
       category: '肉品',
       hsCode: '0201.30.0000',
+    },
+    牛肉: {
+      category: '肉品',
+      hsCode: '0201.30.0000',
+    },
+    鮭魚: {
+      category: '海鮮',
+      hsCode: '0302.14.0000',
+    },
+    冷凍蝦: {
+      category: '冷凍',
+      hsCode: '0306.17.0000',
+    },
+    蝦: {
+      category: '冷凍',
+      hsCode: '0306.17.0000',
+    },
+    番茄: {
+      category: '生鮮',
+      hsCode: '0702.00.0000',
     },
   };
 
@@ -81,7 +129,7 @@ export class ProductManageComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private dialogService: DialogService
+    private dialogService: DialogService,
   ) {}
 
   ngOnInit(): void {
@@ -134,13 +182,12 @@ export class ProductManageComponent implements OnInit {
   }
 
   toggleActionMenu(id: number): void {
-    this.openedActionId =
-      this.openedActionId === id ? null : id;
+    this.openedActionId = this.openedActionId === id ? null : id;
   }
 
   onCategoryChange(): void {
     const selectedCategory = this.categories.find(
-      (category) => category.id === this.productReq.categoryId
+      (category) => category.id === this.productReq.categoryId,
     );
 
     if (!selectedCategory) {
@@ -152,65 +199,73 @@ export class ProductManageComponent implements OnInit {
     }
 
     this.filteredHsCodes = this.hsCodes.filter(
-      (hsCode) => hsCode.categoryName === selectedCategory.name
+      (hsCode) => hsCode.categoryName === selectedCategory.name,
     );
 
     this.productReq.hsCodeId =
-      this.filteredHsCodes.length > 0
-        ? this.filteredHsCodes[0].id
-        : 0;
+      this.filteredHsCodes.length > 0 ? this.filteredHsCodes[0].id : 0;
   }
 
   onProductNameChange(): void {
-    const rule =
-      this.productRules[
-        this.productReq.name as keyof typeof this.productRules
-      ];
-
-    if (!rule) {
+    if (!this.isAutoRecommendEnabled) {
       return;
     }
 
-    const category = this.categories.find(
-      (item) => item.name === rule.category
-    );
+    const productName = this.productReq.name.trim();
 
-    const hsCode = this.hsCodes.find(
-      (item) => item.code === rule.hsCode
-    );
-
-    if (category) {
-      this.productReq.categoryId = category.id;
+    if (!productName) {
+      this.recommendMessage = '';
+      return;
     }
 
-    this.onCategoryChange();
+    this.apiService.recommendHsCode(productName).subscribe({
+      next: (hsCode) => {
+        if (!hsCode) {
+          this.recommendMessage = '';
+          return;
+        }
 
-    if (hsCode) {
-      this.productReq.hsCodeId = hsCode.id;
-    }
+        const category = this.categories.find(
+          (item) => item.name === hsCode.categoryName,
+        );
+
+        if (category) {
+          this.productReq.categoryId = category.id;
+        }
+
+        this.onCategoryChange();
+
+        this.productReq.hsCodeId = hsCode.id;
+
+        this.recommendMessage = `系統推薦：${hsCode.categoryName} / ${hsCode.code} / 進口稅 ${hsCode.dutyRate}% / 營業稅 ${hsCode.vatRate}%`;
+      },
+
+      error: (error) => {
+        console.error(error);
+        this.recommendMessage = '';
+      },
+    });
   }
 
   isValidProductRule(): boolean {
     const rule =
-      this.productRules[
-        this.productReq.name as keyof typeof this.productRules
-      ];
+      this.productRules[this.productReq.name as keyof typeof this.productRules];
 
     if (!rule) {
       return true;
     }
 
     const selectedCategory = this.categories.find(
-      (category) => category.id === this.productReq.categoryId
+      (category) => category.id === this.productReq.categoryId,
     );
 
     const selectedHsCode = this.hsCodes.find(
-      (hsCode) => hsCode.id === this.productReq.hsCodeId
+      (hsCode) => hsCode.id === this.productReq.hsCodeId,
     );
 
     if (selectedCategory?.name !== rule.category) {
       this.dialogService.warning(
-        `${this.productReq.name} 的分類只能是「${rule.category}」`
+        `${this.productReq.name} 的分類只能是「${rule.category}」`,
       );
 
       return false;
@@ -218,7 +273,7 @@ export class ProductManageComponent implements OnInit {
 
     if (selectedHsCode?.code !== rule.hsCode) {
       this.dialogService.warning(
-        `${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`
+        `${this.productReq.name} 的 HS Code 只能是「${rule.hsCode}」`,
       );
 
       return false;
@@ -273,7 +328,7 @@ export class ProductManageComponent implements OnInit {
     const duplicateProduct = this.products.some(
       (product) =>
         product.productName.trim() === this.productReq.name.trim() &&
-        product.id !== this.editingProductId
+        product.id !== this.editingProductId,
     );
 
     if (duplicateProduct) {
@@ -348,12 +403,16 @@ export class ProductManageComponent implements OnInit {
   editProduct(product: Product): void {
     this.editingProductId = product.id;
 
+    this.isAutoRecommendEnabled = false;
+
+    this.recommendMessage = '';
+
     const matchedCategory = this.categories.find(
-      (category) => category.name === product.categoryName
+      (category) => category.name === product.categoryName,
     );
 
     const matchedHsCode = this.hsCodes.find(
-      (hsCode) => hsCode.code === product.hsCode
+      (hsCode) => hsCode.code === product.hsCode,
     );
 
     this.productReq = {
@@ -412,6 +471,10 @@ export class ProductManageComponent implements OnInit {
     this.editingProductId = null;
 
     this.openedActionId = null;
+
+    this.recommendMessage = '';
+
+    this.isAutoRecommendEnabled = true;
   }
 
   filteredProducts(): Product[] {
@@ -426,5 +489,19 @@ export class ProductManageComponent implements OnInit {
 
       return matchKeyword && matchCategory;
     });
+  }
+
+  onManualCategoryChange(): void {
+    this.isAutoRecommendEnabled = false;
+
+    this.recommendMessage = '';
+
+    this.onCategoryChange();
+  }
+
+  onManualHsCodeChange(): void {
+    this.isAutoRecommendEnabled = false;
+
+    this.recommendMessage = '';
   }
 }

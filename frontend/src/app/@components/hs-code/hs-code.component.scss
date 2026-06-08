@@ -1,58 +1,17 @@
-.layout {
-  display: flex;
-  min-height: 100vh;
-  background: #f4f7fb;
-  color: #0f172a;
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
 }
 
-.sidebar {
-  width: 260px;
-  background: #07122c;
-  color: white;
-  padding: 36px 28px;
-  flex-shrink: 0;
-}
-
-.sidebar h2 {
-  font-size: 32px;
-  font-weight: 800;
-  margin-bottom: 48px;
-}
-
-.sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.sidebar nav a {
-  color: #e5e7eb;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 16px 20px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-  background: #2563eb;
-  color: white;
-}
-
-.main {
-  flex: 1;
-  padding: 48px;
-}
-
-.main h1 {
+/* 標題 */
+h1 {
   font-size: 42px;
   font-weight: 900;
-  margin-bottom: 32px;
+  margin: 0 0 32px;
 }
 
+/* 共用卡片 */
 .card,
 .panel,
 .chart-card,
@@ -65,6 +24,18 @@
   overflow: visible;
 }
 
+/* Panel */
+.panel {
+  overflow-x: auto;
+}
+
+.panel h2 {
+  font-size: 30px;
+  font-weight: 900;
+  margin: 0 0 24px;
+}
+
+/* 輸入與下拉 */
 input,
 select {
   height: 56px;
@@ -74,6 +45,7 @@ select {
   font-size: 16px;
   outline: none;
   background: white;
+  box-sizing: border-box;
 }
 
 input:focus,
@@ -82,6 +54,7 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
+/* 按鈕 */
 button {
   height: 46px;
   padding: 0 22px;
@@ -108,8 +81,67 @@ button.danger:hover,
   background: #b91c1c;
 }
 
+/* 搜尋區 */
+.search-bar,
+.filter-bar {
+  margin-bottom: 20px;
+}
+
+.search-bar input {
+  width: 360px;
+  max-width: 100%;
+}
+
+.filter-bar select {
+  width: 240px;
+  max-width: 100%;
+}
+
+.search-filter-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.search-filter-row input {
+  width: 320px;
+  max-width: 100%;
+}
+
+/* 表單 */
+.form-card {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.form-card input,
+.form-card select,
+.form-card button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 新增 / 收合按鈕 */
+.toggle-btn {
+  width: 220px;
+  height: 52px;
+  border-radius: 14px;
+  background: #2563eb;
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.toggle-btn:hover {
+  background: #1d4ed8;
+}
+
+/* 表格 */
 table {
   width: 100%;
+  min-width: 920px;
   border-collapse: collapse;
   background: white;
   border-radius: 22px;
@@ -118,6 +150,12 @@ table {
 
 thead {
   background: #eef2f7;
+}
+
+th,
+td {
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 th {
@@ -138,31 +176,52 @@ tbody tr:hover {
   background: #f8fafc;
 }
 
-.form-card {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+/* 說明欄允許換行 */
+td:nth-child(6),
+th:nth-child(6) {
+  min-width: 260px;
+  white-space: normal;
+  line-height: 1.6;
 }
 
-.search-bar,
-.filter-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  width: 360px;
-}
-
-.filter-bar select {
-  width: 240px;
-}
-
-/* 操作下拉選單 */
+/* 操作欄 */
 .action-cell {
-  position: relative;
-  width: 120px;
-  text-align: center;
-  overflow: visible;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+  min-width: 240px;
+}
+
+.calc-btn {
+  background: #16a34a;
+}
+
+.calc-btn:hover {
+  background: #15803d;
+}
+
+.edit-btn {
+  background: #2563eb;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.action-cell button {
+  min-width: 64px;
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 10px;
 }
 
 .edit-menu-btn {
@@ -197,6 +256,90 @@ tbody tr:hover {
   background: #2563eb;
 }
 
+/* 一鍵試算區 */
+.calc-panel {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 20px;
+  padding: 24px;
+  margin: 24px 0;
+}
+
+.calc-panel h2 {
+  margin: 0 0 14px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.calc-target {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.calc-target strong {
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.calc-target span {
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.calc-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.calc-form input {
+  width: 100%;
+}
+
+.calc-result {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.calc-result div {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.calc-result span {
+  display: block;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.calc-result strong {
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.calc-result .total {
+  border: 2px solid #2563eb;
+}
+
+.calc-result .total strong {
+  color: #2563eb;
+}
+
+.calc-btn {
+  background: #16a34a;
+  margin-right: 8px;
+}
+
+.calc-btn:hover {
+  background: #15803d;
+}
+
 /* 官方查詢資源 */
 .official-links {
   margin-top: 40px;
@@ -226,111 +369,6 @@ tbody tr:hover {
   text-decoration: underline;
 }
 
-.toggle-btn {
-  width: 220px;
-  height: 52px;
-  border: none;
-  border-radius: 14px;
-  background: #2563eb;
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 24px;
-}
-
-.toggle-btn:hover {
-  background: #1d4ed8;
-}
-
-.toggle-btn {
-  width: 220px;
-  height: 52px;
-
-  border: none;
-  border-radius: 14px;
-
-  background: #2563eb;
-  color: white;
-
-  font-size: 18px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  margin-bottom: 24px;
-}
-
-.toggle-btn:hover {
-  background: #1d4ed8;
-}
-
-/* HS Code RWD */
-:host {
-  display: block;
-  width: 100%;
-  min-width: 0;
-}
-
-.panel {
-  overflow: hidden;
-}
-
-.search-filter-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.search-filter-row input {
-  width: 320px;
-  max-width: 100%;
-}
-
-.form-card {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
-}
-
-.form-card input,
-.form-card select {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-table {
-  width: 100%;
-  min-width: 920px;
-  border-collapse: collapse;
-}
-
-.panel table {
-  display: table;
-}
-
-.panel {
-  overflow-x: auto;
-}
-
-th,
-td {
-  white-space: nowrap;
-  word-break: keep-all;
-}
-
-td:nth-child(6),
-th:nth-child(6) {
-  min-width: 260px;
-  white-space: normal;
-  line-height: 1.6;
-}
-
-.action-cell {
-  min-width: 120px;
-  position: relative;
-}
-
 /* 平板 */
 @media (max-width: 1024px) {
   h1 {
@@ -342,7 +380,7 @@ th:nth-child(6) {
   }
 
   .form-card {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -361,6 +399,10 @@ th:nth-child(6) {
     font-size: 28px;
   }
 
+  .search-filter-row {
+    flex-direction: column;
+  }
+
   .search-filter-row input {
     width: 100%;
   }
@@ -369,7 +411,9 @@ th:nth-child(6) {
     width: 100%;
   }
 
-  .form-card {
+  .form-card,
+  .calc-form,
+  .calc-result {
     grid-template-columns: 1fr;
   }
 

@@ -30,6 +30,20 @@ export class HsCodeComponent implements OnInit {
 
   editingHsCodeId: number | null = null;
 
+  selectedHsCodeForCalc: any = null;
+
+  calcPrice: number | null = null;
+
+  calcQuantity = 1;
+
+  calcSubtotal = 0;
+
+  calcDutyAmount = 0;
+
+  calcVatAmount = 0;
+
+  calcLandedCost = 0;
+
   hsCodeReq: {
     code: string;
     name: string;
@@ -249,5 +263,60 @@ export class HsCodeComponent implements OnInit {
     };
 
     this.editingHsCodeId = null;
+  }
+
+  //選擇 HS Code 方法
+  selectHsCodeForCalc(hsCode: any): void {
+    this.selectedHsCodeForCalc = hsCode;
+
+    this.calcPrice = null;
+
+    this.calcQuantity = 1;
+
+    this.resetCalcResult();
+  }
+
+  //試算方法
+  calculateHsCodeCost(): void {
+    if (!this.selectedHsCodeForCalc) {
+      return;
+    }
+
+    if (!this.calcPrice || this.calcPrice <= 0) {
+      return;
+    }
+
+    if (!this.calcQuantity || this.calcQuantity <= 0) {
+      this.calcQuantity = 1;
+    }
+
+    const price = this.calcPrice;
+
+    const quantity = this.calcQuantity;
+
+    const dutyRate = this.selectedHsCodeForCalc.dutyRate ?? 0;
+
+    const vatRate = this.selectedHsCodeForCalc.vatRate ?? 0;
+
+    this.calcSubtotal = price * quantity;
+
+    this.calcDutyAmount = (this.calcSubtotal * dutyRate) / 100;
+
+    this.calcVatAmount =
+      ((this.calcSubtotal + this.calcDutyAmount) * vatRate) / 100;
+
+    this.calcLandedCost =
+      this.calcSubtotal + this.calcDutyAmount + this.calcVatAmount;
+  }
+
+  //reset方法
+  resetCalcResult(): void {
+    this.calcSubtotal = 0;
+
+    this.calcDutyAmount = 0;
+
+    this.calcVatAmount = 0;
+
+    this.calcLandedCost = 0;
   }
 }
