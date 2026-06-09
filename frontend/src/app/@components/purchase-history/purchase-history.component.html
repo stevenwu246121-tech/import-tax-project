@@ -1,5 +1,23 @@
 <h1>進貨紀錄</h1>
 
+<div class="history-filter-row">
+  <input type="text" placeholder="搜尋訂單編號或供應商" [(ngModel)]="recordKeyword" />
+
+  <select [(ngModel)]="selectedOriginCountry">
+    <option value="">全部來源國</option>
+    <option value="JP">JP 日本</option>
+    <option value="TW">TW 台灣</option>
+  </select>
+
+  <input type="date" [(ngModel)]="startDate" (change)="onDateChange()" />
+
+  <input type="date" [(ngModel)]="endDate" (change)="onDateChange()" [min]="startDate" />
+</div>
+
+<div class="date-error-message" *ngIf="dateErrorMessage">
+  {{ dateErrorMessage }}
+</div>
+
 <div class="card">
 
   <table>
@@ -18,14 +36,10 @@
 
     <tbody>
 
-      <tr *ngFor="let order of orders">
+      <tr *ngFor="let order of filteredOrders()">
 
         <td data-label="訂單編號">
-          <button
-            type="button"
-            class="order-link"
-            (click)="openOrderDetail(order.id)"
-          >
+          <button type="button" class="order-link" (click)="openOrderDetail(order.id)">
             {{ order.orderNo }}
           </button>
         </td>
@@ -51,28 +65,20 @@
         </td>
 
         <td data-label="操作" class="action-cell">
-          <button
-            type="button"
-            class="detail-btn"
-            (click)="openOrderDetail(order.id)"
-          >
+          <button type="button" class="detail-btn" (click)="openOrderDetail(order.id)">
             明細
           </button>
 
-          <button
-            type="button"
-            class="delete-btn"
-            (click)="deleteOrder(order.id)"
-          >
+          <button type="button" class="delete-btn" (click)="deleteOrder(order.id)">
             刪除
           </button>
         </td>
 
       </tr>
 
-      <tr *ngIf="orders.length === 0">
-        <td colspan="7" class="empty-row">
-          尚無進貨紀錄
+      <tr *ngIf="filteredOrders().length === 0">
+        <td colspan="8" class="empty-row">
+          查無進貨紀錄
         </td>
       </tr>
 

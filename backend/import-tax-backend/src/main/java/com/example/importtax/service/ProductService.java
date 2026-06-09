@@ -57,6 +57,8 @@ public class ProductService {
 			res.setUnitPrice(product.getUnitPrice());
 
 			res.setStockQty(product.getStockQty());
+			
+			res.setUnit(product.getUnit());
 
 			ImportTaxRule taxRule = importTaxRuleDao.findByHsCode(product.getHsCode()).orElse(null);
 

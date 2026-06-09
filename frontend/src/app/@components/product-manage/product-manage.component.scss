@@ -199,34 +199,39 @@ tbody tr:hover {
   background: #f8fafc;
 }
 
-/* 欄位寬度：商品 / 分類 / HS Code / 價格 / 庫存 / 操作 */
+/* 欄位寬度：商品 / 分類 / HS Code / 價格 / 庫存 / 單位 / 操作 */
 th:nth-child(1),
 td:nth-child(1) {
-  width: 22%;
+  width: 20%;
 }
 
 th:nth-child(2),
 td:nth-child(2) {
-  width: 13%;
+  width: 12%;
 }
 
 th:nth-child(3),
 td:nth-child(3) {
-  width: 20%;
+  width: 18%;
 }
 
 th:nth-child(4),
 td:nth-child(4) {
-  width: 13%;
+  width: 12%;
 }
 
 th:nth-child(5),
 td:nth-child(5) {
-  width: 10%;
+  width: 12%;
 }
 
 th:nth-child(6),
 td:nth-child(6) {
+  width: 10%;
+}
+
+th:nth-child(7),
+td:nth-child(7) {
   width: 120px;
   text-align: center;
 }
@@ -398,4 +403,29 @@ td:nth-child(6) {
     padding: 12px 14px;
     font-size: 14px;
   }
+}
+
+.stock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #2563eb;
+  font-weight: 800;
+}
+
+.stock-badge.low-stock {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.low-stock-text {
+  margin-left: 8px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 800;
 }

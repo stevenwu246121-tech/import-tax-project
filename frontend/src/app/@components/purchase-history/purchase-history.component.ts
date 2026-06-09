@@ -11,17 +11,22 @@ import { PurchaseOrder } from '../../models/purchase-order';
 import { OrderDetailDialogComponent } from '../../shared/dialogs/order-detail-dialog/order-detail-dialog.component';
 
 import { DialogService } from '../../@services/dialog.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-purchase-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './purchase-history.component.html',
   styleUrl: './purchase-history.component.scss',
 })
 export class PurchaseHistoryComponent implements OnInit {
   orders: PurchaseOrder[] = [];
-
+  recordKeyword = '';
+  selectedOriginCountry = '';
+  startDate = '';
+  endDate = '';
+  dateErrorMessage = '';
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
@@ -36,6 +41,7 @@ export class PurchaseHistoryComponent implements OnInit {
     this.apiService.getOrders().subscribe({
       next: (response: PurchaseOrder[]) => {
         this.orders = response;
+        console.log('進貨紀錄資料：', this.orders);
       },
       error: (error: unknown) => {
         console.error(error);
@@ -79,5 +85,45 @@ export class PurchaseHistoryComponent implements OnInit {
           },
         });
       });
+  }
+
+  filteredOrders(): PurchaseOrder[] {
+    const keyword = this.recordKeyword.trim().toLowerCase();
+
+    return this.orders.filter((order) => {
+      const matchKeyword =
+        !keyword ||
+        order.orderNo?.toLowerCase().includes(keyword) ||
+        order.supplierName?.toLowerCase().includes(keyword);
+
+      const matchCountry =
+        !this.selectedOriginCountry ||
+        order.originCountry === this.selectedOriginCountry;
+
+      const orderDate = this.toDateString(order.createdAt);
+
+      const matchStartDate = !this.startDate || orderDate >= this.startDate;
+
+      const matchEndDate = !this.endDate || orderDate <= this.endDate;
+
+      return matchKeyword && matchCountry && matchStartDate && matchEndDate;
+    });
+  }
+
+  toDateString(dateTime: string): string {
+    if (!dateTime) {
+      return '';
+    }
+
+    return dateTime.substring(0, 10);
+  }
+
+  onDateChange(): void {
+    this.dateErrorMessage = '';
+
+    if (this.startDate && this.endDate && this.endDate < this.startDate) {
+      this.dateErrorMessage = '結束日不得早於起始日';
+      this.endDate = '';
+    }
   }
 }

@@ -60,13 +60,25 @@
   </select>
 
   <!-- 單位 -->
-  <input type="text" placeholder="單位" maxlength="5" [(ngModel)]="productReq.unit" />
+  <select [(ngModel)]="productReq.unit">
+    <option value="" disabled>
+      請選擇數量單位
+    </option>
+
+    <option value="kg">
+      公斤 kg
+    </option>
+
+    <option value="g">
+      公克 g
+    </option>
+  </select>
 
   <!-- 單價 -->
   <input type="number" placeholder="單價" min="1" [(ngModel)]="productReq.unitPrice" />
 
   <!-- 庫存數量 -->
-  <input type="number" min="0" placeholder="庫存數量" [(ngModel)]="productReq.stockQty" />
+  <input type="number" placeholder="庫存數量" min="0" [(ngModel)]="productReq.stockQty" />
 
   <!-- 新增 / 更新商品 -->
   <button type="button" class="submit-btn" (click)="submitProduct()">
@@ -83,6 +95,7 @@
         <th>HS Code</th>
         <th>價格</th>
         <th>庫存</th>
+        <th>單位</th>
         <th>操作</th>
       </tr>
     </thead>
@@ -117,6 +130,10 @@
           </span>
         </td>
 
+        <td>
+          {{ getUnitLabel(product.unit) }}
+        </td>
+
         <td class="action-cell">
           <button type="button" class="edit-menu-btn" (click)="toggleActionMenu(product.id)">
             編輯
@@ -135,7 +152,7 @@
       </tr>
 
       <tr *ngIf="filteredProducts().length === 0">
-        <td colspan="6" class="empty-row">
+        <td colspan="7" class="empty-row">
           查無商品資料
         </td>
       </tr>

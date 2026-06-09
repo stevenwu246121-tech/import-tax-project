@@ -139,3 +139,39 @@ th {
   padding: 24px;
   color: #666;
 }
+
+.history-filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.history-filter-row input {
+  width: 420px;
+  max-width: 100%;
+}
+
+.history-filter-row select {
+  width: 240px;
+  max-width: 100%;
+}
+
+.history-filter-row input,
+.history-filter-row select {
+  height: 56px;
+  border-radius: 16px;
+  border: 1px solid #dbe2ea;
+  padding: 0 16px;
+  font-size: 16px;
+  outline: none;
+  background: white;
+  box-sizing: border-box;
+}
+
+.history-filter-row input:focus,
+.history-filter-row select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}

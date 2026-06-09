@@ -16,18 +16,12 @@ import { HsCode } from '../../models/hs-code';
 
 interface ProductReq {
   name: string;
-
   categoryId: number;
-
   hsCodeId: number;
-
   originCountry: string;
-
   unit: string;
-
   unitPrice: number | null;
-
-  stockQty: number;
+  stockQty: number | null;
 }
 
 @Component({
@@ -61,7 +55,7 @@ export class ProductManageComponent implements OnInit {
     originCountry: '',
     unit: '',
     unitPrice: null,
-    stockQty: 0,
+    stockQty: null,
   };
 
   productRules = {
@@ -307,9 +301,8 @@ export class ProductManageComponent implements OnInit {
       return;
     }
 
-    if (!this.productReq.unit.trim()) {
-      this.dialogService.warning('請輸入單位');
-
+    if (!this.productReq.unit) {
+      this.dialogService.warning('請選擇數量單位');
       return;
     }
 
@@ -319,9 +312,13 @@ export class ProductManageComponent implements OnInit {
       return;
     }
 
+    if (this.productReq.stockQty === null) {
+      this.dialogService.warning('請輸入庫存數量');
+      return;
+    }
+
     if (this.productReq.stockQty < 0) {
       this.dialogService.warning('庫存數量不可小於 0');
-
       return;
     }
 
@@ -420,9 +417,9 @@ export class ProductManageComponent implements OnInit {
       categoryId: matchedCategory?.id ?? 0,
       hsCodeId: matchedHsCode?.id ?? 0,
       originCountry: product.productName.includes('台灣') ? 'TW' : 'JP',
-      unit: product.unit ?? '箱',
+      unit: product.unit ?? '',
       unitPrice: product.unitPrice,
-      stockQty: product.stockQty ?? 0,
+      stockQty: product.stockQty ?? null,
     };
 
     this.onCategoryChange();
@@ -463,17 +460,13 @@ export class ProductManageComponent implements OnInit {
       originCountry: '',
       unit: '',
       unitPrice: null,
-      stockQty: 0,
+      stockQty: null,
     };
 
     this.filteredHsCodes = this.hsCodes;
-
     this.editingProductId = null;
-
     this.openedActionId = null;
-
     this.recommendMessage = '';
-
     this.isAutoRecommendEnabled = true;
   }
 
@@ -531,5 +524,16 @@ export class ProductManageComponent implements OnInit {
         this.recommendMessage = '找不到對應的 HS Code';
       },
     });
+  }
+
+  getUnitLabel(unit?: string): string {
+    switch (unit) {
+      case 'kg':
+        return '公斤 kg';
+      case 'g':
+        return '公克 g';
+      default:
+        return '-';
+    }
   }
 }

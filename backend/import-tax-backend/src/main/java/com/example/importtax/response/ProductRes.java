@@ -5,77 +5,79 @@ import java.math.BigDecimal;
 public class ProductRes {
 	private Long id;
 
-    private String productName;
+	private String productName;
 
-    private String categoryName;
+	private String categoryName;
 
-    private String hsCode;
+	private String hsCode;
 
-    private BigDecimal dutyRate;
+	private BigDecimal dutyRate;
 
-    private BigDecimal vatRate;
+	private BigDecimal vatRate;
 
-    private BigDecimal unitPrice;
+	private BigDecimal unitPrice;
 
-    private Integer stockQty;
-    
-    // Getter Setter
+	private Integer stockQty;
 
-    public Long getId() {
-        return id;
-    }
+	private String unit;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	// Getter Setter
 
-    public String getProductName() {
-        return productName;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getCategoryName() {
-        return categoryName;
-    }
+	public String getProductName() {
+		return productName;
+	}
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
 
-    public String getHsCode() {
-        return hsCode;
-    }
+	public String getCategoryName() {
+		return categoryName;
+	}
 
-    public void setHsCode(String hsCode) {
-        this.hsCode = hsCode;
-    }
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
 
-    public BigDecimal getDutyRate() {
-        return dutyRate;
-    }
+	public String getHsCode() {
+		return hsCode;
+	}
 
-    public void setDutyRate(BigDecimal dutyRate) {
-        this.dutyRate = dutyRate;
-    }
+	public void setHsCode(String hsCode) {
+		this.hsCode = hsCode;
+	}
 
-    public BigDecimal getVatRate() {
-        return vatRate;
-    }
+	public BigDecimal getDutyRate() {
+		return dutyRate;
+	}
 
-    public void setVatRate(BigDecimal vatRate) {
-        this.vatRate = vatRate;
-    }
+	public void setDutyRate(BigDecimal dutyRate) {
+		this.dutyRate = dutyRate;
+	}
 
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
+	public BigDecimal getVatRate() {
+		return vatRate;
+	}
 
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
-    }
+	public void setVatRate(BigDecimal vatRate) {
+		this.vatRate = vatRate;
+	}
+
+	public BigDecimal getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(BigDecimal unitPrice) {
+		this.unitPrice = unitPrice;
+	}
 
 	public Integer getStockQty() {
 		return stockQty;
@@ -84,5 +86,12 @@ public class ProductRes {
 	public void setStockQty(Integer stockQty) {
 		this.stockQty = stockQty;
 	}
-    
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 }
