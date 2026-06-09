@@ -1,72 +1,104 @@
-<!-- <div class="dashboard-container">
+<div class="dashboard-container">
   <h1>報表分析</h1>
 
-  <div *ngIf="isLoading" class="empty">
-    資料載入中...
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-label">商品總數</div>
+      <div class="kpi-value">
+        {{ totalProductCount }}
+      </div>
+      <div class="kpi-desc">
+        目前系統中的商品資料筆數
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">本月進貨總額</div>
+      <div class="kpi-value">
+        NT$ {{ monthlyPurchaseTotal | number:'1.0-0' }}
+      </div>
+      <div class="kpi-desc">
+        本月所有進貨訂單的到岸成本加總
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-label">本月進口稅總額</div>
+      <div class="kpi-value">
+        NT$ {{ monthlyDutyTotal | number:'1.0-0' }}
+      </div>
+      <div class="kpi-desc">
+        本月進貨訂單產生的進口稅加總
+      </div>
+    </div>
+
+    <div class="kpi-card warning">
+      <div class="kpi-label">低庫存商品數</div>
+      <div class="kpi-value">
+        {{ lowStockCount }}
+      </div>
+      <div class="kpi-desc">
+        庫存數量小於等於 10 的商品
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="!isLoading && errorMessage" class="empty error">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="!isLoading && !errorMessage && products.length === 0" class="empty">
-    目前沒有商品資料，請先新增商品。
-  </div>
-
-  <section
-    class="chart-card"
-    *ngIf="!isLoading && !errorMessage && products.length > 0"
-  >
-    <div class="chart-header">
+  <section class="low-stock-card">
+    <div class="section-header">
       <div>
-        <h2>進貨商品趨勢建議</h2>
-
-        <p class="chart-desc">
-          選擇單一商品，查看近 7 / 30 / 90 天提前進貨建議趨勢。
+        <h2>低庫存商品清單</h2>
+        <p>
+          庫存數量小於等於 10 的商品會顯示在此，方便商家優先補貨。
         </p>
       </div>
-
-      <div class="chart-filters">
-        <select
-          [(ngModel)]="selectedProductId"
-          (change)="onProductChange()"
-        >
-          <option
-            *ngFor="let product of products"
-            [ngValue]="product.id"
-          >
-            {{ product.productName }}
-          </option>
-        </select>
-
-        <select
-          [(ngModel)]="selectedPeriod"
-          (change)="onPeriodChange()"
-        >
-          <option [ngValue]="7">近7天</option>
-          <option [ngValue]="30">近30天</option>
-          <option [ngValue]="90">近90天</option>
-        </select>
-      </div>
     </div>
 
-    <div class="chart-box">
-      <canvas #purchaseTrendChart></canvas>
+    <div class="empty-message" *ngIf="lowStockProducts.length === 0">
+      目前沒有低庫存商品。
+    </div>
+
+    <div class="table-scroll" *ngIf="lowStockProducts.length > 0">
+      <table>
+        <thead>
+          <tr>
+            <th>商品</th>
+            <th>分類</th>
+            <th>HS Code</th>
+            <th>庫存</th>
+            <th>單位</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let product of lowStockProducts">
+            <td>
+              {{ product.productName }}
+            </td>
+
+            <td>
+              {{ product.categoryName }}
+            </td>
+
+            <td>
+              {{ product.hsCode }}
+            </td>
+
+            <td>
+              <span class="stock-badge low-stock">
+                {{ product.stockQty }}
+              </span>
+
+              <span class="low-stock-text">
+                低庫存
+              </span>
+            </td>
+
+            <td>
+              {{ getUnitLabel(product.unit) }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
-
-  <section
-    class="chart-card"
-    *ngIf="!isLoading && !errorMessage && products.length > 0"
-  >
-    <h2>目前庫存商品占比</h2>
-
-    <p class="chart-desc">
-      依目前商品單價加總推估各分類庫存金額占比。
-    </p>
-
-    <div class="chart-box">
-      <canvas #inventoryPieChart></canvas>
-    </div>
-  </section>
-</div> -->
+</div>
