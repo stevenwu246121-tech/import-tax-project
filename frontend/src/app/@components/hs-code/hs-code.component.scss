@@ -4,44 +4,47 @@
   min-width: 0;
 }
 
-/* 標題 */
 h1 {
   font-size: 42px;
   font-weight: 900;
-  margin: 0 0 32px;
+  margin: 0 0 24px;
 }
 
-/* 共用卡片 */
-.card,
-.panel,
-.chart-card,
-.form-card {
+.panel {
   background: white;
   border-radius: 24px;
   padding: 32px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
   margin-bottom: 32px;
-  overflow: visible;
-}
-
-/* Panel */
-.panel {
   overflow-x: auto;
 }
 
-.panel h2 {
-  font-size: 30px;
-  font-weight: 900;
-  margin: 0 0 24px;
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
 }
 
-/* 輸入與下拉 */
+.page-header h2 {
+  font-size: 30px;
+  font-weight: 900;
+  margin: 0 0 8px;
+}
+
+.page-header p {
+  margin: 0;
+  color: #64748b;
+  font-weight: 700;
+}
+
 input,
 select {
-  height: 56px;
+  height: 52px;
   border-radius: 14px;
   border: 1px solid #d1d5db;
-  padding: 0 18px;
+  padding: 0 16px;
   font-size: 16px;
   outline: none;
   background: white;
@@ -54,16 +57,15 @@ select:focus {
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
 
-/* 按鈕 */
 button {
-  height: 46px;
-  padding: 0 22px;
+  height: 44px;
+  padding: 0 18px;
   border: none;
   border-radius: 12px;
   background: #2563eb;
   color: white;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -71,227 +73,179 @@ button:hover {
   background: #1d4ed8;
 }
 
-button.danger,
-.action-delete {
-  background: #dc2626;
+.toggle-btn {
+  min-width: 150px;
+  height: 48px;
 }
 
-button.danger:hover,
-.action-delete:hover {
-  background: #b91c1c;
-}
-
-/* 搜尋區 */
-.search-bar,
-.filter-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input {
-  width: 360px;
-  max-width: 100%;
-}
-
-.filter-bar select {
-  width: 240px;
-  max-width: 100%;
-}
-
-.search-filter-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.search-filter-row input {
-  width: 320px;
-  max-width: 100%;
-}
-
-/* 表單 */
 .form-card {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
+  gap: 18px;
+  background: #f8fafc;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 28px;
 }
 
 .form-card input,
 .form-card select,
 .form-card button {
   width: 100%;
-  box-sizing: border-box;
 }
 
-/* 新增 / 收合按鈕 */
-.toggle-btn {
-  width: 220px;
-  height: 52px;
-  border-radius: 14px;
-  background: #2563eb;
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 24px;
+.demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 24px;
+  margin-bottom: 32px;
 }
 
-.toggle-btn:hover {
-  background: #1d4ed8;
-}
-
-/* 表格 */
-table {
-  width: 100%;
-  min-width: 920px;
-  border-collapse: collapse;
-  background: white;
+.hs-list-panel,
+.calc-panel {
   border-radius: 22px;
-  overflow: visible;
+  padding: 24px;
 }
 
-thead {
-  background: #eef2f7;
-}
-
-th,
-td {
-  white-space: nowrap;
-  word-break: keep-all;
-}
-
-th {
-  padding: 20px 24px;
-  text-align: left;
-  font-size: 17px;
-  font-weight: 800;
-}
-
-td {
-  padding: 22px 24px;
-  border-top: 1px solid #e5e7eb;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-tbody tr:hover {
+.hs-list-panel {
   background: #f8fafc;
+  border: 1px solid #e5e7eb;
 }
 
-/* 說明欄允許換行 */
-td:nth-child(6),
-th:nth-child(6) {
-  min-width: 260px;
-  white-space: normal;
-  line-height: 1.6;
+.search-filter-row {
+  margin-bottom: 18px;
 }
 
-/* 操作欄 */
-.action-cell {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  align-items: center;
-  min-width: 240px;
+.search-filter-row input {
+  width: 100%;
 }
 
-.calc-btn {
-  background: #16a34a;
-}
-
-.calc-btn:hover {
-  background: #15803d;
-}
-
-.edit-btn {
-  background: #2563eb;
-}
-
-.edit-btn:hover {
-  background: #1d4ed8;
-}
-
-.delete-btn {
-  background: #dc2626;
-}
-
-.delete-btn:hover {
-  background: #b91c1c;
-}
-
-.action-cell button {
-  min-width: 64px;
-  height: 40px;
-  padding: 0 12px;
-  border-radius: 10px;
-}
-
-.edit-menu-btn {
-  min-width: 86px;
-  height: 44px;
-  background: #2563eb;
-}
-
-.action-menu {
-  position: absolute;
-  top: 52px;
-  right: 0;
-  z-index: 999;
-
+.hs-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
 
+.hs-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
   background: white;
-  padding: 10px;
-  border-radius: 14px;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
-.action-menu button {
-  width: 90px;
-  height: 40px;
-  border-radius: 10px;
+.hs-item:hover {
+  border-color: #2563eb;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
 }
 
-.action-update {
-  background: #2563eb;
+.hs-item.active {
+  border-color: #2563eb;
+  background: #eff6ff;
 }
 
-/* 一鍵試算區 */
+.hs-item strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.hs-item span {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.rate-tags {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.rate-tags span {
+  background: #dbeafe;
+  color: #2563eb;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .calc-panel {
   background: #eff6ff;
   border: 1px solid #bfdbfe;
-  border-radius: 20px;
-  padding: 24px;
-  margin: 24px 0;
 }
 
 .calc-panel h2 {
-  margin: 0 0 14px;
-  font-size: 22px;
+  margin: 0 0 16px;
+  font-size: 24px;
   font-weight: 900;
+}
+
+.calc-empty {
+  color: #64748b;
+  font-weight: 700;
+  line-height: 1.7;
 }
 
 .calc-target {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 18px;
 }
 
 .calc-target strong {
-  font-size: 18px;
+  font-size: 20px;
   color: #0f172a;
 }
 
 .calc-target span {
+  color: #475569;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.tax-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.tax-info-grid div {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.tax-info-grid span,
+.calc-result span {
+  display: block;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.tax-info-grid strong {
+  font-size: 28px;
+  font-weight: 900;
   color: #2563eb;
-  font-weight: 800;
 }
 
 .calc-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 14px;
   margin-bottom: 18px;
 }
 
@@ -311,13 +265,6 @@ th:nth-child(6) {
   padding: 16px;
 }
 
-.calc-result span {
-  display: block;
-  color: #64748b;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
 .calc-result strong {
   font-size: 22px;
   font-weight: 900;
@@ -331,18 +278,86 @@ th:nth-child(6) {
   color: #2563eb;
 }
 
-.calc-btn {
-  background: #16a34a;
-  margin-right: 8px;
+.table-section {
+  margin-top: 8px;
+  overflow-x: auto;
 }
 
-.calc-btn:hover {
-  background: #15803d;
+.table-section h2 {
+  margin: 0 0 18px;
+  font-size: 24px;
+  font-weight: 900;
 }
 
-/* 官方查詢資源 */
+table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  background: white;
+}
+
+thead {
+  background: #eef2f7;
+}
+
+th {
+  padding: 18px 20px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+td {
+  padding: 18px 20px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 15px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+td:nth-child(6),
+th:nth-child(6) {
+  min-width: 260px;
+  white-space: normal;
+  line-height: 1.6;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+.action-cell {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.edit-btn {
+  background: #2563eb;
+}
+
+.edit-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #dc2626;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.empty-row {
+  padding: 24px;
+  text-align: center;
+  color: #64748b;
+  font-weight: 800;
+}
+
 .official-links {
-  margin-top: 40px;
   background: white;
   padding: 24px;
   border-radius: 20px;
@@ -351,17 +366,16 @@ th:nth-child(6) {
 
 .official-links h3 {
   font-size: 22px;
-  font-weight: 800;
-  margin-bottom: 20px;
+  font-weight: 900;
+  margin: 0 0 18px;
 }
 
 .official-links a {
   display: block;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
   color: #2563eb;
-  font-weight: 700;
+  font-weight: 800;
   text-decoration: none;
-  transition: 0.2s;
 }
 
 .official-links a:hover {
@@ -369,22 +383,16 @@ th:nth-child(6) {
   text-decoration: underline;
 }
 
-/* 平板 */
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 36px;
+@media (max-width: 1200px) {
+  .demo-grid {
+    grid-template-columns: 1fr;
   }
 
-  .panel {
-    padding: 28px;
-  }
-
-  .form-card {
+  .calc-result {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-/* 手機 */
 @media (max-width: 768px) {
   h1 {
     font-size: 32px;
@@ -392,19 +400,10 @@ th:nth-child(6) {
 
   .panel {
     padding: 24px;
-    border-radius: 20px;
   }
 
-  .panel h2 {
-    font-size: 28px;
-  }
-
-  .search-filter-row {
+  .page-header {
     flex-direction: column;
-  }
-
-  .search-filter-row input {
-    width: 100%;
   }
 
   .toggle-btn {
@@ -412,6 +411,7 @@ th:nth-child(6) {
   }
 
   .form-card,
+  .tax-info-grid,
   .calc-form,
   .calc-result {
     grid-template-columns: 1fr;
@@ -419,24 +419,5 @@ th:nth-child(6) {
 
   table {
     min-width: 900px;
-  }
-}
-
-/* 超小螢幕 */
-@media (max-width: 480px) {
-  h1 {
-    font-size: 28px;
-  }
-
-  .panel {
-    padding: 20px;
-  }
-
-  .panel h2 {
-    font-size: 24px;
-  }
-
-  table {
-    min-width: 860px;
   }
 }

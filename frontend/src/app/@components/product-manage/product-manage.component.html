@@ -13,10 +13,21 @@
 </div>
 
 <div class="form-card">
-  <input type="text" placeholder="商品名稱" maxlength="30" [(ngModel)]="productReq.name" (input)="onProductNameChange()" />
+  <!-- 商品名稱 + 自動推薦 HS Code -->
+  <div class="product-name-row">
+    <input type="text" placeholder="商品名稱" maxlength="30" [(ngModel)]="productReq.name" />
+
+    <button type="button" class="recommend-btn" (click)="recommendHsCode()">
+      自動推薦 HS Code
+    </button>
+  </div>
+
+  <!-- 推薦訊息 -->
   <div class="recommend-message" *ngIf="recommendMessage">
     {{ recommendMessage }}
   </div>
+
+  <!-- 分類 -->
   <select [(ngModel)]="productReq.categoryId" (change)="onManualCategoryChange()">
     <option [ngValue]="0" disabled>
       請選擇分類
@@ -27,6 +38,7 @@
     </option>
   </select>
 
+  <!-- HS Code -->
   <select [(ngModel)]="productReq.hsCodeId" (change)="onManualHsCodeChange()">
     <option [ngValue]="0" disabled>
       請選擇 HS Code
@@ -37,35 +49,33 @@
     </option>
   </select>
 
+  <!-- 來源國 -->
   <select [(ngModel)]="productReq.originCountry">
     <option value="" disabled>
       請選擇來源國
     </option>
 
-    <option value="JP">
-      JP
-    </option>
-
-    <option value="TW">
-      TW
-    </option>
+    <option value="JP">JP</option>
+    <option value="TW">TW</option>
   </select>
 
+  <!-- 單位 -->
   <input type="text" placeholder="單位" maxlength="5" [(ngModel)]="productReq.unit" />
 
+  <!-- 單價 -->
   <input type="number" placeholder="單價" min="1" [(ngModel)]="productReq.unitPrice" />
 
+  <!-- 庫存數量 -->
   <input type="number" min="0" placeholder="庫存數量" [(ngModel)]="productReq.stockQty" />
 
-  <button (click)="submitProduct()">
+  <!-- 新增 / 更新商品 -->
+  <button type="button" class="submit-btn" (click)="submitProduct()">
     {{ editingProductId ? '更新商品' : '新增商品' }}
   </button>
 </div>
 
 <div class="table-scroll">
-
   <table>
-
     <thead>
       <tr>
         <th>商品</th>
@@ -78,9 +88,7 @@
     </thead>
 
     <tbody>
-
       <tr *ngFor="let product of filteredProducts()">
-
         <td>
           <span class="product-name" [title]="product.productName">
             {{ product.productName }}
@@ -100,27 +108,30 @@
         </td>
 
         <td>
-          <span class="stock-badge" [class.low-stock]="(product.stockQty) <= 10">
+          <span class="stock-badge" [class.low-stock]="product.stockQty <= 10">
             {{ product.stockQty }}
+          </span>
+
+          <span class="low-stock-text" *ngIf="product.stockQty <= 10">
+            低庫存
           </span>
         </td>
 
         <td class="action-cell">
-          <button class="edit-menu-btn" (click)="toggleActionMenu(product.id)">
+          <button type="button" class="edit-menu-btn" (click)="toggleActionMenu(product.id)">
             編輯
           </button>
 
           <div class="action-menu" *ngIf="openedActionId === product.id">
-            <button class="action-update" (click)="editProduct(product); openedActionId = null">
+            <button type="button" class="action-update" (click)="editProduct(product); openedActionId = null">
               修改
             </button>
 
-            <button class="action-delete" (click)="deleteProduct(product.id); openedActionId = null">
+            <button type="button" class="action-delete" (click)="deleteProduct(product.id); openedActionId = null">
               刪除
             </button>
           </div>
         </td>
-
       </tr>
 
       <tr *ngIf="filteredProducts().length === 0">
@@ -128,9 +139,6 @@
           查無商品資料
         </td>
       </tr>
-
     </tbody>
-
   </table>
-
 </div>

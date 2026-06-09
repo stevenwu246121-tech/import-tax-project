@@ -504,4 +504,32 @@ export class ProductManageComponent implements OnInit {
 
     this.recommendMessage = '';
   }
+
+  recommendHsCode() {
+    const productName = this.productReq.name;
+
+    if (!productName || productName.trim() === '') {
+      alert('請先輸入商品名稱');
+      return;
+    }
+
+    this.apiService.recommendHsCode(productName).subscribe({
+      next: (res) => {
+        console.log('推薦結果', res);
+
+        const matchedHsCode = this.hsCodes.find((hs) => hs.code === res.code);
+
+        if (matchedHsCode) {
+          this.productReq.hsCodeId = matchedHsCode.id;
+          this.recommendMessage = `已推薦 HS Code：${res.code}`;
+        } else {
+          this.recommendMessage = `後端有推薦 ${res.code}，但前端 hsCodes 清單裡找不到`;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.recommendMessage = '找不到對應的 HS Code';
+      },
+    });
+  }
 }

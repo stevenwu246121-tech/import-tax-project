@@ -104,10 +104,10 @@ export class ApiService {
     return this.http.get<LowStock[]>(`${this.baseUrl}/dashboard/low-stock`);
   }
 
-  recommendHsCode(keyword: string) {
-    return this.http.get<HsCode>(`${this.baseUrl}/hs-codes/recommend`, {
+  recommendHsCode(productName: string) {
+    return this.http.get<any>(`${this.baseUrl}/hs-codes/recommend`, {
       params: {
-        keyword,
+        name: productName,
       },
     });
   }

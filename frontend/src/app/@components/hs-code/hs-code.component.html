@@ -2,86 +2,18 @@
 
 <section class="panel">
 
-  <h2>食品類 HS Code 對照表</h2>
+  <div class="page-header">
+    <div>
+      <h2>食品類 HS Code 對照表</h2>
 
-  <div class="search-filter-row">
-    <input type="text" placeholder="搜尋 HS Code / 商品 / 分類" [(ngModel)]="keyword" (input)="search()" />
-  </div>
-
-  <button class="toggle-btn" (click)="toggleForm()">
-    {{ showForm ? '收合表單' : '新增 HS Code' }}
-  </button>
-
-  <div class="calc-panel">
-
-    <ng-container *ngIf="selectedHsCodeForCalc; else emptyCalc">
-
-      <h2>HS Code 成本試算</h2>
-
-      <div class="calc-target">
-        <strong>
-          {{ selectedHsCodeForCalc.code }}
-          -
-          {{ selectedHsCodeForCalc.name }}
-        </strong>
-
-        <span>
-          進口稅 {{ selectedHsCodeForCalc.dutyRate }}%
-          /
-          營業稅 {{ selectedHsCodeForCalc.vatRate }}%
-        </span>
-      </div>
-
-      <div class="calc-form">
-        <input type="number" min="1" placeholder="商品單價" [(ngModel)]="calcPrice" (input)="calculateHsCodeCost()" />
-
-        <input type="number" min="1" placeholder="數量" [(ngModel)]="calcQuantity" (input)="calculateHsCodeCost()" />
-      </div>
-
-      <div class="calc-result">
-        <div>
-          <span>商品小計</span>
-
-          <strong>
-            NT$ {{ calcSubtotal | number:'1.0-0' }}
-          </strong>
-        </div>
-
-        <div>
-          <span>進口稅</span>
-
-          <strong>
-            NT$ {{ calcDutyAmount | number:'1.0-0' }}
-          </strong>
-        </div>
-
-        <div>
-          <span>營業稅</span>
-
-          <strong>
-            NT$ {{ calcVatAmount | number:'1.0-0' }}
-          </strong>
-        </div>
-
-        <div class="total">
-          <span>落地成本</span>
-
-          <strong>
-            NT$ {{ calcLandedCost | number:'1.0-0' }}
-          </strong>
-        </div>
-      </div>
-
-    </ng-container>
-
-    <ng-template #emptyCalc>
-      <h2>HS Code 成本試算</h2>
-
-      <p class="calc-empty">
-        請先從下方表格選擇一筆 HS Code 進行試算
+      <p>
+        查詢 HS Code、快速取得進口稅與營業稅，並直接試算落地成本。
       </p>
-    </ng-template>
+    </div>
 
+    <button class="toggle-btn" (click)="toggleForm()">
+      {{ showForm ? '收合表單' : '新增 HS Code' }}
+    </button>
   </div>
 
   <div class="form-card" *ngIf="showForm">
@@ -108,97 +40,155 @@
     <button (click)="submitHsCode()">
       {{ editingHsCodeId ? '更新 HS Code' : '新增 HS Code' }}
     </button>
+  </div>
+
+  <div class="demo-grid">
+
+    <div class="hs-list-panel">
+
+      <div class="search-filter-row">
+        <input type="text" placeholder="搜尋 HS Code / 商品 / 分類" [(ngModel)]="keyword" (input)="search()" />
+      </div>
+
+      <div class="hs-list">
+
+        <div class="hs-item" *ngFor="let item of filteredHsCodes" [class.active]="selectedHsCodeForCalc?.id === item.id"
+          (click)="selectHsCodeForCalc(item)">
+          <div>
+            <strong>
+              {{ item.code }}
+            </strong>
+
+            <span>
+              {{ item.name }}・{{ item.categoryName }}
+            </span>
+          </div>
+
+          <div class="rate-tags">
+            <span>稅 {{ item.dutyRate }}%</span>
+            <span>營 {{ item.vatRate }}%</span>
+          </div>
+        </div>
+
+        <div class="empty-row" *ngIf="filteredHsCodes.length === 0">
+          查無 HS Code 資料
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="calc-panel">
+
+      <ng-container *ngIf="selectedHsCodeForCalc; else emptyCalc">
+
+        <h2>成本試算器</h2>
+
+        <div class="calc-target">
+          <strong>
+            {{ selectedHsCodeForCalc.code }}
+            -
+            {{ selectedHsCodeForCalc.name }}
+          </strong>
+
+          <span>
+            {{ selectedHsCodeForCalc.description }}
+          </span>
+        </div>
+
+        <div class="tax-info-grid">
+          <div>
+            <span>進口稅</span>
+            <strong>{{ selectedHsCodeForCalc.dutyRate }}%</strong>
+          </div>
+
+          <div>
+            <span>營業稅</span>
+            <strong>{{ selectedHsCodeForCalc.vatRate }}%</strong>
+          </div>
+        </div>
+
+        <div class="calc-form">
+          <input type="number" min="1" placeholder="商品單價" [(ngModel)]="calcPrice" (input)="calculateHsCodeCost()" />
+
+          <input type="number" min="1" placeholder="數量" [(ngModel)]="calcQuantity" (input)="calculateHsCodeCost()" />
+        </div>
+
+        <div class="calc-result">
+          <div>
+            <span>商品小計</span>
+            <strong>NT$ {{ calcSubtotal | number:'1.0-0' }}</strong>
+          </div>
+
+          <div>
+            <span>進口稅</span>
+            <strong>NT$ {{ calcDutyAmount | number:'1.0-0' }}</strong>
+          </div>
+
+          <div>
+            <span>營業稅</span>
+            <strong>NT$ {{ calcVatAmount | number:'1.0-0' }}</strong>
+          </div>
+
+          <div class="total">
+            <span>落地成本</span>
+            <strong>NT$ {{ calcLandedCost | number:'1.0-0' }}</strong>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <ng-template #emptyCalc>
+        <h2>成本試算器</h2>
+
+        <p class="calc-empty">
+          請從左側選擇一筆 HS Code，即可顯示稅率並試算落地成本。
+        </p>
+      </ng-template>
+
+    </div>
 
   </div>
 
-  <table>
+  <div class="table-section">
 
-    <thead>
-      <tr>
-        <th>HS Code</th>
-        <th>商品類型</th>
-        <th>分類</th>
-        <th>進口稅</th>
-        <th>營業稅</th>
-        <th>說明</th>
-        <th>操作</th>
-      </tr>
-    </thead>
+    <h2>完整 HS Code 資料表</h2>
 
-    <tbody>
+    <table>
+      <thead>
+        <tr>
+          <th>HS Code</th>
+          <th>商品類型</th>
+          <th>分類</th>
+          <th>進口稅</th>
+          <th>營業稅</th>
+          <th>說明</th>
+          <th>操作</th>
+        </tr>
+      </thead>
 
-      <tr *ngFor="let item of filteredHsCodes">
+      <tbody>
+        <tr *ngFor="let item of filteredHsCodes">
+          <td>{{ item.code }}</td>
+          <td>{{ item.name }}</td>
+          <td>{{ item.categoryName }}</td>
+          <td>{{ item.dutyRate }}%</td>
+          <td>{{ item.vatRate }}%</td>
+          <td>{{ item.description }}</td>
 
-        <td>
-          {{ item.code }}
-        </td>
+          <td class="action-cell">
+            <button class="edit-btn" (click)="editHsCode(item)">
+              修改
+            </button>
 
-        <td>
-          {{ item.name }}
-        </td>
+            <button class="delete-btn" (click)="deleteHsCode(item.id)">
+              刪除
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-        <td>
-          {{ item.categoryName }}
-        </td>
-
-        <td>
-          {{ item.dutyRate }}%
-        </td>
-
-        <td>
-          {{ item.vatRate }}%
-        </td>
-
-        <td>
-          {{ item.description }}
-        </td>
-
-        <td class="action-cell">
-
-          <button class="calc-btn" (click)="selectHsCodeForCalc(item)">
-            試算
-          </button>
-
-          <button class="edit-btn" (click)="editHsCode(item)">
-            修改
-          </button>
-
-          <button class="delete-btn" (click)="deleteHsCode(item.id)">
-            刪除
-          </button>
-
-        </td>
-
-      </tr>
-
-      <tr *ngIf="filteredHsCodes.length === 0">
-        <td colspan="7" class="empty-row">
-          查無 HS Code 資料
-        </td>
-      </tr>
-
-    </tbody>
-
-  </table>
-
-</section>
-
-<section class="official-links">
-
-  <h3>官方 HS Code 查詢資源</h3>
-
-  <a href="https://hscode.customs.gov.tw/" target="_blank">
-    台灣海關 HS Code 智慧查詢系統
-  </a>
-
-  <a href="https://web.customs.gov.tw/etaipei/singlehtml/c12340eb38d94fd4bd5f4c8f743a95db?cntId=ed74683917a345f4b7af10363965dbeb"
-    target="_blank">
-    財政部關務署 Tariff Database Search
-  </a>
-
-  <a href="https://portal.sw.nat.gov.tw/APGQ/LoginFree?breadCrumbs=JTdCJTIyYnJlYWRDcnVtYnMlMjIlM0ElNUIlN0IlMjJuYW1lJTIyJTNBJTIySW5mb3JtYXRpb24lMjBTZWFyY2glMjBTeXN0ZW0lMjIlMkMlMjJ1cmwlMjIlM0ElMjIlMjIlN0QlMkMlN0IlMjJuYW1lJTIyJTNBJTIyT25saW5lJTIwSW5mb3JtYXRpb24lMjBRdXJlaWVzJTIyJTJDJTIydXJsJTIyJTNBJTIyY2hhbmdlTWVudVVybDIoJ09ubGluZSUyMEluZm9ybWF0aW9uJTIwUXVyZWllcyclMkMnQVBHUV83X0VOJyklMjIlN0QlMkMlN0IlMjJuYW1lJTIyJTNBJTIyKEdDNDUxKVRhcmlmZiUyMERhdGFiYXNlJTIwU3lzdGVtJTIyJTJDJTIydXJsJTIyJTNBJTIyb3Blbk1lbnUoJyUyRkFQR1ElMkZHQzQ1MScpJTIyJTdEJTJDJTdCJTdEJTJDJTdCJTdEJTVEJTJDJTIycGF0aFVybCUyMiUzQSUyMiUyM01FTlVfQVBHUV9FTiUyQyUyM01FTlVfQVBHUV83X0VOJTJDJTJGQVBHUSUyRkdDNDUxJTIyJTdE"
-    target="_blank">
-    關港貿單一窗口 GC451 稅則查詢
-  </a>
+  </div>
 
 </section>
