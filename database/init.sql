@@ -284,3 +284,20 @@ WHERE code = '0306.17.0000';
 UPDATE hs_code
 SET keywords = '番茄,蕃茄,tomato'
 WHERE code = '0702.00.0000';
+
+SHOW INDEX FROM hs_code;
+
+ALTER TABLE hs_code
+ADD UNIQUE KEY uk_hs_code_code (code);
+
+DROP TABLE IF EXISTS hs_code_import_tmp;
+
+CREATE TABLE hs_code_import_tmp (
+  code VARCHAR(30),
+  name VARCHAR(100),
+  category_name VARCHAR(50),
+  duty_rate DECIMAL(5,2),
+  vat_rate DECIMAL(5,2),
+  description VARCHAR(255),
+  keywords VARCHAR(255)
+);
