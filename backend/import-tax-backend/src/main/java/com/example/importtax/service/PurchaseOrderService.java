@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,7 +33,6 @@ public class PurchaseOrderService {
 
 	public PurchaseOrderService(PurchaseOrderDao purchaseOrderRepository,
 			PurchaseOrderItemDao purchaseOrderItemRepository, ProductDao productRepository) {
-
 		this.purchaseOrderRepository = purchaseOrderRepository;
 		this.purchaseOrderItemRepository = purchaseOrderItemRepository;
 		this.productRepository = productRepository;
@@ -78,9 +77,6 @@ public class PurchaseOrderService {
 
 			BigDecimal itemSubtotal = product.getUnitPrice().multiply(quantity);
 
-			/*
-			 * 先寫死稅率 之後改 ImportTaxRule
-			 */
 			if (product.getHsCode() == null) {
 				throw new RuntimeException("Product " + product.getName() + " 未設定 HS Code");
 			}
@@ -111,13 +107,14 @@ public class PurchaseOrderService {
 
 			orderItem.setDutyAmount(dutyAmount);
 
+			orderItem.setVatRate(vatRate);
+
 			orderItem.setVatAmount(vatAmount);
 
 			orderItem.setLandedCost(landedCost);
 
 			purchaseOrderItemRepository.save(orderItem);
 
-			// 進貨成功後，自動增加商品庫存
 			Integer currentStock = product.getStockQty() == null ? 0 : product.getStockQty();
 
 			product.setStockQty(currentStock + itemRequest.getQuantity());
@@ -148,9 +145,15 @@ public class PurchaseOrderService {
 
 	private String generateOrderNo() {
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+		String dateText = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-		return "PO" + LocalDateTime.now().format(formatter);
+		String prefix = "PO" + dateText;
+
+		long todayCount = purchaseOrderRepository.countByOrderNoStartingWith(prefix);
+
+		long nextSeq = todayCount + 1;
+
+		return prefix + String.format("%04d", nextSeq);
 	}
 
 	public List<PurchaseOrderListRes> getOrders() {
@@ -203,6 +206,7 @@ public class PurchaseOrderService {
 			PurchaseOrderItemRes itemRes = new PurchaseOrderItemRes();
 
 			itemRes.setProductId(item.getProduct().getId());
+
 			itemRes.setProductName(item.getProduct().getName());
 
 			if (item.getProduct().getHsCode() != null) {

@@ -12,6 +12,8 @@ import com.example.importtax.entity.PurchaseOrder;
 public interface PurchaseOrderDao extends JpaRepository<PurchaseOrder, Long> {
 
 	List<PurchaseOrder> findAllByOrderByCreatedAtDesc();
+	
+	long countByOrderNoStartingWith(String prefix);
 
 	@Query("""
 			SELECT COALESCE(SUM(p.subtotal),0)
