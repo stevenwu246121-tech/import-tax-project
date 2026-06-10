@@ -1,17 +1,16 @@
 <h1>HS Code 管理</h1>
 
 <section class="panel">
-
   <div class="page-header">
     <div>
       <h2>食品類 HS Code 對照表</h2>
 
       <p>
-        查詢 HS Code、快速取得進口稅與營業稅，並直接試算落地成本。
+        查詢 HS Code、商品名稱、關鍵字與說明，快速取得進口稅與營業稅，並直接試算落地成本。
       </p>
     </div>
 
-    <button class="toggle-btn" (click)="toggleForm()">
+    <button type="button" class="toggle-btn" (click)="toggleForm()">
       {{ showForm ? '收合表單' : '新增 HS Code' }}
     </button>
   </div>
@@ -37,21 +36,40 @@
 
     <input type="text" placeholder="說明" [(ngModel)]="hsCodeReq.description" />
 
-    <button (click)="submitHsCode()">
+    <button type="button" (click)="submitHsCode()">
       {{ editingHsCodeId ? '更新 HS Code' : '新增 HS Code' }}
     </button>
   </div>
 
+  <div class="search-card">
+    <div class="search-row">
+      <input type="text" placeholder="輸入商品名稱、HS Code 或關鍵字，例如：咖啡、拉麵、白米" [(ngModel)]="keyword" (keyup.enter)="search()" />
+
+      <button type="button" class="search-btn" (click)="search()">
+        查詢
+      </button>
+
+      <button type="button" class="clear-btn" (click)="clearSearch()">
+        清除
+      </button>
+    </div>
+
+    <p class="search-hint">
+      系統依據匯入的官方稅則資料，透過 HS Code、商品名稱、說明與關鍵字進行模糊查詢。
+    </p>
+  </div>
+
+  <p class="result-count" *ngIf="isSearched">
+    共找到 {{ filteredHsCodes.length }} 筆符合資料
+  </p>
+
+  <div class="empty-message" *ngIf="isSearched && filteredHsCodes.length === 0">
+    查無符合的 HS Code 資料
+  </div>
+
   <div class="demo-grid">
-
     <div class="hs-list-panel">
-
-      <div class="search-filter-row">
-        <input type="text" placeholder="搜尋 HS Code / 商品 / 分類" [(ngModel)]="keyword" (input)="search()" />
-      </div>
-
       <div class="hs-list">
-
         <div class="hs-item" *ngFor="let item of filteredHsCodes" [class.active]="selectedHsCodeForCalc?.id === item.id"
           (click)="selectHsCodeForCalc(item)">
           <div>
@@ -70,18 +88,14 @@
           </div>
         </div>
 
-        <div class="empty-row" *ngIf="filteredHsCodes.length === 0">
-          查無 HS Code 資料
+        <div class="empty-row" *ngIf="!isSearched && filteredHsCodes.length === 0">
+          目前沒有 HS Code 資料
         </div>
-
       </div>
-
     </div>
 
     <div class="calc-panel">
-
       <ng-container *ngIf="selectedHsCodeForCalc; else emptyCalc">
-
         <h2>成本試算器</h2>
 
         <div class="calc-target">
@@ -92,7 +106,7 @@
           </strong>
 
           <span>
-            {{ selectedHsCodeForCalc.description }}
+            {{ selectedHsCodeForCalc.description || '無說明資料' }}
           </span>
         </div>
 
@@ -135,7 +149,6 @@
             <strong>NT$ {{ calcLandedCost | number:'1.0-0' }}</strong>
           </div>
         </div>
-
       </ng-container>
 
       <ng-template #emptyCalc>
@@ -145,14 +158,11 @@
           請從左側選擇一筆 HS Code，即可顯示稅率並試算落地成本。
         </p>
       </ng-template>
-
     </div>
-
   </div>
 
   <div class="table-section">
-
-    <h2>完整 HS Code 資料表</h2>
+    <h2>{{ isSearched ? '查詢結果資料表' : '完整 HS Code 資料表' }}</h2>
 
     <table>
       <thead>
@@ -174,21 +184,25 @@
           <td>{{ item.categoryName }}</td>
           <td>{{ item.dutyRate }}%</td>
           <td>{{ item.vatRate }}%</td>
-          <td>{{ item.description }}</td>
+          <td>{{ item.description || '-' }}</td>
 
           <td class="action-cell">
-            <button class="edit-btn" (click)="editHsCode(item)">
+            <button type="button" class="edit-btn" (click)="editHsCode(item)">
               修改
             </button>
 
-            <button class="delete-btn" (click)="deleteHsCode(item.id)">
+            <button type="button" class="delete-btn" (click)="deleteHsCode(item.id)">
               刪除
             </button>
           </td>
         </tr>
+
+        <tr *ngIf="filteredHsCodes.length === 0">
+          <td colspan="7" class="empty-row">
+            查無 HS Code 資料
+          </td>
+        </tr>
       </tbody>
     </table>
-
   </div>
-
 </section>

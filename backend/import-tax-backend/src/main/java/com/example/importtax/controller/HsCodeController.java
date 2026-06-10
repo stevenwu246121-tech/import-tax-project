@@ -2,6 +2,7 @@ package com.example.importtax.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.importtax.entity.HsCode;
@@ -11,6 +12,7 @@ import com.example.importtax.service.HsCodeService;
 
 @RestController
 @RequestMapping("/api/hs-codes")
+@CrossOrigin(origins = "http://localhost:4200")
 public class HsCodeController {
 
 	private final HsCodeService hsCodeService;
@@ -40,12 +42,19 @@ public class HsCodeController {
 	}
 
 	@GetMapping("/search")
-	public List<HsCodeRes> searchHsCodes(@RequestParam("keyword") String keyword) {
+	public List<HsCodeRes> searchHsCodes(
+			@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
 		return hsCodeService.searchHsCodes(keyword);
 	}
 
 	@GetMapping("/recommend")
-	public HsCodeRes recommendHsCode(@RequestParam("keyword") String keyword) {
-		return hsCodeService.recommendHsCode(keyword);
+	public ResponseEntity<HsCodeRes> recommendHsCode(@RequestParam("keyword") String keyword) {
+		HsCodeRes result = hsCodeService.recommendHsCode(keyword);
+
+		if (result == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		return ResponseEntity.ok(result);
 	}
 }

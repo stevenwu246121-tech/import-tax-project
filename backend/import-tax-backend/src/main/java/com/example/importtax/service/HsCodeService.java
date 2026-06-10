@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
 import com.example.importtax.dao.CategoryDao;
-import com.example.importtax.entity.Category;
 import com.example.importtax.dao.HsCodeDao;
+import com.example.importtax.entity.Category;
 import com.example.importtax.entity.HsCode;
 import com.example.importtax.request.HsCodeReq;
 import com.example.importtax.response.HsCodeRes;
@@ -43,15 +44,10 @@ public class HsCodeService {
 		HsCode hsCode = new HsCode();
 
 		hsCode.setCode(req.getCode());
-
 		hsCode.setName(req.getName());
-
 		hsCode.setCategoryName(category.getName());
-
 		hsCode.setDutyRate(req.getDutyRate());
-
 		hsCode.setVatRate(req.getVatRate());
-
 		hsCode.setDescription(req.getDescription());
 
 		hsCodeDao.save(hsCode);
@@ -88,26 +84,27 @@ public class HsCodeService {
 
 	public List<HsCodeRes> searchHsCodes(String keyword) {
 
-		return hsCodeDao.findByCodeContainingOrNameContainingOrCategoryNameContaining(keyword, keyword, keyword)
+		String normalizedKeyword = keyword == null ? "" : keyword.trim();
+
+		if (normalizedKeyword.isEmpty()) {
+			return hsCodeDao.findAll().stream().map(this::toRes).toList();
+		}
+
+		return hsCodeDao
+				.findByCodeContainingIgnoreCaseOrNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrKeywordsContainingIgnoreCase(
+						normalizedKeyword, normalizedKeyword, normalizedKeyword, normalizedKeyword)
 				.stream().map(this::toRes).toList();
 	}
 
 	public HsCodeRes recommendHsCode(String keyword) {
 
-		String normalizedKeyword = keyword == null ? "" : keyword.trim();
+		List<HsCodeRes> results = searchHsCodes(keyword);
 
-		if (normalizedKeyword.isEmpty()) {
+		if (results.isEmpty()) {
 			return null;
 		}
 
-		List<HsCode> allHsCodes = hsCodeDao.findAll();
-
-		return allHsCodes.stream()
-				.filter(hsCode -> normalizedKeyword.contains(hsCode.getName())
-						|| hsCode.getName().contains(normalizedKeyword)
-						|| normalizedKeyword.contains(hsCode.getCategoryName())
-						|| normalizedKeyword.contains(hsCode.getDescription()))
-				.findFirst().map(this::toRes).orElse(null);
+		return results.get(0);
 	}
 
 	private HsCodeRes toRes(HsCode hsCode) {
@@ -124,5 +121,4 @@ public class HsCodeService {
 
 		return res;
 	}
-
 }

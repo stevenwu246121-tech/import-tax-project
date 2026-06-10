@@ -249,3 +249,38 @@ SELECT
 FROM purchase_order_item poi
 JOIN purchase_order po ON poi.purchase_order_id = po.id
 ORDER BY poi.id;
+
+ALTER TABLE hs_code
+ADD COLUMN keywords VARCHAR(255);
+
+UPDATE hs_code
+SET keywords = '咖啡,咖啡豆,日本咖啡,coffee,bean'
+WHERE code = '0901.11.0000';
+
+UPDATE hs_code
+SET keywords = '白米,米,日本米,rice'
+WHERE code = '1006.30.0000';
+
+UPDATE hs_code
+SET keywords = '拉麵,泡麵,即食麵,麵條,ramen,noodle'
+WHERE code = '1902.30.0000';
+
+UPDATE hs_code
+SET keywords = '抹茶,抹茶粉,茶,綠茶,日本茶,tea'
+WHERE code = '0902.10.0000';
+
+UPDATE hs_code
+SET keywords = '和牛,牛肉,日本和牛,beef,wagyu'
+WHERE code = '0201.30.0000';
+
+UPDATE hs_code
+SET keywords = '鮭魚,生鮭魚,salmon'
+WHERE code = '0302.14.0000';
+
+UPDATE hs_code
+SET keywords = '蝦,冷凍蝦,shrimp'
+WHERE code = '0306.17.0000';
+
+UPDATE hs_code
+SET keywords = '番茄,蕃茄,tomato'
+WHERE code = '0702.00.0000';

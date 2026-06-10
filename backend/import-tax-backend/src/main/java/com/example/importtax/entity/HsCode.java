@@ -8,78 +8,88 @@ import jakarta.persistence.*;
 @Table(name = "hs_code")
 public class HsCode {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    private String code;
+	private String code;
 
-    private String name;
+	private String name;
 
-    @Column(name = "category_name")
-    private String categoryName;
+	@Column(name = "category_name")
+	private String categoryName;
 
-    @Column(name = "duty_rate")
-    private BigDecimal dutyRate;
+	@Column(name = "duty_rate")
+	private BigDecimal dutyRate;
 
-    @Column(name = "vat_rate")
-    private BigDecimal vatRate;
+	@Column(name = "vat_rate")
+	private BigDecimal vatRate;
 
-    private String description;
+	private String description;
 
-    public Long getId() {
-        return id;
-    }
+	private String keywords;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public String getCode() {
-        return code;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+	public String getCode() {
+		return code;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setCode(String code) {
+		this.code = code;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getCategoryName() {
-        return categoryName;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
+	public String getCategoryName() {
+		return categoryName;
+	}
 
-    public BigDecimal getDutyRate() {
-        return dutyRate;
-    }
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
+	}
 
-    public void setDutyRate(BigDecimal dutyRate) {
-        this.dutyRate = dutyRate;
-    }
+	public BigDecimal getDutyRate() {
+		return dutyRate;
+	}
 
-    public BigDecimal getVatRate() {
-        return vatRate;
-    }
+	public void setDutyRate(BigDecimal dutyRate) {
+		this.dutyRate = dutyRate;
+	}
 
-    public void setVatRate(BigDecimal vatRate) {
-        this.vatRate = vatRate;
-    }
+	public BigDecimal getVatRate() {
+		return vatRate;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setVatRate(BigDecimal vatRate) {
+		this.vatRate = vatRate;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getKeywords() {
+		return keywords;
+	}
+
+	public void setKeywords(String keywords) {
+		this.keywords = keywords;
+	}
 }

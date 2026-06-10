@@ -111,4 +111,12 @@ export class ApiService {
       },
     });
   }
+
+  searchHsCodes(keyword: string) {
+    return this.http.get<any[]>(`${this.baseUrl}/hs-codes/search`, {
+      params: {
+        keyword: keyword,
+      },
+    });
+  }
 }
