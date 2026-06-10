@@ -16,8 +16,8 @@ import { HsCode } from '../../models/hs-code';
 
 interface ProductReq {
   name: string;
-  categoryId: number;
-  hsCodeId: number;
+  categoryId: number | null;
+  hsCodeId: number | null;
   originCountry: string;
   unit: string;
   unitPrice: number | null;
@@ -50,8 +50,8 @@ export class ProductManageComponent implements OnInit {
 
   productReq: ProductReq = {
     name: '',
-    categoryId: 0,
-    hsCodeId: 0,
+    categoryId: null,
+    hsCodeId: null,
     originCountry: '',
     unit: '',
     unitPrice: null,
@@ -400,33 +400,17 @@ export class ProductManageComponent implements OnInit {
   editProduct(product: Product): void {
     this.editingProductId = product.id;
 
-    this.isAutoRecommendEnabled = false;
-
-    this.recommendMessage = '';
-
-    const matchedCategory = this.categories.find(
-      (category) => category.name === product.categoryName,
-    );
-
-    const matchedHsCode = this.hsCodes.find(
-      (hsCode) => hsCode.code === product.hsCode,
-    );
-
     this.productReq = {
       name: product.productName,
-      categoryId: matchedCategory?.id ?? 0,
-      hsCodeId: matchedHsCode?.id ?? 0,
-      originCountry: product.productName.includes('台灣') ? 'TW' : 'JP',
+      categoryId: product.categoryId ?? null,
+      hsCodeId: product.hsCodeId ?? null,
+      originCountry: product.originCountry ?? '',
       unit: product.unit ?? '',
-      unitPrice: product.unitPrice,
+      unitPrice: product.unitPrice ?? null,
       stockQty: product.stockQty ?? null,
     };
 
-    this.onCategoryChange();
-
-    if (matchedHsCode) {
-      this.productReq.hsCodeId = matchedHsCode.id;
-    }
+    this.recommendMessage = '';
   }
 
   deleteProduct(productId: number): void {
@@ -498,34 +482,55 @@ export class ProductManageComponent implements OnInit {
     this.recommendMessage = '';
   }
 
-  recommendHsCode() {
-    const productName = this.productReq.name;
+  recommendHsCode(): void {
+    const productName = this.productReq.name?.trim();
 
-    if (!productName || productName.trim() === '') {
-      alert('請先輸入商品名稱');
+    if (!productName) {
+      this.dialogService.warning('請先輸入商品名稱');
       return;
     }
+
+    // 先清掉舊的推薦結果，避免「起司」還殘留上一筆冷凍蝦
+    this.productReq.categoryId = null;
+    this.productReq.hsCodeId = null;
+    this.recommendMessage = '';
 
     this.apiService.recommendHsCode(productName).subscribe({
       next: (res) => {
         console.log('推薦結果', res);
 
+        if (!res || !res.code) {
+          this.recommendMessage = '找不到對應的 HS Code';
+          this.dialogService.warning('找不到對應的 HS Code');
+          return;
+        }
+
         const matchedHsCode = this.hsCodes.find((hs) => hs.code === res.code);
 
-        if (matchedHsCode) {
-          this.productReq.hsCodeId = matchedHsCode.id;
-          this.recommendMessage = `已推薦 HS Code：${res.code}`;
-        } else {
-          this.recommendMessage = `後端有推薦 ${res.code}，但前端 hsCodes 清單裡找不到`;
+        if (!matchedHsCode) {
+          this.recommendMessage = `後端有推薦 ${res.code}，但前端 HS Code 清單裡找不到`;
+          this.dialogService.warning(this.recommendMessage);
+          return;
         }
+
+        this.productReq.hsCodeId = matchedHsCode.id;
+        this.productReq.categoryId = matchedHsCode.categoryId ?? null;
+
+        this.recommendMessage = `已推薦 HS Code：${matchedHsCode.code} - ${matchedHsCode.name}`;
+
+        this.dialogService.success(this.recommendMessage);
       },
       error: (err) => {
         console.error(err);
+
+        this.productReq.categoryId = null;
+        this.productReq.hsCodeId = null;
+
         this.recommendMessage = '找不到對應的 HS Code';
+        this.dialogService.warning('找不到對應的 HS Code');
       },
     });
   }
-
   getUnitLabel(unit?: string): string {
     switch (unit) {
       case 'kg':
@@ -535,5 +540,17 @@ export class ProductManageComponent implements OnInit {
       default:
         return '-';
     }
+  }
+
+  onHsCodeChange(): void {
+    const selectedHsCode = this.hsCodes.find(
+      (hs) => hs.id === this.productReq.hsCodeId,
+    );
+
+    if (!selectedHsCode) {
+      return;
+    }
+
+    this.productReq.categoryId = selectedHsCode.categoryId ?? null;
   }
 }

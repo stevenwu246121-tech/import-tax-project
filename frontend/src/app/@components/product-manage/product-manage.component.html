@@ -28,8 +28,8 @@
   </div>
 
   <!-- 分類 -->
-  <select [(ngModel)]="productReq.categoryId" (change)="onManualCategoryChange()">
-    <option [ngValue]="0" disabled>
+  <select [(ngModel)]="productReq.categoryId">
+    <option [ngValue]="null" disabled>
       請選擇分類
     </option>
 
@@ -39,13 +39,13 @@
   </select>
 
   <!-- HS Code -->
-  <select [(ngModel)]="productReq.hsCodeId" (change)="onManualHsCodeChange()">
-    <option [ngValue]="0" disabled>
+  <select [(ngModel)]="productReq.hsCodeId" (change)="onHsCodeChange()">
+    <option [ngValue]="null" disabled>
       請選擇 HS Code
     </option>
 
-    <option *ngFor="let hsCode of filteredHsCodes" [ngValue]="hsCode.id">
-      {{ hsCode.code }} - {{ hsCode.name }}
+    <option *ngFor="let hs of hsCodes" [ngValue]="hs.id">
+      {{ hs.code }} - {{ hs.name }}
     </option>
   </select>
 

@@ -25,7 +25,9 @@ type ExchangeRateMode = 'TWD_TO_JPY' | 'JPY_TO_TWD';
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss'],
 })
-export class DashboardHomeComponent implements OnInit, AfterViewInit,OnDestroy {
+export class DashboardHomeComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   todayImportTotal = 0;
 
   totalDuty = 0;
@@ -52,19 +54,20 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit,OnDestroy {
 
   updateTime = '';
 
-  selectedHsCode = '';
-
-  dutyRate = 0;
-
-  vatRate = 0;
-
-  hsCodes: HsCode[] = [];
-
   selectedPeriod = 7;
 
   trendData: DashboardTrend[] = [];
 
   lowStockProducts: LowStock[] = [];
+
+  // HS Code 快速查詢
+  hsCodeKeyword = '';
+
+  hsCodeSearchResults: HsCode[] = [];
+
+  selectedQuickHsCode: HsCode | null = null;
+
+  hsCodeSearchMessage = '';
 
   private trendChart?: Chart;
 
@@ -79,30 +82,28 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit,OnDestroy {
     private dialogService: DialogService,
   ) {}
   ngOnDestroy(): void {
-  if (this.exchangeRateTimer) {
-    clearInterval(this.exchangeRateTimer);
+    if (this.exchangeRateTimer) {
+      clearInterval(this.exchangeRateTimer);
+    }
+
+    this.trendChart?.destroy();
+    this.taxChart?.destroy();
+    this.inventoryChart?.destroy();
   }
 
-  this.trendChart?.destroy();
-  this.taxChart?.destroy();
-  this.inventoryChart?.destroy();
-}
+  ngOnInit(): void {
+    this.loadDashboardSummary();
 
-ngOnInit(): void {
-  this.loadDashboardSummary();
+    this.loadProducts();
 
-  this.loadProducts();
+    this.loadDashboardTrend();
 
-  this.loadDashboardTrend();
+    this.loadExchangeRate();
 
-  this.loadExchangeRate();
+    this.startExchangeRateAutoRefresh();
 
-  this.startExchangeRateAutoRefresh();
-
-  this.loadHsCodes();
-
-  this.loadLowStockProducts();
-}
+    this.loadLowStockProducts();
+  }
 
   ngAfterViewInit(): void {}
 
@@ -143,64 +144,47 @@ ngOnInit(): void {
     });
   }
 
-  loadHsCodes(): void {
-    this.apiService.getHsCodes().subscribe({
-      next: (response: HsCode[]) => {
-        this.hsCodes = response;
+  loadExchangeRate(showError = true): void {
+    this.apiService.getJpyExchangeRate().subscribe({
+      next: (response: number) => {
+        this.twdToJpyRate = response;
+
+        this.updateTime = new Date().toLocaleString();
       },
+
       error: (error: unknown) => {
         console.error(error);
 
-        this.dialogService.error('HS Code 資料載入失敗');
+        if (showError) {
+          this.dialogService.error('匯率資料載入失敗');
+        }
       },
     });
   }
-
-loadExchangeRate(showError = true): void {
-  this.apiService.getJpyExchangeRate().subscribe({
-    next: (response: number) => {
-      this.twdToJpyRate = response;
-
-      this.updateTime = new Date().toLocaleString();
-    },
-
-    error: (error: unknown) => {
-      console.error(error);
-
-      if (showError) {
-        this.dialogService.error('匯率資料載入失敗');
-      }
-    },
-  });
-}
-get exchangeRateTitle(): string {
-  return this.exchangeRateMode === 'TWD_TO_JPY'
-    ? 'NT$ → JP¥'
-    : 'JP¥ → NT$';
-}
-
-get exchangeRateText(): string {
-  if (!this.twdToJpyRate) {
-    return '-';
+  get exchangeRateTitle(): string {
+    return this.exchangeRateMode === 'TWD_TO_JPY' ? 'NT$ → JP¥' : 'JP¥ → NT$';
   }
 
-  if (this.exchangeRateMode === 'TWD_TO_JPY') {
-    return `1 NT$ = ${this.twdToJpyRate.toFixed(2)} JP¥`;
-  }
+  get exchangeRateText(): string {
+    if (!this.twdToJpyRate) {
+      return '-';
+    }
 
-  return `1 JP¥ = ${(1 / this.twdToJpyRate).toFixed(4)} NT$`;
-}
-toggleExchangeRateMode(): void {
-  this.exchangeRateMode =
-    this.exchangeRateMode === 'TWD_TO_JPY'
-      ? 'JPY_TO_TWD'
-      : 'TWD_TO_JPY';
-}
+    if (this.exchangeRateMode === 'TWD_TO_JPY') {
+      return `1 NT$ = ${this.twdToJpyRate.toFixed(2)} JP¥`;
+    }
+
+    return `1 JP¥ = ${(1 / this.twdToJpyRate).toFixed(4)} NT$`;
+  }
+  toggleExchangeRateMode(): void {
+    this.exchangeRateMode =
+      this.exchangeRateMode === 'TWD_TO_JPY' ? 'JPY_TO_TWD' : 'TWD_TO_JPY';
+  }
   startExchangeRateAutoRefresh(): void {
-  this.exchangeRateTimer = setInterval(() => {
-    this.loadExchangeRate(false);
-  }, 1000);
-}
+    this.exchangeRateTimer = setInterval(() => {
+      this.loadExchangeRate(false);
+    }, 1000);
+  }
   onTrendFilterChange(): void {
     this.loadDashboardTrend();
   }
@@ -401,19 +385,48 @@ toggleExchangeRateMode(): void {
     });
   }
 
-  searchHsCode(): void {
-    const found = this.hsCodes.find(
-      (item) => item.code === this.selectedHsCode.trim(),
-    );
+  searchQuickHsCode(): void {
+    const keyword = this.hsCodeKeyword.trim();
 
-    if (!found) {
-      this.dialogService.warning('查無此 HS Code');
+    if (!keyword) {
+      this.hsCodeSearchResults = [];
+      this.selectedQuickHsCode = null;
+      this.hsCodeSearchMessage = '請輸入商品名稱、HS Code 或關鍵字';
       return;
     }
 
-    this.dutyRate = found.dutyRate;
+    this.apiService.searchHsCodes(keyword).subscribe({
+      next: (response: HsCode[]) => {
+        this.hsCodeSearchResults = response;
 
-    this.vatRate = found.vatRate;
+        if (response.length === 0) {
+          this.selectedQuickHsCode = null;
+          this.hsCodeSearchMessage = '查無符合的 HS Code';
+          return;
+        }
+
+        this.selectedQuickHsCode = response[0];
+        this.hsCodeSearchMessage = `共找到 ${response.length} 筆符合資料`;
+      },
+      error: (error: unknown) => {
+        console.error(error);
+        this.hsCodeSearchResults = [];
+        this.selectedQuickHsCode = null;
+        this.hsCodeSearchMessage = 'HS Code 查詢失敗';
+        this.dialogService.error('HS Code 查詢失敗');
+      },
+    });
+  }
+
+  selectQuickHsCode(hsCode: HsCode): void {
+    this.selectedQuickHsCode = hsCode;
+  }
+
+  clearQuickHsCodeSearch(): void {
+    this.hsCodeKeyword = '';
+    this.hsCodeSearchResults = [];
+    this.selectedQuickHsCode = null;
+    this.hsCodeSearchMessage = '';
   }
 
   loadDashboardSummary(): void {

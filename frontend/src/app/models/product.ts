@@ -1,19 +1,14 @@
 export interface Product {
-  unit?: string;
-
   id: number;
-
   productName: string;
-
+  categoryId?: number;
   categoryName: string;
-
+  hsCodeId?: number;
   hsCode: string;
-
-  dutyRate: number;
-
-  vatRate: number;
-
+  originCountry: string;
+  unit: string;
   unitPrice: number;
-
   stockQty: number;
+  dutyRate?: number;
+  vatRate?: number;
 }

@@ -1,4 +1,4 @@
-<h1>進貨稅率與成本平台</h1>
+<h1>總覽</h1>
 
 <div class="home-summary-grid">
 
@@ -150,71 +150,96 @@
 
   <section class="home-panel">
 
-  <div class="exchange-header">
-    <h2>即時匯率</h2>
+    <div class="exchange-header">
+      <h2>即時匯率</h2>
 
-    <button
-      type="button"
-      class="exchange-toggle-btn"
-      (click)="toggleExchangeRateMode()"
-    >
-      切換匯率
-    </button>
-  </div>
+      <button type="button" class="exchange-toggle-btn" (click)="toggleExchangeRateMode()">
+        切換匯率
+      </button>
+    </div>
 
-  <div class="exchange-card">
+    <div class="exchange-card">
 
-    <span>{{ exchangeRateTitle }}</span>
+      <span>{{ exchangeRateTitle }}</span>
 
-    <strong>
-      {{ exchangeRateText }}
-    </strong>
+      <strong>
+        {{ exchangeRateText }}
+      </strong>
 
-    <small>
-      更新時間：
-      {{ updateTime }}
-    </small>
+      <small>
+        更新時間：
+        {{ updateTime }}
+      </small>
 
-  </div>
+    </div>
 
-</section>
+  </section>
 
-  <section class="home-panel">
+  <section class="home-panel quick-hs-panel">
 
     <h2>HS Code 快速查詢</h2>
 
-    <div class="hs-result" *ngIf="dutyRate || vatRate">
-      <p>
-        進口稅：
-        <strong>
-          {{ dutyRate }}%
-        </strong>
-      </p>
+    <div class="quick-search-row">
+      <input type="text" placeholder="輸入商品名稱、HS Code 或關鍵字" [(ngModel)]="hsCodeKeyword"
+        (keyup.enter)="searchQuickHsCode()" />
 
-      <p>
-        營業稅：
-        <strong>
-          {{ vatRate }}%
-        </strong>
+      <button type="button" (click)="searchQuickHsCode()">
+        查詢
+      </button>
+    </div>
+
+    <button type="button" class="quick-clear-btn" *ngIf="hsCodeKeyword || hsCodeSearchMessage"
+      (click)="clearQuickHsCodeSearch()">
+      清除查詢
+    </button>
+
+    <p class="quick-search-message" *ngIf="hsCodeSearchMessage">
+      {{ hsCodeSearchMessage }}
+    </p>
+
+    <div class="quick-result-main" *ngIf="selectedQuickHsCode">
+      <div class="quick-result-code">
+        {{ selectedQuickHsCode.code }}
+      </div>
+
+      <div class="quick-result-name">
+        {{ selectedQuickHsCode.name }}
+      </div>
+
+      <div class="quick-tax-grid">
+        <div>
+          <span>進口稅</span>
+
+          <strong>
+            {{ selectedQuickHsCode.dutyRate }}%
+          </strong>
+        </div>
+
+        <div>
+          <span>營業稅</span>
+
+          <strong>
+            {{ selectedQuickHsCode.vatRate }}%
+          </strong>
+        </div>
+      </div>
+
+      <p class="quick-description">
+        {{ selectedQuickHsCode.description || '無說明資料' }}
       </p>
     </div>
 
-    <div class="quick-calc">
+    <div class="quick-result-list" *ngIf="hsCodeSearchResults.length > 1">
+      <button type="button" class="quick-result-item" *ngFor="let item of hsCodeSearchResults"
+        [class.active]="selectedQuickHsCode?.id === item.id" (click)="selectQuickHsCode(item)">
+        <span>
+          {{ item.code }}
+        </span>
 
-      <select [(ngModel)]="selectedHsCode">
-        <option value="">
-          請選擇 HS Code
-        </option>
-
-        <option *ngFor="let hs of hsCodes" [value]="hs.code">
-          {{ hs.code }} - {{ hs.name }}
-        </option>
-      </select>
-
-      <button (click)="searchHsCode()">
-        查詢
+        <strong>
+          {{ item.name }}
+        </strong>
       </button>
-
     </div>
 
   </section>

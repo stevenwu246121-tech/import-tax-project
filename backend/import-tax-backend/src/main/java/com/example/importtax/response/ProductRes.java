@@ -3,11 +3,16 @@ package com.example.importtax.response;
 import java.math.BigDecimal;
 
 public class ProductRes {
+
 	private Long id;
 
 	private String productName;
 
+	private Long categoryId;
+
 	private String categoryName;
+
+	private Long hsCodeId;
 
 	private String hsCode;
 
@@ -15,13 +20,13 @@ public class ProductRes {
 
 	private BigDecimal vatRate;
 
+	private String originCountry;
+
 	private BigDecimal unitPrice;
 
 	private Integer stockQty;
 
 	private String unit;
-
-	// Getter Setter
 
 	public Long getId() {
 		return id;
@@ -39,12 +44,28 @@ public class ProductRes {
 		this.productName = productName;
 	}
 
+	public Long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Long categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	public String getCategoryName() {
 		return categoryName;
 	}
 
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	public Long getHsCodeId() {
+		return hsCodeId;
+	}
+
+	public void setHsCodeId(Long hsCodeId) {
+		this.hsCodeId = hsCodeId;
 	}
 
 	public String getHsCode() {
@@ -69,6 +90,14 @@ public class ProductRes {
 
 	public void setVatRate(BigDecimal vatRate) {
 		this.vatRate = vatRate;
+	}
+
+	public String getOriginCountry() {
+		return originCountry;
+	}
+
+	public void setOriginCountry(String originCountry) {
+		this.originCountry = originCountry;
 	}
 
 	public BigDecimal getUnitPrice() {

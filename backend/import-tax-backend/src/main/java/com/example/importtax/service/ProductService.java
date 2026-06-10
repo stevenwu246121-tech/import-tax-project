@@ -29,7 +29,6 @@ public class ProductService {
 
 	public ProductService(ProductDao productDao, ImportTaxRuleDao importTaxRuleDao, CategoryDao categoryDao,
 			HsCodeDao hsCodeDao) {
-
 		this.productDao = productDao;
 		this.importTaxRuleDao = importTaxRuleDao;
 		this.categoryDao = categoryDao;
@@ -50,24 +49,37 @@ public class ProductService {
 
 			res.setProductName(product.getName());
 
-			res.setCategoryName(product.getCategory().getName());
+			if (product.getCategory() != null) {
+				res.setCategoryId(product.getCategory().getId());
 
-			res.setHsCode(product.getHsCode().getCode());
+				res.setCategoryName(product.getCategory().getName());
+			}
+
+			if (product.getHsCode() != null) {
+				res.setHsCodeId(product.getHsCode().getId());
+
+				res.setHsCode(product.getHsCode().getCode());
+
+				res.setDutyRate(product.getHsCode().getDutyRate());
+
+				res.setVatRate(product.getHsCode().getVatRate());
+
+				ImportTaxRule taxRule = importTaxRuleDao.findByHsCode(product.getHsCode()).orElse(null);
+
+				if (taxRule != null) {
+					res.setDutyRate(taxRule.getDutyRate());
+
+					res.setVatRate(taxRule.getVatRate());
+				}
+			}
+
+			res.setOriginCountry(product.getOriginCountry());
 
 			res.setUnitPrice(product.getUnitPrice());
 
 			res.setStockQty(product.getStockQty());
-			
+
 			res.setUnit(product.getUnit());
-
-			ImportTaxRule taxRule = importTaxRuleDao.findByHsCode(product.getHsCode()).orElse(null);
-
-			if (taxRule != null) {
-
-				res.setDutyRate(taxRule.getDutyRate());
-
-				res.setVatRate(taxRule.getVatRate());
-			}
 
 			responseList.add(res);
 		}
@@ -111,11 +123,13 @@ public class ProductService {
 
 	public void update(Long productId, ProductReq req) {
 
-		Product product = productDao.findById(productId).orElseThrow();
+		Product product = productDao.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
 
-		Category category = categoryDao.findById(req.getCategoryId()).orElseThrow();
+		Category category = categoryDao.findById(req.getCategoryId())
+				.orElseThrow(() -> new RuntimeException("Category not found"));
 
-		HsCode hsCode = hsCodeDao.findById(req.getHsCodeId()).orElseThrow();
+		HsCode hsCode = hsCodeDao.findById(req.getHsCodeId())
+				.orElseThrow(() -> new RuntimeException("HS Code not found"));
 
 		product.setName(req.getName());
 
