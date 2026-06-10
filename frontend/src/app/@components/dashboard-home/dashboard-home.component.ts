@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
@@ -17,7 +17,7 @@ import { DashboardTrend } from '../../models/dashboard-trend';
 import { LowStock } from '../../models/low-stock';
 
 Chart.register(...registerables);
-
+type ExchangeRateMode = 'TWD_TO_JPY' | 'JPY_TO_TWD';
 @Component({
   selector: 'app-dashboard-home',
   standalone: true,
@@ -25,7 +25,7 @@ Chart.register(...registerables);
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss'],
 })
-export class DashboardHomeComponent implements OnInit, AfterViewInit {
+export class DashboardHomeComponent implements OnInit, AfterViewInit,OnDestroy {
   todayImportTotal = 0;
 
   totalDuty = 0;
@@ -47,6 +47,8 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
   inventoryTotals: { [key: string]: number } = {};
 
   twdToJpyRate = 0;
+
+  exchangeRateMode: ExchangeRateMode = 'TWD_TO_JPY';
 
   updateTime = '';
 
@@ -70,24 +72,37 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
 
   private inventoryChart?: Chart;
 
+  private exchangeRateTimer?: ReturnType<typeof setInterval>;
+
   constructor(
     private apiService: ApiService,
     private dialogService: DialogService,
   ) {}
-
-  ngOnInit(): void {
-    this.loadDashboardSummary();
-
-    this.loadProducts();
-
-    this.loadDashboardTrend();
-
-    this.loadExchangeRate();
-
-    this.loadHsCodes();
-
-    this.loadLowStockProducts();
+  ngOnDestroy(): void {
+  if (this.exchangeRateTimer) {
+    clearInterval(this.exchangeRateTimer);
   }
+
+  this.trendChart?.destroy();
+  this.taxChart?.destroy();
+  this.inventoryChart?.destroy();
+}
+
+ngOnInit(): void {
+  this.loadDashboardSummary();
+
+  this.loadProducts();
+
+  this.loadDashboardTrend();
+
+  this.loadExchangeRate();
+
+  this.startExchangeRateAutoRefresh();
+
+  this.loadHsCodes();
+
+  this.loadLowStockProducts();
+}
 
   ngAfterViewInit(): void {}
 
@@ -141,22 +156,51 @@ export class DashboardHomeComponent implements OnInit, AfterViewInit {
     });
   }
 
-  loadExchangeRate(): void {
-    this.apiService.getJpyExchangeRate().subscribe({
-      next: (response: number) => {
-        this.twdToJpyRate = 1 / response;
+loadExchangeRate(showError = true): void {
+  this.apiService.getJpyExchangeRate().subscribe({
+    next: (response: number) => {
+      this.twdToJpyRate = response;
 
-        this.updateTime = new Date().toLocaleString();
-      },
+      this.updateTime = new Date().toLocaleString();
+    },
 
-      error: (error: unknown) => {
-        console.error(error);
+    error: (error: unknown) => {
+      console.error(error);
 
+      if (showError) {
         this.dialogService.error('匯率資料載入失敗');
-      },
-    });
+      }
+    },
+  });
+}
+get exchangeRateTitle(): string {
+  return this.exchangeRateMode === 'TWD_TO_JPY'
+    ? 'NT$ → JP¥'
+    : 'JP¥ → NT$';
+}
+
+get exchangeRateText(): string {
+  if (!this.twdToJpyRate) {
+    return '-';
   }
 
+  if (this.exchangeRateMode === 'TWD_TO_JPY') {
+    return `1 NT$ = ${this.twdToJpyRate.toFixed(2)} JP¥`;
+  }
+
+  return `1 JP¥ = ${(1 / this.twdToJpyRate).toFixed(4)} NT$`;
+}
+toggleExchangeRateMode(): void {
+  this.exchangeRateMode =
+    this.exchangeRateMode === 'TWD_TO_JPY'
+      ? 'JPY_TO_TWD'
+      : 'TWD_TO_JPY';
+}
+  startExchangeRateAutoRefresh(): void {
+  this.exchangeRateTimer = setInterval(() => {
+    this.loadExchangeRate(false);
+  }, 1000);
+}
   onTrendFilterChange(): void {
     this.loadDashboardTrend();
   }
