@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -6,7 +6,6 @@ import { ApiService } from '../../@services/api.service';
 import { Product } from '../../models/product';
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
 import { PurchaseItemRequest } from '../../models/purchase-item-request';
-import { ExchangeRateService } from '../../@services/exchange-rate.service';
 
 type Region = 'TW' | 'JP';
 type DiningType = 'DINE_IN' | 'TAKE_OUT';
@@ -18,7 +17,7 @@ type DiningType = 'DINE_IN' | 'TAKE_OUT';
   templateUrl: './pos-checkout.component.html',
   styleUrls: ['./pos-checkout.component.scss'],
 })
-export class PosCheckoutComponent implements OnInit {
+export class PosCheckoutComponent implements OnInit, OnDestroy {
   productList: Product[] = [];
 
   cart: {
@@ -34,6 +33,7 @@ export class PosCheckoutComponent implements OnInit {
   exchangeRate = 1;
   isLoadingExchangeRate = false;
   private cachedJpyRate?: number;
+  private exchangeRateTimer?: ReturnType<typeof setInterval>;
 
   isRegionMenuOpen = false;
   isDiningMenuOpen = false;
@@ -41,20 +41,47 @@ export class PosCheckoutComponent implements OnInit {
   twdToJpyRate = 0;
   updateTime = '';
 
-  constructor(
-    private apiService: ApiService,
-    private exchangeRateService: ExchangeRateService,
-  ) {}
+  constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
     this.loadProducts();
     this.loadExchangeRate();
+
+    this.exchangeRateTimer = setInterval(() => {
+      this.loadExchangeRate();
+    }, 1000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.exchangeRateTimer) {
+      clearInterval(this.exchangeRateTimer);
+    }
   }
 
   get currencyLabel(): string {
     return this.selectedRegion === 'TW' ? 'NT$ ' : 'JP¥ ';
   }
+  get exchangeRateTitle(): string {
+  return this.selectedRegion === 'TW' ? '日幣換台幣' : '台幣換日幣';
+}
 
+get exchangeRatePrefix(): string {
+  return this.selectedRegion === 'TW' ? '1 JP¥ =' : '1 NT$ =';
+}
+
+get displayExchangeRate(): number {
+  if (this.twdToJpyRate <= 0) {
+    return 0;
+  }
+
+  return this.selectedRegion === 'TW'
+    ? 1 / this.twdToJpyRate
+    : this.twdToJpyRate;
+}
+
+  get exchangeRateUnit(): string {
+  return this.selectedRegion === 'TW' ? 'NT$' : 'JP¥';
+}
   get regionLabel(): string {
     return this.selectedRegion === 'TW' ? '台灣 TW' : '日本 JP';
   }
@@ -104,34 +131,39 @@ export class PosCheckoutComponent implements OnInit {
     this.loadJpyExchangeRate();
   }
 
-  loadJpyExchangeRate(): void {
-    if (this.cachedJpyRate) {
-      this.exchangeRate = this.cachedJpyRate;
-      this.selectedRegion = 'JP';
-      this.onCheckoutSettingChange();
-      return;
-    }
-
-    this.isLoadingExchangeRate = true;
-
-    this.apiService.getJpyExchangeRate().subscribe({
-      next: (rate: number) => {
-        this.cachedJpyRate = rate;
-        this.exchangeRate = rate;
-        this.selectedRegion = 'JP';
-        this.isLoadingExchangeRate = false;
-        this.onCheckoutSettingChange();
-      },
-      error: (error: unknown) => {
-        console.error('匯率取得失敗，使用預設匯率', error);
-
-        this.exchangeRate = 4.5;
-        this.selectedRegion = 'JP';
-        this.isLoadingExchangeRate = false;
-        this.onCheckoutSettingChange();
-      },
-    });
+loadJpyExchangeRate(): void {
+  if (this.twdToJpyRate > 0) {
+    this.exchangeRate = this.twdToJpyRate;
+    this.cachedJpyRate = this.twdToJpyRate;
+    this.selectedRegion = 'JP';
+    this.onCheckoutSettingChange();
+    return;
   }
+
+  this.isLoadingExchangeRate = true;
+
+  this.apiService.getJpyExchangeRate().subscribe({
+    next: (rate: number) => {
+      this.twdToJpyRate = rate;
+      this.cachedJpyRate = rate;
+      this.exchangeRate = rate;
+      this.selectedRegion = 'JP';
+      this.isLoadingExchangeRate = false;
+      this.updateTime = new Date().toLocaleString();
+      this.onCheckoutSettingChange();
+    },
+    error: (error: unknown) => {
+      console.error('匯率取得失敗，使用預設匯率', error);
+
+      this.twdToJpyRate = 4.5;
+      this.exchangeRate = 4.5;
+      this.selectedRegion = 'JP';
+      this.isLoadingExchangeRate = false;
+      this.updateTime = new Date().toLocaleString();
+      this.onCheckoutSettingChange();
+    },
+  });
+}
   selectDiningType(type: DiningType): void {
     this.isDiningMenuOpen = false;
 
@@ -213,11 +245,16 @@ export class PosCheckoutComponent implements OnInit {
     });
   }
 
-  loadExchangeRate(): void {
+loadExchangeRate(): void {
   this.apiService.getJpyExchangeRate().subscribe({
     next: (response: number) => {
-      this.twdToJpyRate = 1 / response;
+      this.twdToJpyRate = response;
       this.updateTime = new Date().toLocaleString();
+
+      if (this.selectedRegion === 'JP') {
+        this.exchangeRate = response;
+        this.cachedJpyRate = response;
+      }
     },
     error: (error: unknown) => {
       console.error(error);
