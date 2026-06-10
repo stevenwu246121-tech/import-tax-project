@@ -150,26 +150,34 @@
 
   <section class="home-panel">
 
+  <div class="exchange-header">
     <h2>即時匯率</h2>
 
-    <div class="exchange-card">
+    <button
+      type="button"
+      class="exchange-toggle-btn"
+      (click)="toggleExchangeRateMode()"
+    >
+      切換匯率
+    </button>
+  </div>
 
-      <span>NT$ → JP¥</span>
+  <div class="exchange-card">
 
-      <strong>
-        1 NT$ =
-        {{ twdToJpyRate | number:'1.2-2' }}
-        JP¥
-      </strong>
+    <span>{{ exchangeRateTitle }}</span>
 
-      <small>
-        更新時間：
-        {{ updateTime }}
-      </small>
+    <strong>
+      {{ exchangeRateText }}
+    </strong>
 
-    </div>
+    <small>
+      更新時間：
+      {{ updateTime }}
+    </small>
 
-  </section>
+  </div>
+
+</section>
 
   <section class="home-panel">
 
