@@ -6,7 +6,7 @@
   <select [(ngModel)]="selectedCategory">
     <option value="">全部分類</option>
 
-    <option *ngFor="let category of categories" [value]="category.name">
+    <option *ngFor="let category of uniqueCategories" [value]="category.name">
       {{ category.name }}
     </option>
   </select>
@@ -33,7 +33,7 @@
       請選擇分類
     </option>
 
-    <option *ngFor="let category of categories" [ngValue]="category.id">
+    <option *ngFor="let category of uniqueCategories" [ngValue]="category.id">
       {{ category.name }}
     </option>
   </select>

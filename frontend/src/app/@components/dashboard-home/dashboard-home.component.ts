@@ -114,20 +114,7 @@ export class DashboardHomeComponent
 
         this.previewProducts = this.products.slice(0, 3);
 
-        this.inventoryTotals = this.products.reduce(
-          (acc: { [key: string]: number }, product: Product) => {
-            const categoryName = product.categoryName || '未分類';
-
-            if (!acc[categoryName]) {
-              acc[categoryName] = 0;
-            }
-
-            acc[categoryName] += product.unitPrice ?? 0;
-
-            return acc;
-          },
-          {},
-        );
+        this.calculateInventoryTotals(this.products);
 
         setTimeout(() => {
           this.createInventoryChart();
@@ -276,9 +263,13 @@ export class DashboardHomeComponent
       return;
     }
 
-    const labels = Object.keys(this.inventoryTotals);
+    const entries = Object.entries(this.inventoryTotals)
+      .filter(([, value]) => value > 0)
+      .sort((a, b) => b[1] - a[1]);
 
-    const data = Object.values(this.inventoryTotals);
+    const labels = entries.map(([label]) => label);
+
+    const data = entries.map(([, value]) => value);
 
     if (labels.length === 0) {
       return;
@@ -301,6 +292,10 @@ export class DashboardHomeComponent
               '#facc15',
               '#14b8a6',
               '#8b5cf6',
+              '#64748b',
+              '#22c55e',
+              '#ec4899',
+              '#0ea5e9',
             ],
           },
         ],
@@ -313,6 +308,18 @@ export class DashboardHomeComponent
         plugins: {
           legend: {
             position: 'right',
+          },
+
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const label = context.label || '';
+
+                const value = Number(context.raw ?? 0);
+
+                return `${label}：${value} 件庫存`;
+              },
+            },
           },
         },
 
@@ -484,5 +491,23 @@ export class DashboardHomeComponent
         console.error(error);
       },
     });
+  }
+
+  calculateInventoryTotals(products: Product[]): void {
+    const totals: { [key: string]: number } = {};
+
+    products.forEach((product) => {
+      const categoryName = product.categoryName?.trim() || '未分類';
+
+      const stockQty = product.stockQty ?? 0;
+
+      if (!totals[categoryName]) {
+        totals[categoryName] = 0;
+      }
+
+      totals[categoryName] += stockQty;
+    });
+
+    this.inventoryTotals = totals;
   }
 }

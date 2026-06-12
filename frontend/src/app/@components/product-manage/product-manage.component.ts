@@ -688,4 +688,16 @@ ${vatRate}`;
 
     this.filterHsCodes();
   }
+
+  get uniqueCategories(): Category[] {
+    const map = new Map<string, Category>();
+
+    this.categories.forEach((category) => {
+      if (!map.has(category.name)) {
+        map.set(category.name, category);
+      }
+    });
+
+    return Array.from(map.values());
+  }
 }
