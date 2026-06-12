@@ -15,7 +15,7 @@
 <div class="form-card">
   <!-- 商品名稱 + 自動推薦 HS Code -->
   <div class="product-name-row">
-    <input type="text" placeholder="商品名稱" maxlength="30" [(ngModel)]="productReq.name" />
+    <input type="text" placeholder="商品名稱" maxlength="30" [(ngModel)]="productReq.name" (input)="onProductNameInput()" />
 
     <button type="button" class="recommend-btn" (click)="recommendHsCode()">
       自動推薦 HS Code
@@ -28,7 +28,7 @@
   </div>
 
   <!-- 分類 -->
-  <select [(ngModel)]="productReq.categoryId">
+  <select [(ngModel)]="productReq.categoryId" (change)="onManualCategoryChange()">
     <option [ngValue]="null" disabled>
       請選擇分類
     </option>
@@ -39,16 +39,19 @@
   </select>
 
   <!-- HS Code -->
-  <select class="hs-code-select" [(ngModel)]="productReq.hsCodeId" (change)="onHsCodeChange()"
-    [title]="getSelectedHsCodeTitle()">
-    <option [ngValue]="null" title="請選擇 HS Code">
-      請選擇 HS Code
-    </option>
+  <div class="hs-code-field">
+    <select class="hs-code-select" [(ngModel)]="productReq.hsCodeId" (change)="onManualHsCodeChange()"
+      [title]="getSelectedHsCodeTitle()">
+      <option [ngValue]="null" title="請選擇 HS Code">
+        請選擇 HS Code
+      </option>
 
-    <option *ngFor="let hs of hsCodes" [ngValue]="hs.id" [title]="getHsCodeFullText(hs)">
-      {{ formatHsCodeOption(hs) }}
-    </option>
-  </select>
+      <option *ngFor="let hs of filteredHsCodes" [ngValue]="hs.id" [title]="getHsCodeFullText(hs)">
+        {{ formatHsCodeOption(hs) }}
+      </option>
+    </select>
+  </div>
+
   <!-- 來源國 -->
   <select [(ngModel)]="productReq.originCountry">
     <option value="" disabled>

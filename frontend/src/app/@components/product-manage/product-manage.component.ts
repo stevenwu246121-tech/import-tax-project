@@ -40,6 +40,8 @@ export class ProductManageComponent implements OnInit {
 
   filteredHsCodes: HsCode[] = [];
 
+  hsCodeSearchKeyword = '';
+
   keyword = '';
 
   selectedCategory = '';
@@ -165,7 +167,7 @@ export class ProductManageComponent implements OnInit {
       next: (response: HsCode[]) => {
         this.hsCodes = response;
 
-        this.filteredHsCodes = response;
+        this.filteredHsCodes = this.hsCodes.slice(0, 50);
       },
       error: (error: unknown) => {
         console.error(error);
@@ -185,19 +187,17 @@ export class ProductManageComponent implements OnInit {
     );
 
     if (!selectedCategory) {
-      this.filteredHsCodes = this.hsCodes;
-
-      this.productReq.hsCodeId = 0;
-
+      this.filteredHsCodes = this.hsCodes.slice(0, 50);
+      this.productReq.hsCodeId = null;
       return;
     }
 
-    this.filteredHsCodes = this.hsCodes.filter(
-      (hsCode) => hsCode.categoryName === selectedCategory.name,
-    );
+    this.filteredHsCodes = this.hsCodes
+      .filter((hsCode) => hsCode.categoryName === selectedCategory.name)
+      .slice(0, 50);
 
     this.productReq.hsCodeId =
-      this.filteredHsCodes.length > 0 ? this.filteredHsCodes[0].id : 0;
+      this.filteredHsCodes.length > 0 ? this.filteredHsCodes[0].id : null;
   }
 
   onProductNameChange(): void {
@@ -439,15 +439,16 @@ export class ProductManageComponent implements OnInit {
   resetForm(): void {
     this.productReq = {
       name: '',
-      categoryId: 0,
-      hsCodeId: 0,
+      categoryId: null,
+      hsCodeId: null,
       originCountry: '',
       unit: '',
       unitPrice: null,
       stockQty: null,
     };
 
-    this.filteredHsCodes = this.hsCodes;
+    this.filteredHsCodes = this.hsCodes.slice(0, 50);
+    this.hsCodeSearchKeyword = '';
     this.editingProductId = null;
     this.openedActionId = null;
     this.recommendMessage = '';
@@ -468,18 +469,20 @@ export class ProductManageComponent implements OnInit {
     });
   }
 
+  onManualHsCodeChange(): void {
+    this.isAutoRecommendEnabled = false;
+
+    this.recommendMessage = '';
+
+    this.onHsCodeChange();
+  }
+
   onManualCategoryChange(): void {
     this.isAutoRecommendEnabled = false;
 
     this.recommendMessage = '';
 
     this.onCategoryChange();
-  }
-
-  onManualHsCodeChange(): void {
-    this.isAutoRecommendEnabled = false;
-
-    this.recommendMessage = '';
   }
 
   recommendHsCode(): void {
@@ -490,13 +493,13 @@ export class ProductManageComponent implements OnInit {
       return;
     }
 
-    // 先清掉舊的推薦結果，避免「起司」還殘留上一筆冷凍蝦
+    // 先清掉舊推薦結果，避免殘留上一筆資料
     this.productReq.categoryId = null;
     this.productReq.hsCodeId = null;
     this.recommendMessage = '';
 
     this.apiService.recommendHsCode(productName).subscribe({
-      next: (res) => {
+      next: (res: HsCode) => {
         console.log('推薦結果', res);
 
         if (!res || !res.code) {
@@ -505,16 +508,19 @@ export class ProductManageComponent implements OnInit {
           return;
         }
 
-        const matchedHsCode = this.hsCodes.find((hs) => hs.code === res.code);
-
-        if (!matchedHsCode) {
-          this.recommendMessage = `後端有推薦 ${res.code}，但前端 HS Code 清單裡找不到`;
-          this.dialogService.warning(this.recommendMessage);
-          return;
-        }
+        // 優先用前端完整 hsCodes 清單裡的資料
+        const matchedHsCode =
+          this.hsCodes.find((hs) => hs.code === res.code) ?? res;
 
         this.productReq.hsCodeId = matchedHsCode.id;
-        this.productReq.categoryId = matchedHsCode.categoryId ?? null;
+
+        // 關鍵：把推薦到的 HS Code 放進目前下拉選單
+        this.putRecommendedHsCodeIntoOptions(matchedHsCode);
+
+        // 關鍵：用 categoryId 或 categoryName 自動帶入分類
+        this.setCategoryByHsCode(matchedHsCode);
+
+        this.hsCodeSearchKeyword = matchedHsCode.name;
 
         this.recommendMessage = `已推薦 HS Code：${matchedHsCode.code} - ${matchedHsCode.name}`;
 
@@ -531,6 +537,7 @@ export class ProductManageComponent implements OnInit {
       },
     });
   }
+
   getUnitLabel(unit?: string): string {
     switch (unit) {
       case 'kg':
@@ -557,7 +564,7 @@ export class ProductManageComponent implements OnInit {
       return;
     }
 
-    this.productReq.categoryId = selectedHsCode.categoryId ?? null;
+    this.setCategoryByHsCode(selectedHsCode);
   }
 
   getHsCodeFullText(hs: HsCode): string {
@@ -589,5 +596,96 @@ ${vatRate}`;
     }
 
     return this.getHsCodeFullText(selectedHsCode);
+  }
+
+  filterHsCodes(): void {
+    const keyword = this.hsCodeSearchKeyword.trim().toLowerCase();
+
+    if (!keyword) {
+      this.filteredHsCodes = this.hsCodes.slice(0, 50);
+      return;
+    }
+
+    this.filteredHsCodes = this.hsCodes
+      .filter((hs) => {
+        const code = hs.code?.toLowerCase() ?? '';
+        const name = hs.name?.toLowerCase() ?? '';
+        const description = hs.description?.toLowerCase() ?? '';
+        const keywords = (hs as any).keywords?.toLowerCase() ?? '';
+
+        return (
+          code.includes(keyword) ||
+          name.includes(keyword) ||
+          description.includes(keyword) ||
+          keywords.includes(keyword)
+        );
+      })
+      .slice(0, 50);
+  }
+
+  setCategoryByHsCode(hsCode: HsCode): void {
+    console.log('要帶入分類的 HS Code：', hsCode);
+    console.log('目前分類清單：', this.categories);
+
+    if (!hsCode) {
+      return;
+    }
+
+    // 情況 1：如果 HS Code 本身有 categoryId，直接用
+    if (hsCode.categoryId !== undefined && hsCode.categoryId !== null) {
+      this.productReq.categoryId = Number(hsCode.categoryId);
+      console.log('用 categoryId 帶入分類：', this.productReq.categoryId);
+      return;
+    }
+
+    // 情況 2：目前多數資料只有 categoryName，例如「乾貨」
+    const categoryName = hsCode.categoryName?.trim();
+
+    if (!categoryName) {
+      console.warn('這筆 HS Code 沒有 categoryName');
+      return;
+    }
+
+    const matchedCategory = this.categories.find((category) => {
+      return category.name?.trim() === categoryName;
+    });
+
+    if (!matchedCategory) {
+      console.warn('找不到對應分類：', categoryName);
+      return;
+    }
+
+    this.productReq.categoryId = matchedCategory.id;
+
+    console.log('已自動帶入分類 ID：', this.productReq.categoryId);
+  }
+
+  putRecommendedHsCodeIntoOptions(hsCode: HsCode): void {
+    const exists = this.filteredHsCodes.some((item) => item.id === hsCode.id);
+
+    if (exists) {
+      return;
+    }
+
+    this.filteredHsCodes = [hsCode, ...this.filteredHsCodes].slice(0, 50);
+  }
+
+  onProductNameInput(): void {
+    const productName = this.productReq.name.trim();
+
+    this.hsCodeSearchKeyword = productName;
+
+    this.recommendMessage = '';
+
+    // 商品名稱被改動時，先清掉舊推薦，避免殘留上一筆 HS Code
+    this.productReq.categoryId = null;
+    this.productReq.hsCodeId = null;
+
+    if (!productName) {
+      this.filteredHsCodes = this.hsCodes.slice(0, 50);
+      return;
+    }
+
+    this.filterHsCodes();
   }
 }
