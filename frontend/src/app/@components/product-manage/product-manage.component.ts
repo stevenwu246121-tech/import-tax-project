@@ -542,6 +542,12 @@ export class ProductManageComponent implements OnInit {
     }
   }
 
+  formatHsCodeOption(hs: HsCode): string {
+    const text = `${hs.code} - ${hs.name}`;
+
+    return text.length > 28 ? text.slice(0, 28) + '...' : text;
+  }
+
   onHsCodeChange(): void {
     const selectedHsCode = this.hsCodes.find(
       (hs) => hs.id === this.productReq.hsCodeId,
@@ -552,5 +558,36 @@ export class ProductManageComponent implements OnInit {
     }
 
     this.productReq.categoryId = selectedHsCode.categoryId ?? null;
+  }
+
+  getHsCodeFullText(hs: HsCode): string {
+    const description = hs.description ? `說明：${hs.description}` : '說明：無';
+
+    const dutyRate =
+      hs.dutyRate !== undefined && hs.dutyRate !== null
+        ? `進口稅：${hs.dutyRate}%`
+        : '進口稅：無';
+
+    const vatRate =
+      hs.vatRate !== undefined && hs.vatRate !== null
+        ? `營業稅：${hs.vatRate}%`
+        : '營業稅：無';
+
+    return `${hs.code} - ${hs.name}
+${description}
+${dutyRate}
+${vatRate}`;
+  }
+
+  getSelectedHsCodeTitle(): string {
+    const selectedHsCode = this.hsCodes.find(
+      (hs) => hs.id === this.productReq.hsCodeId,
+    );
+
+    if (!selectedHsCode) {
+      return '請選擇 HS Code';
+    }
+
+    return this.getHsCodeFullText(selectedHsCode);
   }
 }

@@ -39,16 +39,16 @@
   </select>
 
   <!-- HS Code -->
-  <select [(ngModel)]="productReq.hsCodeId" (change)="onHsCodeChange()">
-    <option [ngValue]="null" disabled>
+  <select class="hs-code-select" [(ngModel)]="productReq.hsCodeId" (change)="onHsCodeChange()"
+    [title]="getSelectedHsCodeTitle()">
+    <option [ngValue]="null" title="請選擇 HS Code">
       請選擇 HS Code
     </option>
 
-    <option *ngFor="let hs of hsCodes" [ngValue]="hs.id">
-      {{ hs.code }} - {{ hs.name }}
+    <option *ngFor="let hs of hsCodes" [ngValue]="hs.id" [title]="getHsCodeFullText(hs)">
+      {{ formatHsCodeOption(hs) }}
     </option>
   </select>
-
   <!-- 來源國 -->
   <select [(ngModel)]="productReq.originCountry">
     <option value="" disabled>
