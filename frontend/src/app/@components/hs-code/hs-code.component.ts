@@ -24,6 +24,10 @@ export class HsCodeComponent implements OnInit {
 
   filteredHsCodes: HsCode[] = [];
 
+  currentPage = 1;
+
+  pageSize = 10;
+
   categories: Category[] = [];
 
   keyword = '';
@@ -45,6 +49,8 @@ export class HsCodeComponent implements OnInit {
   calcVatAmount = 0;
 
   calcLandedCost = 0;
+
+  lastSyncTime = '';
 
   hsCodeReq: {
     code: string;
@@ -121,6 +127,8 @@ export class HsCodeComponent implements OnInit {
 
       this.isSearched = false;
 
+      this.currentPage = 1;
+
       return;
     }
 
@@ -129,6 +137,8 @@ export class HsCodeComponent implements OnInit {
         this.filteredHsCodes = response;
 
         this.isSearched = true;
+
+        this.currentPage = 1;
       },
       error: (error: unknown) => {
         console.error(error);
@@ -136,6 +146,8 @@ export class HsCodeComponent implements OnInit {
         this.filteredHsCodes = [];
 
         this.isSearched = true;
+
+        this.currentPage = 1;
 
         this.dialogService.error('HS Code 查詢失敗');
       },
@@ -148,6 +160,27 @@ export class HsCodeComponent implements OnInit {
     this.filteredHsCodes = this.hsCodes;
 
     this.isSearched = false;
+
+    this.currentPage = 1;
+  }
+
+  syncOfficialHsCode(): void {
+    this.apiService.syncOfficialHsCode().subscribe({
+      next: (response) => {
+        this.dialogService.success(
+          `官方資料同步完成：共 ${response.totalCount} 筆，新增 ${response.createdCount} 筆，更新 ${response.updatedCount} 筆`,
+        );
+
+        this.loadHsCodes();
+
+        this.clearSearch();
+      },
+      error: (error: unknown) => {
+        console.error(error);
+
+        this.dialogService.error('官方資料同步失敗');
+      },
+    });
   }
 
   submitHsCode(): void {
@@ -352,5 +385,41 @@ export class HsCodeComponent implements OnInit {
     this.calcVatAmount = 0;
 
     this.calcLandedCost = 0;
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.filteredHsCodes.length / this.pageSize);
+  }
+
+  get pagedHsCodes(): HsCode[] {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+
+    const endIndex = startIndex + this.pageSize;
+
+    return this.filteredHsCodes.slice(startIndex, endIndex);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+  }
+
+  nextPage(): void {
+    if (this.currentPage >= this.totalPages) {
+      return;
+    }
+
+    this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage <= 1) {
+      return;
+    }
+
+    this.currentPage--;
   }
 }

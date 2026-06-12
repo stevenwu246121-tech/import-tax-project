@@ -119,4 +119,8 @@ export class ApiService {
       },
     });
   }
+
+  syncOfficialHsCode() {
+    return this.http.post<any>(`${this.baseUrl}/hs-codes/sync-official`, {});
+  }
 }
