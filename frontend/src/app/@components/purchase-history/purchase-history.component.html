@@ -9,9 +9,26 @@
     <option value="TW">TW 台灣</option>
   </select>
 
-  <input type="date" [(ngModel)]="startDate" (change)="onDateChange()" />
+  <div class="date-range-field">
+  <span class="date-range-label">日期區間</span>
 
-  <input type="date" [(ngModel)]="endDate" (change)="onDateChange()" [min]="startDate" />
+  <input
+    type="date"
+    [(ngModel)]="startDate"
+    (change)="onDateChange()"
+    aria-label="起始日期"
+  />
+
+  <span class="date-range-separator">至</span>
+
+  <input
+    type="date"
+    [(ngModel)]="endDate"
+    (change)="onDateChange()"
+    [min]="startDate"
+    aria-label="結束日期"
+  />
+</div>
 </div>
 
 <div class="date-error-message" *ngIf="dateErrorMessage">
