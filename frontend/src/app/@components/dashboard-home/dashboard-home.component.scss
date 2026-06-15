@@ -7,7 +7,12 @@ h1 {
   font-size: 36px;
   font-weight: 900;
   line-height: 1.2;
+  color: #0f172a;
 }
+
+/* =========================
+   Summary Cards
+========================= */
 
 .home-summary-grid {
   display: grid;
@@ -18,7 +23,7 @@ h1 {
 
 .home-card,
 .home-panel {
-  background: white;
+  background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
 }
@@ -40,6 +45,7 @@ h1 {
   font-size: 24px;
   font-weight: 900;
   line-height: 1.2;
+  color: #0f172a;
 }
 
 .home-card small {
@@ -61,6 +67,8 @@ h1 {
 .down {
   color: #dc2626;
 }
+
+/* 成本與平均稅負率 */
 
 .cost-tax-card {
   display: flex;
@@ -95,6 +103,10 @@ h1 {
   line-height: 1;
 }
 
+/* =========================
+   Dashboard Grid
+========================= */
+
 .home-grid {
   display: grid;
   grid-template-columns: 1.45fr 1fr 1fr;
@@ -117,6 +129,7 @@ h1 {
   font-size: 20px;
   font-weight: 900;
   margin: 0 0 14px;
+  color: #0f172a;
 }
 
 .panel-header {
@@ -131,7 +144,7 @@ h1 {
   height: 36px;
   border-radius: 10px;
   border: 1px solid #dbe2ea;
-  background: white;
+  background: #ffffff;
   padding: 0 12px;
   font-weight: 700;
 }
@@ -141,6 +154,10 @@ h1 {
   gap: 10px;
   align-items: center;
 }
+
+/* =========================
+   Charts
+========================= */
 
 .chart-box {
   height: 200px;
@@ -177,6 +194,10 @@ h1 {
   line-height: 1.5;
 }
 
+/* =========================
+   Low Stock
+========================= */
+
 .low-stock-list {
   display: flex;
   flex-direction: column;
@@ -210,124 +231,10 @@ h1 {
   font-weight: 600;
 }
 
-.exchange-card {
-  display: grid;
-  gap: 18px;
-  padding: 20px;
-  border-radius: 18px;
-  background: #eef6ff;
-}
+/* =========================
+   Exchange Rate
+========================= */
 
-.exchange-card span {
-  display: block;
-  color: #64748b;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.exchange-card strong {
-  font-size: 32px;
-  font-weight: 900;
-  color: #2563eb;
-}
-
-.exchange-card small {
-  color: #64748b;
-  font-weight: 600;
-}
-
-.quick-calc {
-  display: grid;
-  gap: 10px;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.quick-calc input,
-.quick-calc select {
-  height: 40px;
-  border-radius: 10px;
-  border: 1px solid #d1d5db;
-  padding: 0 12px;
-}
-
-.quick-calc button {
-  height: 40px;
-  border: none;
-  border-radius: 10px;
-  background: #2563eb;
-  color: white;
-  font-weight: 800;
-}
-
-.hs-result {
-  margin-bottom: 12px;
-}
-
-.hs-result p {
-  margin: 6px 0;
-  color: #334155;
-  font-weight: 700;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-th,
-td {
-  padding: 12px 14px;
-  font-size: 14px;
-}
-
-.total {
-  display: block;
-  margin-top: 14px;
-  font-size: 20px;
-  color: #2563eb;
-}
-
-
-//RWD
-@media (max-width: 1200px) {
-  .home-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .home-grid,
-  .home-grid.lower {
-    grid-template-columns: 1fr;
-  }
-
-  .home-panel {
-    min-height: auto;
-  }
-}
-
-@media (max-width: 640px) {
-  h1 {
-    font-size: 30px;
-    margin-bottom: 16px;
-  }
-
-  .home-summary-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cost-tax-card {
-    align-items: flex-start;
-  }
-
-  .tax-section {
-    min-width: 110px;
-    padding-left: 14px;
-  }
-
-  .tax-section strong {
-    font-size: 26px;
-  }
-}
 .exchange-header {
   display: flex;
   align-items: center;
@@ -360,6 +267,36 @@ td {
 .exchange-toggle-btn:active {
   transform: translateY(0);
 }
+
+.exchange-card {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+  border-radius: 18px;
+  background: #eef6ff;
+}
+
+.exchange-card span {
+  display: block;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.exchange-card strong {
+  font-size: 32px;
+  font-weight: 900;
+  color: #2563eb;
+}
+
+.exchange-card small {
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* =========================
+   HS Code Quick Search
+========================= */
 
 .quick-hs-panel {
   min-height: 300px;
@@ -397,6 +334,10 @@ td {
   cursor: pointer;
 }
 
+.quick-search-row button:hover {
+  background: #1d4ed8;
+}
+
 .quick-clear-btn {
   margin-top: 10px;
   height: 38px;
@@ -409,6 +350,10 @@ td {
   cursor: pointer;
 }
 
+.quick-clear-btn:hover {
+  background: #475569;
+}
+
 .quick-search-message {
   margin: 12px 0 0;
   color: #64748b;
@@ -416,39 +361,53 @@ td {
   font-weight: 700;
 }
 
+/* 主查詢結果卡片 */
+
 .quick-result-main {
-  margin-top: 14px;
-  padding: 16px;
+  margin-top: 18px;
+  padding: 20px;
   border-radius: 18px;
   background: #eef6ff;
   border: 1px solid #bfdbfe;
 }
 
 .quick-result-code {
+  display: block;
+  width: 100%;
   color: #2563eb;
-  font-size: 19px;
+  font-size: 24px;
   font-weight: 900;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .quick-result-name {
+  display: block;
+  width: 100%;
   color: #0f172a;
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 900;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .quick-tax-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
 .quick-tax-grid div {
   background: #ffffff;
   border-radius: 14px;
-  padding: 12px;
+  padding: 14px 16px;
 }
 
 .quick-tax-grid span {
@@ -456,43 +415,56 @@ td {
   color: #64748b;
   font-size: 13px;
   font-weight: 800;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .quick-tax-grid strong {
   color: #2563eb;
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 900;
 }
 
+/* 主卡片說明：單行省略 */
+
 .quick-description {
+  display: block;
+  width: 100%;
   margin: 0;
   color: #475569;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  line-height: 1.6;
+  line-height: 1.7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+/* 下方查詢結果清單：維持同一行，只有敘述變 ... */
 
 .quick-result-list {
   display: grid;
   gap: 10px;
-  margin-top: 14px;
-  max-height: 150px;
+  margin-top: 18px;
+  max-height: 190px;
   overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
 }
 
 .quick-result-item {
   width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 115px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 12px;
   align-items: center;
   text-align: left;
   border: 1px solid #dbe3ef;
   border-radius: 14px;
   background: #ffffff;
-  padding: 10px 12px;
+  padding: 12px 14px;
   cursor: pointer;
+  box-sizing: border-box;
 }
 
 .quick-result-item.active {
@@ -501,13 +473,27 @@ td {
 }
 
 .quick-result-item span {
+  min-width: 0;
+  display: block;
   color: #2563eb;
+  font-size: 18px;
   font-weight: 900;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .quick-result-item strong {
+  min-width: 0;
+  display: block;
   color: #0f172a;
+  font-size: 15px;
   font-weight: 900;
+  line-height: 1.45;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .quick-result-item em {
@@ -516,4 +502,105 @@ td {
   font-size: 13px;
   font-style: normal;
   font-weight: 700;
+}
+
+/* =========================
+   Tables
+========================= */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 12px 14px;
+  font-size: 14px;
+}
+
+.total {
+  display: block;
+  margin-top: 14px;
+  font-size: 20px;
+  color: #2563eb;
+}
+
+/* =========================
+   RWD
+========================= */
+
+@media (max-width: 1200px) {
+  .home-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-grid,
+  .home-grid.lower {
+    grid-template-columns: 1fr;
+  }
+
+  .home-panel {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 30px;
+    margin-bottom: 16px;
+  }
+
+  .home-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cost-tax-card {
+    align-items: flex-start;
+  }
+
+  .tax-section {
+    min-width: 110px;
+    padding-left: 14px;
+  }
+
+  .tax-section strong {
+    font-size: 26px;
+  }
+
+  .quick-search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-search-row button {
+    width: 100%;
+  }
+
+  .quick-tax-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-result-main {
+    padding: 16px;
+  }
+
+  .quick-result-code {
+    font-size: 22px;
+  }
+
+  .quick-result-name {
+    font-size: 17px;
+  }
+
+  .quick-result-item {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+
+  .quick-result-item span {
+    font-size: 16px;
+  }
+
+  .quick-result-item strong {
+    font-size: 14px;
+  }
 }
