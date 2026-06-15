@@ -3834,6 +3834,9 @@ INSERT INTO tmp_official_food_hs_codes(code) VALUES
 ;
 
 -- 同步 import_tax_rule，避免商品計算時被舊稅率覆蓋
+SET @OLD_SQL_SAFE_UPDATES = @@SQL_SAFE_UPDATES;
+SET SQL_SAFE_UPDATES = 0;
+
 UPDATE import_tax_rule r
 JOIN hs_code h ON r.hs_code_id = h.id
 JOIN tmp_official_food_hs_codes t ON t.code = h.code
@@ -3843,6 +3846,8 @@ SET r.duty_rate = h.duty_rate,
     r.effective_from = COALESCE(r.effective_from, CURDATE())
 WHERE r.import_country = 'TW'
   AND r.origin_country = 'JP';
+
+SET SQL_SAFE_UPDATES = @OLD_SQL_SAFE_UPDATES;
 
 INSERT INTO import_tax_rule(import_country, origin_country, hs_code_id, duty_rate, vat_rate, effective_from, enabled)
 SELECT 'TW', 'JP', h.id, h.duty_rate, h.vat_rate, CURDATE(), TRUE
