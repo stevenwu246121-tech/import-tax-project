@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 import { Router } from '@angular/router';
 
 import { Product } from '../../models/product';
+
 import { ApiService } from '../../@services/api.service';
+
 import { PurchaseCalculateResponse } from '../../models/purchase-calculate-response';
+
 import { DialogService } from '../../@services/dialog.service';
 
 interface CartItem {
@@ -33,23 +38,34 @@ export class ProductsComponent implements OnInit {
   selectedCountry: 'TW' | 'JP' = 'TW';
 
   currency = 'NT$ ';
+
   exchangeRate = 1;
 
   products: Product[] = [];
+
   quantities: Record<number, number> = {};
+
   cartItems: CartItem[] = [];
 
   calculateResponse?: PurchaseCalculateResponse;
 
   subtotal = 0;
+
   dutyTotal = 0;
+
   vatTotal = 0;
+
   landedCostTotal = 0;
 
   isLoadingProducts = false;
+
   isLoadingExchangeRate = false;
+
   isCalculating = false;
+
   errorMessage = '';
+
+  showCart = false;
 
   constructor(
     private apiService: ApiService,
@@ -61,8 +77,21 @@ export class ProductsComponent implements OnInit {
     this.loadProducts();
   }
 
+  get cartItemCount(): number {
+    return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  toggleCart(): void {
+    this.showCart = !this.showCart;
+  }
+
+  closeCart(): void {
+    this.showCart = false;
+  }
+
   loadProducts(): void {
     this.isLoadingProducts = true;
+
     this.errorMessage = '';
 
     this.apiService.getProducts().subscribe({
@@ -146,10 +175,43 @@ export class ProductsComponent implements OnInit {
     return this.quantities[productId] || 1;
   }
 
-  private getProductStock(productId: number): number {
+  getProductStock(productId: number): number {
     const product = this.products.find((item) => item.id === productId);
 
     return product?.stockQty ?? 0;
+  }
+
+  increaseCartItemQuantity(item: CartItem): void {
+    const stockQty = this.getProductStock(item.productId);
+
+    if (item.quantity >= stockQty) {
+      this.dialogService.warning(`數量不可超過目前庫存 ${stockQty}`);
+      return;
+    }
+
+    item.quantity++;
+
+    this.calculate();
+  }
+
+  decreaseCartItemQuantity(item: CartItem): void {
+    if (item.quantity <= 1) {
+      return;
+    }
+
+    item.quantity--;
+
+    this.calculate();
+  }
+
+  getCartProduct(productId: number): Product | undefined {
+    return this.products.find((product) => product.id === productId);
+  }
+
+  getCartItemSubtotal(item: CartItem): number {
+    const product = this.getCartProduct(item.productId);
+
+    return (product?.unitPrice ?? 0) * item.quantity;
   }
 
   addToCart(product: Product): void {
@@ -204,6 +266,8 @@ export class ProductsComponent implements OnInit {
     this.quantities[product.id] = 1;
 
     this.calculate();
+
+    this.showCart = true;
   }
 
   removeFromCart(productId: number): void {
@@ -330,6 +394,8 @@ export class ProductsComponent implements OnInit {
         this.dialogService.success(`進貨成功：${response.orderNo}`);
 
         this.clearCart();
+
+        this.closeCart();
 
         this.loadProducts();
 

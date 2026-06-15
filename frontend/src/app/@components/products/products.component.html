@@ -5,10 +5,7 @@
   <div class="country-select">
     <label>國家：</label>
 
-    <select
-      [(ngModel)]="selectedCountry"
-      (ngModelChange)="changeCountry()"
-    >
+    <select [(ngModel)]="selectedCountry" (ngModelChange)="changeCountry()">
       <option value="TW">
         TW Taiwan
       </option>
@@ -67,25 +64,29 @@
 
 </section>
 
-<div
-  *ngIf="isLoadingProducts"
-  class="empty"
->
+<div *ngIf="isLoadingProducts" class="empty">
   商品資料載入中...
 </div>
 
-<div
-  *ngIf="!isLoadingProducts && errorMessage"
-  class="empty error"
->
+<div *ngIf="!isLoadingProducts && errorMessage" class="empty error">
   {{ errorMessage }}
 </div>
 
-<section class="content-grid">
+<section class="panel product-panel">
 
-  <div class="panel">
-
+  <div class="product-list-header">
     <h2>商品列表</h2>
+
+    <button type="button" class="cart-toggle-btn" (click)="toggleCart()">
+      🛒 購物車
+
+      <span class="cart-badge" *ngIf="cartItemCount > 0">
+        {{ cartItemCount }}
+      </span>
+    </button>
+  </div>
+
+  <div class="table-scroll">
 
     <table>
 
@@ -108,7 +109,9 @@
         <tr *ngFor="let product of products">
 
           <td>
-            {{ product.productName }}
+            <span class="product-name" [title]="product.productName">
+              {{ product.productName }}
+            </span>
           </td>
 
           <td>
@@ -134,30 +137,18 @@
           </td>
 
           <td>
-            <span
-              class="stock-badge"
-              [class.low-stock]="(product.stockQty) <= 10"
-            >
+            <span class="stock-badge" [class.low-stock]="product.stockQty <= 10">
               {{ product.stockQty }}
             </span>
           </td>
 
           <td>
-            <input
-              type="number"
-              min="1"
-              [max]="product.stockQty"
-              placeholder="數量"
-              [(ngModel)]="quantities[product.id]"
-              [disabled]="isCalculating || (product.stockQty) <= 0"
-            />
+            <input type="number" min="1" [max]="product.stockQty" placeholder="數量" [(ngModel)]="quantities[product.id]"
+              [disabled]="isCalculating || product.stockQty <= 0" />
           </td>
 
           <td>
-            <button
-              (click)="addToCart(product)"
-              [disabled]="isCalculating || (product.stockQty) <= 0"
-            >
+            <button type="button" (click)="addToCart(product)" [disabled]="isCalculating || product.stockQty <= 0">
               加入
             </button>
           </td>
@@ -176,179 +167,196 @@
 
   </div>
 
-  <div class="panel">
+</section>
 
+<div class="cart-overlay" *ngIf="showCart" (click)="closeCart()"></div>
+
+<aside class="cart-drawer" [class.open]="showCart">
+
+  <div class="cart-header">
     <h2>進貨試算購物車</h2>
 
-    <div
-      *ngIf="cartItems.length === 0"
-      class="empty"
-    >
-      目前購物車沒有商品
-    </div>
+    <button type="button" class="cart-close-btn" (click)="closeCart()">
+      ✕
+    </button>
+  </div>
 
-    <div
-      class="cart-item"
-      *ngFor="let item of cartItems"
-    >
-      <div>
+  <div *ngIf="cartItems.length === 0" class="empty cart-empty">
+    目前購物車沒有商品
+  </div>
+
+  <div class="cart-list" *ngIf="cartItems.length > 0">
+
+    <div class="cart-item" *ngFor="let item of cartItems">
+
+      <div class="cart-item-info">
         <strong>
           {{ item.productName }}
         </strong>
 
+        <div class="cart-quantity-control">
+          <span>數量：</span>
+
+          <button type="button" class="quantity-btn" (click)="decreaseCartItemQuantity(item)"
+            [disabled]="item.quantity <= 1">
+            −
+          </button>
+
+          <strong>
+            {{ item.quantity }}
+          </strong>
+
+          <button type="button" class="quantity-btn" (click)="increaseCartItemQuantity(item)"
+            [disabled]="item.quantity >= getProductStock(item.productId)">
+            ＋
+          </button>
+        </div>
+
         <p>
-          數量：{{ item.quantity }}
+          小計：
+          {{ currency }}
+          {{ convertCurrency(getCartItemSubtotal(item)) | number:'1.2-2' }}
         </p>
       </div>
 
-      <button
-        class="danger"
-        (click)="removeFromCart(item.productId)"
-      >
+      <button type="button" class="danger" (click)="removeFromCart(item.productId)">
         移除
       </button>
-    </div>
-
-    <div class="actions">
-
-      <!-- <button
-        (click)="calculate()"
-        [disabled]="cartItems.length === 0 || isCalculating"
-      >
-        進貨試算
-      </button> -->
-
-      <button
-        class="success"
-        *ngIf="calculateResponse"
-        (click)="createPurchaseOrder()"
-        [disabled]="isCalculating"
-      >
-        確認進貨
-      </button>
-
-      <button
-        class="secondary"
-        (click)="clearCart()"
-        [disabled]="cartItems.length === 0"
-      >
-        清空
-      </button>
-
-    </div>
-
-    <div
-      class="summary"
-      *ngIf="calculateResponse"
-    >
-
-      <h3>試算總額</h3>
-
-      <p>
-        商品小計：
-        {{ currency }}
-        {{ convertCurrency(subtotal) | number:'1.2-2' }}
-      </p>
-
-      <p>
-        進口稅：
-        {{ currency }}
-        {{ convertCurrency(dutyTotal) | number:'1.2-2' }}
-      </p>
-
-      <p>
-        進口營業稅：
-        {{ currency }}
-        {{ convertCurrency(vatTotal) | number:'1.2-2' }}
-      </p>
-
-      <h2>
-        <span>落地成本：</span>
-
-        <span>
-          {{ currency }}
-          {{ convertCurrency(landedCostTotal) | number:'1.2-2' }}
-        </span>
-      </h2>
 
     </div>
 
   </div>
 
-</section>
+  <div class="cart-summary">
 
-<section
-  class="panel"
-  *ngIf="calculateResponse"
->
+    <h3>試算總額</h3>
+
+    <p>
+      <span>商品小計</span>
+
+      <strong>
+        {{ currency }}
+        {{ convertCurrency(subtotal) | number:'1.2-2' }}
+      </strong>
+    </p>
+
+    <p>
+      <span>進口稅</span>
+
+      <strong>
+        {{ currency }}
+        {{ convertCurrency(dutyTotal) | number:'1.2-2' }}
+      </strong>
+    </p>
+
+    <p>
+      <span>進口營業稅</span>
+
+      <strong>
+        {{ currency }}
+        {{ convertCurrency(vatTotal) | number:'1.2-2' }}
+      </strong>
+    </p>
+
+    <div class="cart-total">
+      <span>落地成本</span>
+
+      <strong>
+        {{ currency }}
+        {{ convertCurrency(landedCostTotal) | number:'1.2-2' }}
+      </strong>
+    </div>
+
+  </div>
+
+  <div class="cart-actions">
+
+    <button type="button" class="success" *ngIf="calculateResponse" (click)="createPurchaseOrder()"
+      [disabled]="isCalculating">
+      確認進貨
+    </button>
+
+    <button type="button" class="secondary" (click)="clearCart()" [disabled]="cartItems.length === 0">
+      清空
+    </button>
+
+  </div>
+
+</aside>
+
+<section class="panel" *ngIf="calculateResponse">
 
   <h2>品項明細</h2>
 
-  <table>
+  <div class="table-scroll">
 
-    <thead>
-      <tr>
-        <th>商品</th>
-        <th>數量</th>
-        <th>單價</th>
-        <th>小計</th>
-        <th>進口稅</th>
-        <th>進口稅金額</th>
-        <th>營業稅</th>
-        <th>營業稅金額</th>
-        <th>落地成本</th>
-      </tr>
-    </thead>
+    <table>
 
-    <tbody>
+      <thead>
+        <tr>
+          <th>商品</th>
+          <th>數量</th>
+          <th>單價</th>
+          <th>小計</th>
+          <th>進口稅</th>
+          <th>進口稅金額</th>
+          <th>營業稅</th>
+          <th>營業稅金額</th>
+          <th>落地成本</th>
+        </tr>
+      </thead>
 
-      <tr *ngFor="let item of calculateResponse.items">
+      <tbody>
 
-        <td>
-          {{ item.productName }}
-        </td>
+        <tr *ngFor="let item of calculateResponse.items">
 
-        <td>
-          {{ item.quantity }}
-        </td>
+          <td>
+            {{ item.productName }}
+          </td>
 
-        <td>
-          {{ currency }}
-          {{ convertCurrency(item.unitPrice) | number:'1.2-2' }}
-        </td>
+          <td>
+            {{ item.quantity }}
+          </td>
 
-        <td>
-          {{ currency }}
-          {{ convertCurrency(item.subtotal) | number:'1.2-2' }}
-        </td>
+          <td>
+            {{ currency }}
+            {{ convertCurrency(item.unitPrice) | number:'1.2-2' }}
+          </td>
 
-        <td>
-          {{ item.dutyRate }}%
-        </td>
+          <td>
+            {{ currency }}
+            {{ convertCurrency(item.subtotal) | number:'1.2-2' }}
+          </td>
 
-        <td>
-          {{ currency }}
-          {{ convertCurrency(item.dutyAmount) | number:'1.2-2' }}
-        </td>
+          <td>
+            {{ item.dutyRate }}%
+          </td>
 
-        <td>
-          {{ item.vatRate }}%
-        </td>
+          <td>
+            {{ currency }}
+            {{ convertCurrency(item.dutyAmount) | number:'1.2-2' }}
+          </td>
 
-        <td>
-          {{ currency }}
-          {{ convertCurrency(item.vatAmount) | number:'1.2-2' }}
-        </td>
+          <td>
+            {{ item.vatRate }}%
+          </td>
 
-        <td>
-          {{ currency }}
-          {{ convertCurrency(item.landedCost) | number:'1.2-2' }}
-        </td>
+          <td>
+            {{ currency }}
+            {{ convertCurrency(item.vatAmount) | number:'1.2-2' }}
+          </td>
 
-      </tr>
+          <td>
+            {{ currency }}
+            {{ convertCurrency(item.landedCost) | number:'1.2-2' }}
+          </td>
 
-    </tbody>
+        </tr>
 
-  </table>
+      </tbody>
+
+    </table>
+
+  </div>
 
 </section>
