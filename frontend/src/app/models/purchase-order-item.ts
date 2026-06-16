@@ -1,10 +1,13 @@
 export interface PurchaseOrderItem {
+  id?: number;
 
   productId: number;
 
   productName: string;
 
-  hsCode: string;
+  hsCode?: string;
+
+  hsCodeName?: string;
 
   quantity: number;
 
@@ -12,11 +15,11 @@ export interface PurchaseOrderItem {
 
   subtotal: number;
 
-  dutyRate: number;
+  dutyRate?: number;
 
   dutyAmount: number;
 
-  vatRate: number;
+  vatRate?: number;
 
   vatAmount: number;
 

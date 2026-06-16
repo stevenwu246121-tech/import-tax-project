@@ -1,7 +1,7 @@
 <h1>進貨紀錄</h1>
 
 <div class="history-filter-row">
-  <input type="text" placeholder="搜尋訂單編號或供應商" [(ngModel)]="recordKeyword" />
+  <input type="text" placeholder="搜尋訂單編號" [(ngModel)]="recordKeyword" />
 
   <select [(ngModel)]="selectedOriginCountry">
     <option value="">全部來源國</option>
@@ -10,25 +10,18 @@
   </select>
 
   <div class="date-range-field">
-  <span class="date-range-label">日期區間</span>
+    <span class="date-range-label">
+      日期區間
+    </span>
 
-  <input
-    type="date"
-    [(ngModel)]="startDate"
-    (change)="onDateChange()"
-    aria-label="起始日期"
-  />
+    <input type="date" [(ngModel)]="startDate" (change)="onDateChange()" aria-label="起始日期" />
 
-  <span class="date-range-separator">至</span>
+    <span class="date-range-separator">
+      至
+    </span>
 
-  <input
-    type="date"
-    [(ngModel)]="endDate"
-    (change)="onDateChange()"
-    [min]="startDate"
-    aria-label="結束日期"
-  />
-</div>
+    <input type="date" [(ngModel)]="endDate" (change)="onDateChange()" [min]="startDate" aria-label="結束日期" />
+  </div>
 </div>
 
 <div class="date-error-message" *ngIf="dateErrorMessage">
@@ -43,6 +36,7 @@
       <tr>
         <th>訂單編號</th>
         <th>建立時間</th>
+        <th>來源國</th>
         <th>商品總額</th>
         <th>進口稅</th>
         <th>營業稅</th>
@@ -53,7 +47,7 @@
 
     <tbody>
 
-      <tr *ngFor="let order of filteredOrders()">
+      <tr *ngFor="let order of filteredOrderList">
 
         <td data-label="訂單編號">
           <button type="button" class="order-link" (click)="openOrderDetail(order.id)">
@@ -65,20 +59,26 @@
           {{ order.createdAt | date:'yyyy/MM/dd HH:mm' }}
         </td>
 
+        <td data-label="來源國">
+          <span class="country-badge">
+            {{ order.originCountry || '-' }}
+          </span>
+        </td>
+
         <td data-label="商品總額">
-          NT$ {{ order.subtotal | number }}
+          NT$ {{ order.subtotal | number:'1.0-0' }}
         </td>
 
         <td data-label="進口稅">
-          NT$ {{ order.dutyTotal | number }}
+          NT$ {{ order.dutyTotal | number:'1.0-0' }}
         </td>
 
         <td data-label="營業稅">
-          NT$ {{ order.vatTotal | number }}
+          NT$ {{ order.vatTotal | number:'1.0-0' }}
         </td>
 
         <td data-label="到岸成本">
-          NT$ {{ order.landedCostTotal | number }}
+          NT$ {{ order.landedCostTotal | number:'1.0-0' }}
         </td>
 
         <td data-label="操作" class="action-cell">
@@ -93,7 +93,7 @@
 
       </tr>
 
-      <tr *ngIf="filteredOrders().length === 0">
+      <tr *ngIf="filteredOrderList.length === 0">
         <td colspan="8" class="empty-row">
           查無進貨紀錄
         </td>

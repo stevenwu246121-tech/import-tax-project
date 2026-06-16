@@ -2,31 +2,42 @@ import { Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
-import { MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
+
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 import { ApiService } from '../../@services/api.service';
+
+import { DialogService } from '../../@services/dialog.service';
 
 import { PurchaseOrder } from '../../models/purchase-order';
 
 import { OrderDetailDialogComponent } from '../../shared/dialogs/order-detail-dialog/order-detail-dialog.component';
 
-import { DialogService } from '../../@services/dialog.service';
-import { FormsModule } from '@angular/forms';
-
 @Component({
   selector: 'app-purchase-history',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatDialogModule,
+  ],
   templateUrl: './purchase-history.component.html',
   styleUrl: './purchase-history.component.scss',
 })
 export class PurchaseHistoryComponent implements OnInit {
   orders: PurchaseOrder[] = [];
+
   recordKeyword = '';
+
   selectedOriginCountry = '';
+
   startDate = '';
+
   endDate = '';
+
   dateErrorMessage = '';
+
   constructor(
     private dialog: MatDialog,
     private apiService: ApiService,
@@ -40,12 +51,56 @@ export class PurchaseHistoryComponent implements OnInit {
   loadOrders(): void {
     this.apiService.getOrders().subscribe({
       next: (response: PurchaseOrder[]) => {
-        this.orders = response;
+        this.orders = (response ?? []).sort((a, b) => {
+          const timeA = new Date(a.createdAt ?? '').getTime();
+          const timeB = new Date(b.createdAt ?? '').getTime();
+
+          return timeB - timeA;
+        });
+
         console.log('進貨紀錄資料：', this.orders);
       },
       error: (error: unknown) => {
         console.error(error);
+
+        this.dialogService.error('進貨紀錄載入失敗');
       },
+    });
+  }
+
+  get filteredOrderList(): PurchaseOrder[] {
+    const keyword = this.recordKeyword.trim().toLowerCase();
+
+    return this.orders.filter((order) => {
+      const orderNo = order.orderNo?.toLowerCase() ?? '';
+
+      const supplierName = order.supplierName?.toLowerCase() ?? '';
+
+      const originCountry = order.originCountry ?? '';
+
+      const orderDate = this.toDateString(order.createdAt);
+
+      const matchKeyword =
+        !keyword ||
+        orderNo.includes(keyword) ||
+        supplierName.includes(keyword);
+
+      const matchCountry =
+        !this.selectedOriginCountry ||
+        originCountry === this.selectedOriginCountry;
+
+      const matchStartDate =
+        !this.startDate || orderDate >= this.startDate;
+
+      const matchEndDate =
+        !this.endDate || orderDate <= this.endDate;
+
+      return (
+        matchKeyword &&
+        matchCountry &&
+        matchStartDate &&
+        matchEndDate
+      );
     });
   }
 
@@ -60,6 +115,8 @@ export class PurchaseHistoryComponent implements OnInit {
       },
       error: (error: unknown) => {
         console.error(error);
+
+        this.dialogService.error('進貨明細載入失敗');
       },
     });
   }
@@ -87,43 +144,49 @@ export class PurchaseHistoryComponent implements OnInit {
       });
   }
 
-  filteredOrders(): PurchaseOrder[] {
-    const keyword = this.recordKeyword.trim().toLowerCase();
-
-    return this.orders.filter((order) => {
-      const matchKeyword =
-        !keyword ||
-        order.orderNo?.toLowerCase().includes(keyword) ||
-        order.supplierName?.toLowerCase().includes(keyword);
-
-      const matchCountry =
-        !this.selectedOriginCountry ||
-        order.originCountry === this.selectedOriginCountry;
-
-      const orderDate = this.toDateString(order.createdAt);
-
-      const matchStartDate = !this.startDate || orderDate >= this.startDate;
-
-      const matchEndDate = !this.endDate || orderDate <= this.endDate;
-
-      return matchKeyword && matchCountry && matchStartDate && matchEndDate;
-    });
-  }
-
-  toDateString(dateTime: string): string {
-    if (!dateTime) {
-      return '';
-    }
-
-    return dateTime.substring(0, 10);
-  }
-
   onDateChange(): void {
     this.dateErrorMessage = '';
 
     if (this.startDate && this.endDate && this.endDate < this.startDate) {
       this.dateErrorMessage = '結束日不得早於起始日';
+
       this.endDate = '';
     }
+  }
+
+  clearFilters(): void {
+    this.recordKeyword = '';
+
+    this.selectedOriginCountry = '';
+
+    this.startDate = '';
+
+    this.endDate = '';
+
+    this.dateErrorMessage = '';
+  }
+
+  getCountryLabel(originCountry?: string): string {
+    if (originCountry === 'JP') {
+      return 'JP 日本';
+    }
+
+    if (originCountry === 'TW') {
+      return 'TW 台灣';
+    }
+
+    return originCountry || '-';
+  }
+
+  private toDateString(dateTime?: string): string {
+    if (!dateTime) {
+      return '';
+    }
+
+    if (dateTime.includes('T')) {
+      return dateTime.split('T')[0];
+    }
+
+    return dateTime.substring(0, 10);
   }
 }

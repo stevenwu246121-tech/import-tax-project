@@ -1,21 +1,19 @@
-import { PurchaseOrderItem }
-from './purchase-order-item';
+import { PurchaseOrderItem } from './purchase-order-item';
 
 export interface PurchaseOrder {
-
   id: number;
 
   orderNo: string;
 
-  supplierName: string;
+  supplierName?: string;
 
-  importCountry: string;
+  importCountry?: string;
 
-  originCountry: string;
+  originCountry?: string;
 
-  currencyCode: string;
+  currencyCode?: string;
 
-  exchangeRate: number;
+  exchangeRate?: number;
 
   subtotal: number;
 
@@ -25,7 +23,7 @@ export interface PurchaseOrder {
 
   landedCostTotal: number;
 
-  status: string;
+  status?: string;
 
   createdAt: string;
 

@@ -377,11 +377,24 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
+    if (!this.isCartOriginCountryValid()) {
+      return;
+    }
+
+    const firstCartItem = this.cartItems[0];
+
+    const firstProduct = this.getCartProduct(firstCartItem.productId);
+
+    const originCountry = firstProduct?.originCountry || 'JP';
+
     const request = {
       importCountry: 'TW',
-      originCountry: 'JP',
-      currencyCode: 'JPY',
-      exchangeRate: 1,
+
+      originCountry,
+
+      currencyCode: this.selectedCountry === 'JP' ? 'JPY' : 'TWD',
+
+      exchangeRate: this.selectedCountry === 'JP' ? this.exchangeRate : 1,
 
       items: this.cartItems.map((item) => ({
         productId: item.productId,
@@ -389,8 +402,12 @@ export class ProductsComponent implements OnInit {
       })),
     };
 
+    this.isCalculating = true;
+
     this.apiService.createOrder(request).subscribe({
       next: (response) => {
+        this.isCalculating = false;
+
         this.dialogService.success(`進貨成功：${response.orderNo}`);
 
         this.clearCart();
@@ -405,8 +422,26 @@ export class ProductsComponent implements OnInit {
       error: (error: unknown) => {
         console.error(error);
 
+        this.isCalculating = false;
+
         this.dialogService.error('建立進貨單失敗');
       },
     });
+  }
+
+  private isCartOriginCountryValid(): boolean {
+    const originCountries = this.cartItems
+      .map((item) => this.getCartProduct(item.productId)?.originCountry)
+      .filter((country): country is string => !!country);
+
+    const uniqueCountries = Array.from(new Set(originCountries));
+
+    if (uniqueCountries.length > 1) {
+      this.dialogService.warning('同一張進貨單不可混合不同來源國商品');
+
+      return false;
+    }
+
+    return true;
   }
 }
