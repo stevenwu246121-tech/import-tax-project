@@ -93,6 +93,7 @@
         <th>進口稅</th>
         <th>營業稅</th>
         <th>到岸成本</th>
+        <th>狀態</th>
         <th>操作</th>
       </tr>
     </thead>
@@ -133,6 +134,12 @@
           NT$ {{ order.landedCostTotal | number:'1.0-0' }}
         </td>
 
+        <td data-label="狀態">
+          <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+            {{ getStatusLabel(order.status) }}
+          </span>
+        </td>
+
         <td data-label="操作" class="action-cell">
           <button type="button" class="detail-btn" (click)="openOrderDetail(order.id)">
             明細
@@ -146,7 +153,7 @@
       </tr>
 
       <tr *ngIf="filteredOrderList.length === 0">
-        <td colspan="8" class="empty-row">
+        <td colspan="9" class="empty-row">
           查無進貨紀錄
         </td>
       </tr>

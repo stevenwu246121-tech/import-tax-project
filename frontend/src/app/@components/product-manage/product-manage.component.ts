@@ -700,4 +700,32 @@ ${vatRate}`;
 
     return Array.from(map.values());
   }
+
+  isLowStock(stockQty?: number | null): boolean {
+    return (stockQty ?? 0) <= 10;
+  }
+
+  getStockStatusLabel(stockQty?: number | null): string {
+    if ((stockQty ?? 0) <= 0) {
+      return '無庫存';
+    }
+
+    if ((stockQty ?? 0) <= 10) {
+      return '低庫存';
+    }
+
+    return '正常';
+  }
+
+  getStockStatusClass(stockQty?: number | null): string {
+    if ((stockQty ?? 0) <= 0) {
+      return 'stock-empty';
+    }
+
+    if ((stockQty ?? 0) <= 10) {
+      return 'stock-low';
+    }
+
+    return 'stock-normal';
+  }
 }

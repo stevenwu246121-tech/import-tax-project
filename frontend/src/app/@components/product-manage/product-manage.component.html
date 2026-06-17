@@ -1,4 +1,4 @@
-<h1>商品管理</h1>
+<h1>庫存管理</h1>
 
 <div class="search-filter-row">
   <input type="text" placeholder="搜尋商品名稱" [(ngModel)]="keyword" />
@@ -75,6 +75,22 @@
     <option value="g">
       公克 g
     </option>
+
+    <option value="包">
+      包
+    </option>
+
+    <option value="盒">
+      盒
+    </option>
+
+    <option value="瓶">
+      瓶
+    </option>
+
+    <option value="袋">
+      袋
+    </option>
   </select>
 
   <!-- 單價 -->
@@ -98,6 +114,7 @@
         <th>HS Code</th>
         <th>價格</th>
         <th>庫存</th>
+        <th>庫存狀態</th>
         <th>單位</th>
         <th>操作</th>
       </tr>
@@ -105,39 +122,41 @@
 
     <tbody>
       <tr *ngFor="let product of filteredProducts()">
-        <td>
+        <td data-label="商品">
           <span class="product-name" [title]="product.productName">
             {{ product.productName }}
           </span>
         </td>
 
-        <td>
+        <td data-label="分類">
           {{ product.categoryName }}
         </td>
 
-        <td>
+        <td data-label="HS Code">
           {{ product.hsCode }}
         </td>
 
-        <td>
+        <td data-label="價格">
           NT$ {{ product.unitPrice | number }}
         </td>
 
-        <td>
+        <td data-label="庫存">
           <span class="stock-badge" [class.low-stock]="product.stockQty <= 10">
             {{ product.stockQty }}
           </span>
+        </td>
 
-          <span class="low-stock-text" *ngIf="product.stockQty <= 10">
-            低庫存
+        <td data-label="庫存狀態">
+          <span class="stock-status-badge" [ngClass]="getStockStatusClass(product.stockQty)">
+            {{ getStockStatusLabel(product.stockQty) }}
           </span>
         </td>
 
-        <td>
+        <td data-label="單位">
           {{ getUnitLabel(product.unit) }}
         </td>
 
-        <td class="action-cell">
+        <td data-label="操作" class="action-cell">
           <button type="button" class="edit-menu-btn" (click)="toggleActionMenu(product.id)">
             編輯
           </button>
@@ -155,7 +174,7 @@
       </tr>
 
       <tr *ngIf="filteredProducts().length === 0">
-        <td colspan="7" class="empty-row">
+        <td colspan="8" class="empty-row">
           查無商品資料
         </td>
       </tr>

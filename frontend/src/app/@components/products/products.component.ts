@@ -204,6 +204,72 @@ export class ProductsComponent implements OnInit {
     this.calculate();
   }
 
+  onCartQuantityInput(
+    item: { productId: number; quantity: number },
+    event: Event,
+  ): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.value === '') {
+      return;
+    }
+
+    const stockQty = this.getProductStock(item.productId);
+
+    let quantity = Number(input.value);
+
+    if (!Number.isFinite(quantity) || quantity <= 0) {
+      quantity = 1;
+
+      item.quantity = quantity;
+
+      input.value = String(quantity);
+
+      this.calculate();
+
+      return;
+    }
+
+    quantity = Math.floor(quantity);
+
+    if (quantity > stockQty) {
+      quantity = stockQty;
+
+      item.quantity = quantity;
+
+      input.value = String(quantity);
+
+      this.dialogService.warning(`購物車數量不可超過目前庫存 ${stockQty}`);
+
+      this.calculate();
+
+      return;
+    }
+
+    item.quantity = quantity;
+
+    input.value = String(quantity);
+
+    this.calculate();
+  }
+
+  onCartQuantityBlur(
+    item: { productId: number; quantity: number },
+    event: Event,
+  ): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.value !== '') {
+      return;
+    }
+
+    item.quantity = 1;
+
+    input.value = '1';
+
+    this.calculate();
+  }
+
   getCartProduct(productId: number): Product | undefined {
     return this.products.find((product) => product.id === productId);
   }
@@ -266,8 +332,6 @@ export class ProductsComponent implements OnInit {
     this.quantities[product.id] = 1;
 
     this.calculate();
-
-    this.showCart = true;
   }
 
   removeFromCart(productId: number): void {

@@ -1,4 +1,4 @@
-<h1>庫存進貨</h1>
+<h1>商品進貨</h1>
 
 <div class="toolbar">
 
@@ -174,7 +174,7 @@
 <aside class="cart-drawer" [class.open]="showCart">
 
   <div class="cart-header">
-    <h2>進貨試算購物車</h2>
+    <h2>購物車</h2>
 
     <button type="button" class="cart-close-btn" (click)="closeCart()">
       ✕
@@ -186,45 +186,43 @@
   </div>
 
   <div class="cart-list" *ngIf="cartItems.length > 0">
-
     <div class="cart-item" *ngFor="let item of cartItems">
-
-      <div class="cart-item-info">
-        <strong>
+      <div class="cart-item-header">
+        <strong class="cart-product-name" [title]="item.productName">
           {{ item.productName }}
         </strong>
 
-        <div class="cart-quantity-control">
-          <span>數量：</span>
+        <button type="button" class="cart-remove-btn" (click)="removeFromCart(item.productId)">
+          移除
+        </button>
+      </div>
 
+      <div class="cart-quantity-control">
+        <span class="quantity-label">數量：</span>
+
+        <div class="quantity-group">
           <button type="button" class="quantity-btn" (click)="decreaseCartItemQuantity(item)"
             [disabled]="item.quantity <= 1">
             −
           </button>
 
-          <strong>
-            {{ item.quantity }}
-          </strong>
+          <input type="number" class="cart-quantity-input" min="1" [max]="getProductStock(item.productId)"
+            [value]="item.quantity" (input)="onCartQuantityInput(item, $event)"
+            (blur)="onCartQuantityBlur(item, $event)" />
 
           <button type="button" class="quantity-btn" (click)="increaseCartItemQuantity(item)"
             [disabled]="item.quantity >= getProductStock(item.productId)">
             ＋
           </button>
         </div>
-
-        <p>
-          小計：
-          {{ currency }}
-          {{ convertCurrency(getCartItemSubtotal(item)) | number:'1.2-2' }}
-        </p>
       </div>
 
-      <button type="button" class="danger" (click)="removeFromCart(item.productId)">
-        移除
-      </button>
-
+      <p class="cart-item-subtotal">
+        小計：
+        {{ currency }}
+        {{ convertCurrency(getCartItemSubtotal(item)) | number:'1.2-2' }}
+      </p>
     </div>
-
   </div>
 
   <div class="cart-summary">

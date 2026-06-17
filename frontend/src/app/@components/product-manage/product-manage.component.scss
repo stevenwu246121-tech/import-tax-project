@@ -11,6 +11,7 @@ h1 {
 }
 
 /* 搜尋區塊 */
+
 .search-filter-row {
   display: flex;
   align-items: center;
@@ -30,11 +31,12 @@ h1 {
 }
 
 /* 表單卡片 */
+
 .form-card {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
-  background: white;
+  background: #ffffff;
   border-radius: 24px;
   padding: 32px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
@@ -50,6 +52,7 @@ h1 {
 }
 
 /* 商品名稱 + 自動推薦按鈕 */
+
 .product-name-row {
   grid-column: 1 / -1;
   display: grid;
@@ -65,13 +68,14 @@ h1 {
 }
 
 /* 自動推薦按鈕 */
+
 .recommend-btn {
   height: 56px;
   padding: 0 18px;
   border: none;
   border-radius: 14px;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
@@ -83,6 +87,7 @@ h1 {
 }
 
 /* 推薦訊息 */
+
 .recommend-message {
   grid-column: 1 / -1;
   padding: 12px 16px;
@@ -95,11 +100,13 @@ h1 {
 }
 
 /* 新增 / 更新商品按鈕 */
+
 .submit-btn {
   grid-column: 1 / 2;
 }
 
 /* 共用輸入樣式 */
+
 input,
 select {
   height: 56px;
@@ -108,7 +115,7 @@ select {
   padding: 0 16px;
   font-size: 16px;
   outline: none;
-  background: white;
+  background: #ffffff;
   box-sizing: border-box;
 }
 
@@ -119,13 +126,14 @@ select:focus {
 }
 
 /* 共用按鈕 */
+
 button {
   height: 46px;
   padding: 0 22px;
   border: none;
   border-radius: 12px;
   background: #2563eb;
-  color: white;
+  color: #ffffff;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
@@ -145,22 +153,57 @@ button.danger:hover,
   background: #b91c1c;
 }
 
+/* HS Code 選單 */
+
+.hs-code-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hs-code-filter-input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  padding: 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  outline: none;
+}
+
+.hs-code-filter-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.hs-code-select {
+  width: 100%;
+  max-width: 100%;
+  height: 52px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* 表格外層 */
+
 .table-scroll {
   width: 100%;
   overflow-x: auto;
-  background: white;
+  background: #ffffff;
   border-radius: 22px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
 /* 表格 */
+
 table {
   width: 100%;
-  min-width: 900px;
+  min-width: 1080px;
   border-collapse: separate;
   border-spacing: 0;
-  background: white;
+  background: #ffffff;
   border-radius: 22px;
   overflow: visible;
   table-layout: fixed;
@@ -184,10 +227,12 @@ td {
 th {
   font-weight: 800;
   text-align: left;
+  color: #0f172a;
 }
 
 td {
   height: 64px;
+  color: #0f172a;
 }
 
 tbody,
@@ -199,10 +244,11 @@ tbody tr:hover {
   background: #f8fafc;
 }
 
-/* 欄位寬度：商品 / 分類 / HS Code / 價格 / 庫存 / 單位 / 操作 */
+/* 欄位寬度：商品 / 分類 / HS Code / 價格 / 庫存 / 庫存狀態 / 單位 / 操作 */
+
 th:nth-child(1),
 td:nth-child(1) {
-  width: 20%;
+  width: 14%;
 }
 
 th:nth-child(2),
@@ -222,21 +268,27 @@ td:nth-child(4) {
 
 th:nth-child(5),
 td:nth-child(5) {
-  width: 12%;
+  width: 10%;
 }
 
 th:nth-child(6),
 td:nth-child(6) {
-  width: 10%;
+  width: 12%;
 }
 
 th:nth-child(7),
 td:nth-child(7) {
+  width: 8%;
+}
+
+th:nth-child(8),
+td:nth-child(8) {
   width: 120px;
   text-align: center;
 }
 
 /* 商品名稱過長防跑版 */
+
 .product-name {
   display: inline-block;
   max-width: 220px;
@@ -246,7 +298,8 @@ td:nth-child(7) {
   vertical-align: middle;
 }
 
-/* 庫存標籤 */
+/* 庫存數量標籤 */
+
 .stock-badge {
   display: inline-flex;
   align-items: center;
@@ -265,14 +318,37 @@ td:nth-child(7) {
   color: #dc2626;
 }
 
-.low-stock-text {
-  margin-left: 8px;
-  color: #dc2626;
-  font-size: 14px;
-  font-weight: 800;
+/* 庫存狀態標籤 */
+
+.stock-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.stock-normal {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.stock-low {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.stock-empty {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 /* 操作欄 */
+
 .action-cell {
   width: 120px;
   min-width: 120px;
@@ -295,18 +371,17 @@ td:nth-child(7) {
 }
 
 /* 操作下拉選單 */
+
 .action-menu {
   position: absolute;
   top: 52px;
   right: 14px;
   left: auto;
   z-index: 9999;
-
   display: flex;
   flex-direction: column;
   gap: 8px;
-
-  background: white;
+  background: #ffffff;
   padding: 10px;
   border-radius: 14px;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
@@ -322,7 +397,15 @@ td:nth-child(7) {
   background: #2563eb;
 }
 
+.empty-row {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+  font-weight: 800;
+}
+
 /* 平板 */
+
 @media (max-width: 1024px) {
   h1 {
     font-size: 36px;
@@ -337,11 +420,12 @@ td:nth-child(7) {
   }
 
   table {
-    min-width: 860px;
+    min-width: 1040px;
   }
 }
 
 /* 手機 */
+
 @media (max-width: 768px) {
   h1 {
     font-size: 32px;
@@ -374,7 +458,7 @@ td:nth-child(7) {
   }
 
   table {
-    min-width: 820px;
+    min-width: 980px;
   }
 
   th,
@@ -385,6 +469,7 @@ td:nth-child(7) {
 }
 
 /* 超小螢幕 */
+
 @media (max-width: 480px) {
   h1 {
     font-size: 28px;
@@ -395,7 +480,7 @@ td:nth-child(7) {
   }
 
   table {
-    min-width: 780px;
+    min-width: 940px;
   }
 
   th,
@@ -403,60 +488,9 @@ td:nth-child(7) {
     padding: 12px 14px;
     font-size: 14px;
   }
-}
 
-.stock-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 30px;
-  padding: 0 10px;
-  border-radius: 999px;
-  background: #eef2ff;
-  color: #2563eb;
-  font-weight: 800;
-}
-
-.stock-badge.low-stock {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.low-stock-text {
-  margin-left: 8px;
-  color: #dc2626;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.hs-code-field {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.hs-code-filter-input {
-  width: 100%;
-  height: 48px;
-  border: 1px solid #dbe3ef;
-  border-radius: 14px;
-  padding: 0 16px;
-  font-size: 15px;
-  font-weight: 700;
-  outline: none;
-}
-
-.hs-code-filter-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
-}
-
-.hs-code-select {
-  width: 100%;
-  max-width: 100%;
-  height: 52px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  .stock-status-badge {
+    min-width: 68px;
+    font-size: 12px;
+  }
 }

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
@@ -25,9 +25,7 @@ type ExchangeRateMode = 'TWD_TO_JPY' | 'JPY_TO_TWD';
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.scss'],
 })
-export class DashboardHomeComponent
-  implements OnInit, AfterViewInit, OnDestroy
-{
+export class DashboardHomeComponent implements OnInit, OnDestroy {
   todayImportTotal = 0;
 
   totalDuty = 0;
@@ -105,8 +103,6 @@ export class DashboardHomeComponent
     this.loadLowStockProducts();
   }
 
-  ngAfterViewInit(): void {}
-
   loadProducts(): void {
     this.apiService.getProducts().subscribe({
       next: (response: Product[]) => {
@@ -163,15 +159,21 @@ export class DashboardHomeComponent
 
     return `1 JP¥ = ${(1 / this.twdToJpyRate).toFixed(4)} NT$`;
   }
+
   toggleExchangeRateMode(): void {
     this.exchangeRateMode =
       this.exchangeRateMode === 'TWD_TO_JPY' ? 'JPY_TO_TWD' : 'TWD_TO_JPY';
   }
+
   startExchangeRateAutoRefresh(): void {
-    this.exchangeRateTimer = setInterval(() => {
-      this.loadExchangeRate(false);
-    }, 1000);
+    this.exchangeRateTimer = setInterval(
+      () => {
+        this.loadExchangeRate(false);
+      },
+      1 * 60 * 1000,
+    );
   }
+
   onTrendFilterChange(): void {
     this.loadDashboardTrend();
   }
@@ -347,9 +349,13 @@ export class DashboardHomeComponent
         const dutyRate = product.dutyRate ?? 0;
         const vatRate = product.vatRate ?? 0;
 
+        const dutyAmount = (unitPrice * dutyRate) / 100;
+
+        const vatAmount = ((unitPrice + dutyAmount) * vatRate) / 100;
+
         return {
           productName: product.productName,
-          totalTax: (unitPrice * dutyRate) / 100 + (unitPrice * vatRate) / 100,
+          totalTax: dutyAmount + vatAmount,
         };
       })
       .sort((a, b) => b.totalTax - a.totalTax)
@@ -469,9 +475,11 @@ export class DashboardHomeComponent
   loadDashboardTrend(): void {
     this.apiService.getDashboardTrend(this.selectedPeriod).subscribe({
       next: (response) => {
-        this.trendData = response;
+        this.trendData = response ?? [];
 
-        this.createTrendChart();
+        setTimeout(() => {
+          this.createTrendChart();
+        });
       },
       error: (error) => {
         console.error(error);

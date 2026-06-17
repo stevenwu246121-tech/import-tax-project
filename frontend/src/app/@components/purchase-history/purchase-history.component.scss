@@ -8,7 +8,7 @@
 
 table {
   width: 100%;
-  min-width: 1050px;
+  min-width: 1150px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -414,4 +414,36 @@ td {
 
 .export-csv-btn:hover {
   background: #15803d;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.status-completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-default {
+  background: #e2e8f0;
+  color: #475569;
 }

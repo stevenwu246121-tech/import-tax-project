@@ -200,6 +200,46 @@ export class PurchaseHistoryComponent implements OnInit {
     return originCountry || '-';
   }
 
+  getStatusLabel(status?: string): string {
+    if (!status) {
+      return '已完成';
+    }
+
+    if (status === 'CONFIRMED') {
+      return '已完成';
+    }
+
+    if (status === 'COMPLETED') {
+      return '已完成';
+    }
+
+    if (status === 'PENDING') {
+      return '處理中';
+    }
+
+    if (status === 'CANCELLED') {
+      return '已取消';
+    }
+
+    return status;
+  }
+
+  getStatusClass(status?: string): string {
+    if (!status || status === 'CONFIRMED' || status === 'COMPLETED') {
+      return 'status-completed';
+    }
+
+    if (status === 'PENDING') {
+      return 'status-pending';
+    }
+
+    if (status === 'CANCELLED') {
+      return 'status-cancelled';
+    }
+
+    return 'status-default';
+  }
+
   exportFilteredOrdersCsv(): void {
     const orders = this.filteredOrderList;
 
@@ -228,7 +268,7 @@ export class PurchaseHistoryComponent implements OnInit {
       order.dutyTotal ?? 0,
       order.vatTotal ?? 0,
       order.landedCostTotal ?? 0,
-      order.status || '-',
+      this.getStatusLabel(order.status),
     ]);
 
     const csvContent = [headers, ...rows]

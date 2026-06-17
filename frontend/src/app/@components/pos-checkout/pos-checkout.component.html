@@ -5,6 +5,7 @@
     <div class="section-title-bar">
       <div>
         <h2>商品快速選取</h2>
+
         <p class="subtitle">
           點擊商品卡片加入購物車，系統會即時計算進口稅、進口營業稅與抵岸成本。
         </p>
@@ -49,122 +50,157 @@
               </button>
             </div>
           </div>
+
+          <button type="button" class="cart-toggle-btn" (click)="toggleCart()">
+            🛒 購物車
+
+            <span class="cart-badge" *ngIf="cartItemCount > 0">
+              {{ cartItemCount }}
+            </span>
+          </button>
         </div>
       </div>
     </div>
 
     <div class="product-cards-grid">
       <button type="button" class="product-card" *ngFor="let product of productList" (click)="addToCart(product)">
-        <span class="card-category">{{ product.categoryName }}</span>
-        <strong>{{ product.productName }}</strong>
-        <small>HS {{ product.hsCode }}</small>
-        <p class="exchange-rate">
-        <span>{{ exchangeRateTitle }}</span>
-        <br />
-        {{ exchangeRatePrefix }}
-        {{ displayExchangeRate | number:'1.3-3' }}
-        {{ exchangeRateUnit }}
-        </p>
-        <span class="card-price">
-          {{ currencyLabel }} {{ convertCurrency(product.unitPrice) | number:'1.0-0' }}
+        <span class="card-category">
+          {{ product.categoryName }}
         </span>
 
+        <strong>
+          {{ product.productName }}
+        </strong>
+
+        <small>
+          HS {{ product.hsCode }}
+        </small>
+
+        <p class="exchange-rate">
+          <span>{{ exchangeRateTitle }}</span>
+          <br />
+          {{ exchangeRatePrefix }}
+          {{ displayExchangeRate | number:'1.3-3' }}
+          {{ exchangeRateUnit }}
+        </p>
+
+        <span class="card-price">
+          {{ currencyLabel }}
+          {{ convertCurrency(product.unitPrice) | number:'1.0-0' }}
+        </span>
       </button>
     </div>
+  </div>
+</section>
 
-    <div class="cart-table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>商品</th>
-            <th>HS Code</th>
-            <th>單價</th>
-            <th>數量</th>
-            <th>小計</th>
-          </tr>
-        </thead>
+<div class="cart-overlay" *ngIf="showCart" (click)="closeCart()"></div>
 
-        <tbody>
-          <tr *ngFor="let item of cart; let i = index">
-            <td>{{ item.product.productName }}</td>
-            <td>{{ item.product.hsCode }}</td>
-            <td>
-              {{ currencyLabel }} {{ convertCurrency(item.product.unitPrice) | number:'1.0-0' }}
-            </td>
-            <td>
-              <div class="qty-counter">
-                <button type="button" (click)="updateQuantity(i, -1)">-</button>
-                <span>{{ item.quantity }}</span>
-                <button type="button" (click)="updateQuantity(i, 1)">+</button>
-              </div>
-            </td>
-            <td>
-              {{ currencyLabel }}
-              {{ convertCurrency(item.product.unitPrice * item.quantity) | number:'1.0-0' }}
-            </td>
-          </tr>
+<aside class="cart-drawer" [class.open]="showCart">
+  <div class="cart-header">
+    <h2>購物車</h2>
 
-          <tr *ngIf="cart.length === 0">
-            <td colspan="5" class="empty-cart">
-              請點擊上方商品卡片加入購物車
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <button type="button" class="cart-close-btn" (click)="closeCart()">
+      ✕
+    </button>
+  </div>
+
+  <div *ngIf="cart.length === 0" class="empty-cart drawer-empty">
+    目前購物車沒有商品
+  </div>
+
+  <div class="cart-list" *ngIf="cart.length > 0">
+    <div class="cart-item" *ngFor="let item of cart; let i = index">
+      <div class="cart-item-header">
+        <strong class="cart-product-name" [title]="item.product.productName">
+          {{ item.product.productName }}
+        </strong>
+
+        <button type="button" class="cart-remove-btn" (click)="removeFromCart(i)">
+          移除
+        </button>
+      </div>
+
+      <div class="cart-item-meta">
+        <span>HS {{ item.product.hsCode }}</span>
+
+        <span>
+          稅率 {{ getEffectiveVatRate(item.product, item.product.vatRate) }}%
+        </span>
+      </div>
+
+      <div class="cart-quantity-control">
+        <span class="quantity-label">數量：</span>
+
+        <div class="quantity-group">
+          <button type="button" class="quantity-btn" (click)="updateQuantity(i, -1)" [disabled]="item.quantity <= 1">
+            −
+          </button>
+
+          <input type="number" class="cart-quantity-input" min="1" [value]="item.quantity"
+            (input)="onCartQuantityInput(i, $event)" (blur)="onCartQuantityBlur(i, $event)" />
+
+          <button type="button" class="quantity-btn" (click)="updateQuantity(i, 1)">
+            ＋
+          </button>
+        </div>
+      </div>
+
+      <p class="cart-item-subtotal">
+        小計：
+        {{ currencyLabel }}
+        {{ convertCurrency(getCartItemSubtotal(item)) | number:'1.0-0' }}
+      </p>
     </div>
   </div>
 
-  <aside class="pos-summary-panel">
-    <h2>結帳結果</h2>
+  <div class="cart-summary">
+    <h3>試算總額</h3>
 
-    <div class="checkout-mode-box">
-      <div>
-        <span>結帳地區</span>
-        <strong>{{ regionLabel }}</strong>
-      </div>
+    <p>
+      <span>商品小計</span>
 
-      <div>
-        <span>使用方式</span>
-        <strong>{{ diningTypeLabel }}</strong>
-      </div>
+      <strong>
+        {{ currencyLabel }}
+        {{ convertCurrency(calculationResult?.subtotal || 0) | number:'1.2-2' }}
+      </strong>
+    </p>
+
+    <p>
+      <span>進口稅</span>
+
+      <strong>
+        {{ currencyLabel }}
+        {{ convertCurrency(calculationResult?.dutyTotal || 0) | number:'1.2-2' }}
+      </strong>
+    </p>
+
+    <p>
+      <span>
+        進口營業稅
+        <small class="tax-rule-label">
+          {{ posVatRateLabel }}
+        </small>
+      </span>
+
+      <strong>
+        {{ currencyLabel }}
+        {{ convertCurrency(calculationResult?.vatTotal || 0) | number:'1.2-2' }}
+      </strong>
+    </p>
+
+    <div class="cart-total">
+      <span>落地成本</span>
+
+      <strong>
+        {{ currencyLabel }}
+        {{ convertCurrency(calculationResult?.landedCostTotal || 0) | number:'1.2-2' }}
+      </strong>
     </div>
+  </div>
 
-    <div class="summary-list">
-      <div class="summary-row">
-        <span>小計</span>
-        <strong>
-          {{ currencyLabel }}
-          {{ convertCurrency(calculationResult?.subtotal || 0) | number:'1.2-2' }}
-        </strong>
-      </div>
-
-      <div class="summary-row">
-        <span>進口稅總計</span>
-        <strong>
-          {{ currencyLabel }}
-          {{ convertCurrency(calculationResult?.dutyTotal || 0) | number:'1.2-2' }}
-        </strong>
-      </div>
-
-      <div class="summary-row">
-        <span>進口營業稅總計</span>
-        <strong>
-          {{ currencyLabel }}
-          {{ convertCurrency(calculationResult?.vatTotal || 0) | number:'1.2-2' }}
-        </strong>
-      </div>
-
-      <div class="total-row">
-        <span>落地成本總計</span>
-        <strong>
-          {{ currencyLabel }}
-          {{ convertCurrency(calculationResult?.landedCostTotal || 0) | number:'1.2-2' }}
-        </strong>
-      </div>
-    </div>
-
-    <button type="button" class="secondary clear-button" (click)="clearCart()" [disabled]="cart.length === 0">
-      清空購物車
+  <div class="cart-actions">
+    <button type="button" class="secondary" (click)="clearCart()" [disabled]="cart.length === 0">
+      清空
     </button>
-  </aside>
-</section>
+  </div>
+</aside>
