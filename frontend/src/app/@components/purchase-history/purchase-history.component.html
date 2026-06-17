@@ -22,10 +22,62 @@
 
     <input type="date" [(ngModel)]="endDate" (change)="onDateChange()" [min]="startDate" aria-label="結束日期" />
   </div>
+
+  <button type="button" class="clear-filter-btn" (click)="clearFilters()">
+    清除篩選
+  </button>
+
+  <button type="button" class="export-csv-btn" (click)="exportFilteredOrdersCsv()">
+    匯出 CSV
+  </button>
 </div>
 
 <div class="date-error-message" *ngIf="dateErrorMessage">
   {{ dateErrorMessage }}
+</div>
+
+<div class="history-summary-grid">
+
+  <div class="history-summary-card">
+    <span>篩選結果</span>
+
+    <strong>
+      {{ filteredOrderCount }} 筆
+    </strong>
+  </div>
+
+  <div class="history-summary-card">
+    <span>商品總額</span>
+
+    <strong>
+      NT$ {{ filteredSubtotalTotal | number:'1.0-0' }}
+    </strong>
+  </div>
+
+  <div class="history-summary-card">
+    <span>進口稅</span>
+
+    <strong>
+      NT$ {{ filteredDutyTotal | number:'1.0-0' }}
+    </strong>
+  </div>
+
+  <div class="history-summary-card">
+    <span>營業稅</span>
+
+    <strong>
+      NT$ {{ filteredVatTotal | number:'1.0-0' }}
+    </strong>
+  </div>
+
+  <div class="history-summary-card total-card">
+    <span>到岸成本</span>
+
+    <strong>
+      NT$ {{ filteredLandedCostTotal | number:'1.0-0' }}
+    </strong>
+  </div>
+
 </div>
 
 <div class="card">

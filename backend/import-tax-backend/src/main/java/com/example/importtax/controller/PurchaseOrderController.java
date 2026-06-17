@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.importtax.entity.PurchaseOrder;
 import com.example.importtax.request.CreateOrderReq;
 import com.example.importtax.response.CreateOrderRes;
 import com.example.importtax.response.PurchaseOrderDetailRes;
@@ -35,11 +34,9 @@ public class PurchaseOrderController {
 	public PurchaseOrderDetailRes getOrderDetail(@PathVariable("orderId") Long orderId) {
 		return purchaseOrderService.getOrderDetail(orderId);
 	}
-	
+
 	@DeleteMapping("/{orderId}")
-	public void deleteOrder(
-	        @PathVariable("orderId") Long orderId
-	) {
-	    purchaseOrderService.deleteOrder(orderId);
+	public void deleteOrder(@PathVariable("orderId") Long orderId) {
+		purchaseOrderService.deleteOrder(orderId);
 	}
 }

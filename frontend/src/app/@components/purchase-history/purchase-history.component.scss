@@ -1,6 +1,9 @@
 .card {
   width: 100%;
   overflow-x: auto;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
 }
 
 table {
@@ -22,7 +25,13 @@ td {
 
 th {
   background: #eef2f7;
+  color: #334155;
   font-weight: 800;
+}
+
+td {
+  color: #0f172a;
+  font-weight: 700;
 }
 
 .order-link {
@@ -38,123 +47,25 @@ th {
   text-decoration: underline;
 }
 
-/* 平板以下：改成卡片 */
-@media (max-width: 900px) {
-  .card {
-    overflow-x: visible;
-    padding: 20px;
-  }
-
-  table,
-  thead,
-  tbody,
-  th,
-  td,
-  tr {
-    display: block;
-    width: 100%;
-    min-width: 0;
-  }
-
-  thead {
-    display: none;
-  }
-
-  tbody {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  tr {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px;
-    padding: 16px;
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-  }
-
-  td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    height: auto;
-    min-height: 44px;
-
-    padding: 10px 0;
-    border-bottom: 1px solid #e5e7eb;
-
-    text-align: right;
-    white-space: normal;
-  }
-
-  td:last-child {
-    border-bottom: none;
-  }
-
-  td::before {
-    content: attr(data-label);
-    font-weight: 800;
-    color: #64748b;
-    text-align: left;
-    padding-right: 16px;
-  }
-
-  .order-link {
-     max-width: none;
-    text-align: right;
-  }
-}
-
-.detail-btn {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-  margin-right: 8px;
-}
-
-.detail-btn:hover {
-  background: #1d4ed8;
-}
-
-.delete-btn {
-  background: #dc2626;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  cursor: pointer;
-}
-
-.delete-btn:hover {
-  background: #b91c1c;
-}
-
-.empty-row {
-  text-align: center;
-  padding: 24px;
-  color: #666;
-}
+/* =========================
+   Filter Row
+========================= */
 
 .history-filter-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 24px;
-  margin-bottom: 28px;
+  gap: 18px;
+  margin-bottom: 18px;
 }
 
 .history-filter-row input {
-  width: 420px;
+  width: 360px;
   max-width: 100%;
 }
 
 .history-filter-row select {
-  width: 240px;
+  width: 220px;
   max-width: 100%;
 }
 
@@ -166,7 +77,7 @@ th {
   padding: 0 16px;
   font-size: 16px;
   outline: none;
-  background: white;
+  background: #ffffff;
   box-sizing: border-box;
 }
 
@@ -175,6 +86,7 @@ th {
   border-color: #2563eb;
   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
 }
+
 .date-range-field {
   width: 420px;
   max-width: 100%;
@@ -224,4 +136,282 @@ th {
 .date-range-field input:focus {
   border: 0;
   box-shadow: none;
+}
+
+.date-error-message {
+  margin: 0 0 14px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* 清除篩選按鈕 */
+
+.clear-filter-btn {
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  background: #64748b;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  padding: 0 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.clear-filter-btn:hover {
+  background: #475569;
+}
+
+/* =========================
+   Summary Cards
+========================= */
+
+.history-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+  margin: 18px 0 20px;
+}
+
+.history-summary-card {
+  padding: 18px 20px;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.055);
+  border: 1px solid #e2e8f0;
+}
+
+.history-summary-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.history-summary-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.history-summary-card.total-card {
+  background: #eef6ff;
+  border-color: #bfdbfe;
+}
+
+.history-summary-card.total-card strong {
+  color: #2563eb;
+}
+
+/* =========================
+   Table Content
+========================= */
+
+.country-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #eef6ff;
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.action-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.detail-btn {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.detail-btn:hover {
+  background: #1d4ed8;
+}
+
+.delete-btn {
+  background: #dc2626;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.empty-row {
+  text-align: center;
+  padding: 24px;
+  color: #64748b;
+  font-weight: 800;
+}
+
+/* =========================
+   RWD
+========================= */
+
+@media (max-width: 1200px) {
+  .history-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 平板以下：表格改成卡片 */
+@media (max-width: 900px) {
+  .history-filter-row {
+    gap: 14px;
+  }
+
+.history-filter-row input,
+.history-filter-row select,
+.date-range-field,
+.clear-filter-btn,
+.export-csv-btn {
+  width: 100%;
+}
+
+  .card {
+    overflow-x: visible;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  tr {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    box-sizing: border-box;
+  }
+
+  td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: auto;
+    min-height: 44px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: right;
+    white-space: normal;
+  }
+
+  td:last-child {
+    border-bottom: none;
+  }
+
+  td::before {
+    content: attr(data-label);
+    font-weight: 800;
+    color: #64748b;
+    text-align: left;
+    padding-right: 16px;
+  }
+
+  .order-link {
+    max-width: none;
+    text-align: right;
+  }
+
+  .action-cell {
+    justify-content: space-between;
+  }
+
+  .action-cell::before {
+    content: attr(data-label);
+    font-weight: 800;
+    color: #64748b;
+    text-align: left;
+    padding-right: 16px;
+  }
+
+  .action-cell .detail-btn,
+  .action-cell .delete-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 760px) {
+  .history-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .history-summary-card strong {
+    font-size: 21px;
+  }
+}
+
+@media (max-width: 520px) {
+  .date-range-field {
+    height: auto;
+    min-height: 56px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+  }
+
+  .date-range-field input {
+    min-width: 130px;
+  }
+}
+
+.export-csv-btn {
+  height: 56px;
+  border: none;
+  border-radius: 16px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  padding: 0 20px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.export-csv-btn:hover {
+  background: #15803d;
 }
