@@ -129,10 +129,30 @@
         </div>
 
         <div class="calc-form">
-          <input type="number" min="1" placeholder="商品單價" [(ngModel)]="calcPrice" (input)="calculateHsCodeCost()" />
+        <label class="calc-field">
+        <span>商品單價</span>
 
-          <input type="number" min="1" placeholder="數量" [(ngModel)]="calcQuantity" (input)="calculateHsCodeCost()" />
-        </div>
+      <input
+      type="number"
+      min="1"
+      placeholder="請輸入商品單價"
+      [(ngModel)]="calcPrice"
+      (input)="calculateHsCodeCost()"
+    />
+      </label>
+
+  <label class="calc-field">
+    <span>數量</span>
+
+    <input
+      type="number"
+      min="1"
+      placeholder="請輸入數量"
+      [(ngModel)]="calcQuantity"
+      (input)="calculateHsCodeCost()"
+    />
+  </label>
+</div>
 
         <div class="calc-result">
           <div>
