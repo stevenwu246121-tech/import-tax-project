@@ -109,7 +109,9 @@
         </td>
 
         <td data-label="建立時間">
-          {{ order.createdAt | date:'yyyy/MM/dd HH:mm' }}
+          <span class="created-time">
+            {{ order.createdAt | date:'yyyy/MM/dd HH:mm' }}
+          </span>
         </td>
 
         <td data-label="來源國">

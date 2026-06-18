@@ -8,7 +8,7 @@
 
 table {
   width: 100%;
-  min-width: 1150px;
+  min-width: 1180px;
   border-collapse: collapse;
   table-layout: fixed;
 }
@@ -16,7 +16,7 @@ table {
 th,
 td {
   height: 64px;
-  padding: 0 18px;
+  padding: 0 12px;
   border-bottom: 1px solid #e5e7eb;
   vertical-align: middle;
   text-align: center;
@@ -35,12 +35,18 @@ td {
 }
 
 .order-link {
+  display: inline-block;
+  max-width: 150px;
   border: none;
   background: transparent;
   color: #2563eb;
   font-weight: 800;
   cursor: pointer;
   padding: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .order-link:hover {
@@ -210,6 +216,70 @@ td {
 }
 
 /* =========================
+   Table Column Width
+========================= */
+
+/* 1 訂單編號 */
+th:nth-child(1),
+td:nth-child(1) {
+  width: 210px;
+}
+
+/* 2 建立時間 */
+th:nth-child(2),
+td:nth-child(2) {
+  width: 190px;
+}
+
+/* 3 來源國 */
+th:nth-child(3),
+td:nth-child(3) {
+  width: 90px;
+}
+
+/* 4 商品總額 */
+th:nth-child(4),
+td:nth-child(4) {
+  width: 150px;
+}
+
+/* 5 進口稅 */
+th:nth-child(5),
+td:nth-child(5) {
+  width: 130px;
+}
+
+/* 6 營業稅 */
+th:nth-child(6),
+td:nth-child(6) {
+  width: 130px;
+}
+
+/* 7 到岸成本 */
+th:nth-child(7),
+td:nth-child(7) {
+  width: 150px;
+}
+
+/* 8 狀態 */
+th:nth-child(8),
+td:nth-child(8) {
+  width: 110px;
+}
+
+/* 9 操作 */
+th:nth-child(9),
+td:nth-child(9) {
+  width: 180px;
+}
+
+.created-time {
+  display: inline-block;
+  min-width: 150px;
+  white-space: nowrap;
+}
+
+/* =========================
    Table Content
 ========================= */
 
@@ -232,6 +302,14 @@ td {
   justify-content: center;
   align-items: center;
   gap: 8px;
+  min-width: 140px;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.action-cell .detail-btn,
+.action-cell .delete-btn {
+  flex-shrink: 0;
 }
 
 .detail-btn {
@@ -279,20 +357,33 @@ td {
   }
 }
 
-/* 平板以下：表格改成卡片 */
+/* 平板寬度：維持正常表格，只允許橫向捲動 */
 @media (max-width: 900px) {
   .history-filter-row {
     gap: 14px;
   }
 
-.history-filter-row input,
-.history-filter-row select,
-.date-range-field,
-.clear-filter-btn,
-.export-csv-btn {
-  width: 100%;
+  .history-filter-row input,
+  .history-filter-row select,
+  .date-range-field,
+  .clear-filter-btn,
+  .export-csv-btn {
+    width: 100%;
+  }
+
+  .card {
+    overflow-x: auto;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  table {
+    min-width: 1180px;
+  }
 }
 
+/* 真正手機寬度：才改成卡片式表格 */
+@media (max-width: 640px) {
   .card {
     overflow-x: visible;
     padding: 20px;
@@ -330,9 +421,10 @@ td {
   }
 
   td {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
     align-items: center;
+    gap: 14px;
     height: auto;
     min-height: 44px;
     padding: 10px 0;
@@ -350,16 +442,30 @@ td {
     font-weight: 800;
     color: #64748b;
     text-align: left;
-    padding-right: 16px;
+    white-space: nowrap;
+    word-break: keep-all;
   }
 
   .order-link {
-    max-width: none;
+    max-width: 180px;
     text-align: right;
+    justify-self: end;
+  }
+
+  .created-time {
+    justify-self: end;
+  }
+
+  .country-badge,
+  .status-badge {
+    justify-self: end;
   }
 
   .action-cell {
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 14px;
+    align-items: center;
   }
 
   .action-cell::before {
@@ -367,12 +473,12 @@ td {
     font-weight: 800;
     color: #64748b;
     text-align: left;
-    padding-right: 16px;
+    white-space: nowrap;
   }
 
   .action-cell .detail-btn,
   .action-cell .delete-btn {
-    flex: 1;
+    width: 100%;
   }
 }
 
