@@ -249,7 +249,19 @@ button:hover {
   margin-bottom: 18px;
 }
 
-.calc-form input {
+.calc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.calc-field span {
+  color: #475569;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.calc-field input {
   width: 100%;
 }
 
