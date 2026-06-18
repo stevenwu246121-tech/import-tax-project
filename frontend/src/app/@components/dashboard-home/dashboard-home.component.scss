@@ -604,3 +604,13 @@ td {
     font-size: 14px;
   }
 }
+
+.metric-value {
+  display: block;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}

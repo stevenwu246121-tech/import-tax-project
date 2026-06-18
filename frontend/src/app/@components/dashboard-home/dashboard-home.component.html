@@ -5,7 +5,7 @@
   <div class="home-card">
     <span>累積進口總額</span>
 
-    <strong>
+    <strong class="metric-value">
       NT$ {{ todayImportTotal | number }}
     </strong>
 
@@ -17,7 +17,7 @@
   <div class="home-card">
     <span>進口稅</span>
 
-    <strong>
+    <strong class="metric-value">
       NT$ {{ totalDuty | number:'1.0-0' }}
     </strong>
 
@@ -45,7 +45,7 @@
     <div class="cost-section">
       <span>成本與稅負率</span>
 
-      <strong>
+      <strong class="metric-value">
         NT$ {{ landedCostTotal | number:'1.0-0' }}
       </strong>
 
@@ -57,7 +57,7 @@
     <div class="tax-section">
       <span>平均稅負率</span>
 
-      <strong>
+      <strong class="metric-value">
         {{ averageTaxRate | number:'1.1-1' }}%
       </strong>
     </div>
