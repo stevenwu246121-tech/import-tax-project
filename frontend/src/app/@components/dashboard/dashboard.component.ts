@@ -101,14 +101,28 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  getUnitLabel(unit?: string): string {
+  getUnitLabel(unit?: string | null): string {
     switch (unit) {
       case 'kg':
         return '公斤 kg';
+
       case 'g':
         return '公克 g';
+
+      case '包':
+        return '包';
+
+      case '盒':
+        return '盒';
+
+      case '瓶':
+        return '瓶';
+
+      case '袋':
+        return '袋';
+
       default:
-        return '-';
+        return unit || '-';
     }
   }
 }

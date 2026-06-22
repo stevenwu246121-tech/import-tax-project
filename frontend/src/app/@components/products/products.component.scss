@@ -689,3 +689,52 @@ td button:disabled {
   font-size: 14px;
   font-weight: 800;
 }
+
+.cart-item-price-detail {
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+}
+
+.cart-item-price-detail p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.cart-item-price-detail span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cart-item-price-detail small {
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.cart-item-price-detail strong {
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.cart-item-landed {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #cbd5e1;
+}
+
+.cart-item-landed span,
+.cart-item-landed strong {
+  color: #2563eb;
+  font-weight: 900;
+}

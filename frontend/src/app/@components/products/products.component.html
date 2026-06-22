@@ -217,11 +217,53 @@
         </div>
       </div>
 
-      <p class="cart-item-subtotal">
-        小計：
-        {{ currency }}
-        {{ convertCurrency(getCartItemSubtotal(item)) | number:'1.2-2' }}
-      </p>
+      <div class="cart-item-price-detail">
+        <p>
+          <span>小計</span>
+
+          <strong>
+            {{ currency }}
+            {{ convertCurrency(getCartItemSubtotal(item)) | number:'1.2-2' }}
+          </strong>
+        </p>
+
+        <p>
+          <span>
+            進口稅
+            <small>
+              {{ getCartItemDutyRate(item) }}%
+            </small>
+          </span>
+
+          <strong>
+            {{ currency }}
+            {{ convertCurrency(getCartItemDutyAmount(item)) | number:'1.2-2' }}
+          </strong>
+        </p>
+
+        <p>
+          <span>
+            營業稅
+            <small>
+              {{ getCartItemVatRate(item) }}%
+            </small>
+          </span>
+
+          <strong>
+            {{ currency }}
+            {{ convertCurrency(getCartItemVatAmount(item)) | number:'1.2-2' }}
+          </strong>
+        </p>
+
+        <p class="cart-item-landed">
+          <span>落地成本</span>
+
+          <strong>
+            {{ currency }}
+            {{ convertCurrency(getCartItemLandedCost(item)) | number:'1.2-2' }}
+          </strong>
+        </p>
+      </div>
     </div>
   </div>
 

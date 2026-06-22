@@ -1,3 +1,5 @@
+import { forkJoin } from 'rxjs';
+
 import { Component, OnInit } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -249,27 +251,93 @@ export class PurchaseHistoryComponent implements OnInit {
       return;
     }
 
+    const detailRequests = orders.map((order) =>
+      this.apiService.getOrderDetail(order.id),
+    );
+
+    forkJoin(detailRequests).subscribe({
+      next: (orderDetails: PurchaseOrder[]) => {
+        this.exportOrderDetailsCsv(orderDetails);
+      },
+      error: (error: unknown) => {
+        console.error(error);
+
+        this.dialogService.error('進貨明細匯出失敗');
+      },
+    });
+  }
+
+  private exportOrderDetailsCsv(orders: PurchaseOrder[]): void {
     const headers = [
       '訂單編號',
       '建立時間',
       '來源國',
-      '商品總額',
-      '進口稅',
-      '營業稅',
-      '到岸成本',
       '狀態',
+      '商品名稱',
+      'HS Code',
+      '數量',
+      '單價',
+      '商品小計',
+      '進口稅率',
+      '進口稅金額',
+      '營業稅率',
+      '營業稅金額',
+      '到岸成本',
+      '訂單商品總額',
+      '訂單進口稅',
+      '訂單營業稅',
+      '訂單到岸成本',
     ];
 
-    const rows = orders.map((order) => [
-      order.orderNo,
-      this.formatDateTimeForCsv(order.createdAt),
-      this.getCountryLabel(order.originCountry),
-      order.subtotal ?? 0,
-      order.dutyTotal ?? 0,
-      order.vatTotal ?? 0,
-      order.landedCostTotal ?? 0,
-      this.getStatusLabel(order.status),
-    ]);
+    const rows = orders.flatMap((order) => {
+      const items = order.items ?? [];
+
+      if (items.length === 0) {
+        return [
+          [
+            order.orderNo,
+            this.formatDateTimeForCsv(order.createdAt),
+            this.getCountryLabel(order.originCountry),
+            this.getStatusLabel(order.status),
+            '-',
+            '-',
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            order.subtotal ?? 0,
+            order.dutyTotal ?? 0,
+            order.vatTotal ?? 0,
+            order.landedCostTotal ?? 0,
+          ],
+        ];
+      }
+
+      return items.map((item) => [
+        order.orderNo,
+        this.formatDateTimeForCsv(order.createdAt),
+        this.getCountryLabel(order.originCountry),
+        this.getStatusLabel(order.status),
+        item.productName ?? '-',
+        item.hsCode ?? '-',
+        item.quantity ?? 0,
+        item.unitPrice ?? 0,
+        item.subtotal ?? 0,
+        item.dutyRate ?? 0,
+        item.dutyAmount ?? 0,
+        item.vatRate ?? 0,
+        item.vatAmount ?? 0,
+        item.landedCost ?? 0,
+        order.subtotal ?? 0,
+        order.dutyTotal ?? 0,
+        order.vatTotal ?? 0,
+        order.landedCostTotal ?? 0,
+      ]);
+    });
 
     const csvContent = [headers, ...rows]
       .map((row) => row.map((value) => this.escapeCsvValue(value)).join(','))
@@ -289,13 +357,13 @@ export class PurchaseHistoryComponent implements OnInit {
 
     link.href = url;
 
-    link.download = `purchase-history-${today}.csv`;
+    link.download = `purchase-history-details-${today}.csv`;
 
     link.click();
 
     window.URL.revokeObjectURL(url);
 
-    this.dialogService.success('進貨紀錄 CSV 已匯出');
+    this.dialogService.success('進貨明細 CSV 已匯出');
   }
 
   private escapeCsvValue(value: unknown): string {

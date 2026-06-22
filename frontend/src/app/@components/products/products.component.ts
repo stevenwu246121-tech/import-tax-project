@@ -280,6 +280,64 @@ export class ProductsComponent implements OnInit {
     return (product?.unitPrice ?? 0) * item.quantity;
   }
 
+  getCalculatedCartItem(cartItem: {
+    productId: number;
+    productName: string;
+  }): any {
+    if (!this.calculateResponse?.items) {
+      return null;
+    }
+
+    return this.calculateResponse.items.find((item: any) => {
+      return (
+        item.productId === cartItem.productId ||
+        item.productName === cartItem.productName
+      );
+    });
+  }
+
+  getCartItemDutyRate(cartItem: {
+    productId: number;
+    productName: string;
+  }): number {
+    const calculatedItem = this.getCalculatedCartItem(cartItem);
+
+    return calculatedItem?.dutyRate ?? 0;
+  }
+
+  getCartItemDutyAmount(cartItem: {
+    productId: number;
+    productName: string;
+  }): number {
+    const calculatedItem = this.getCalculatedCartItem(cartItem);
+
+    return calculatedItem?.dutyAmount ?? 0;
+  }
+
+  getCartItemVatRate(cartItem: {
+    productId: number;
+    productName: string;
+  }): number {
+    const calculatedItem = this.getCalculatedCartItem(cartItem);
+
+    return calculatedItem?.vatRate ?? 0;
+  }
+
+  getCartItemVatAmount(cartItem: {
+    productId: number;
+    productName: string;
+  }): number {
+    const calculatedItem = this.getCalculatedCartItem(cartItem);
+
+    return calculatedItem?.vatAmount ?? 0;
+  }
+
+  getCartItemLandedCost(cartItem: CartItem): number {
+    const calculatedItem = this.getCalculatedCartItem(cartItem);
+
+    return calculatedItem?.landedCost ?? this.getCartItemSubtotal(cartItem);
+  }
+
   addToCart(product: Product): void {
     const stockQty = product.stockQty ?? 0;
 
