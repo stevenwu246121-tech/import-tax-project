@@ -63,6 +63,55 @@
     </div>
 
   </div>
+<div class="inventory-kpi-grid">
+  <div class="home-card inventory-kpi-card">
+    <span>商品總數</span>
+
+    <strong class="metric-value">
+      {{ totalProductCount }}
+    </strong>
+
+    <small class="info">
+      目前系統中的商品資料筆數
+    </small>
+  </div>
+
+  <div class="home-card inventory-kpi-card">
+    <span>庫存總量</span>
+
+    <strong class="metric-value">
+      {{ totalStockQty | number:'1.0-0' }}
+    </strong>
+
+    <small class="info">
+      目前所有商品庫存數量加總
+    </small>
+  </div>
+
+  <div class="home-card inventory-kpi-card">
+    <span>商品分類數</span>
+
+    <strong class="metric-value">
+      {{ categoryCount }}
+    </strong>
+
+    <small class="info">
+      目前商品涵蓋的分類數量
+    </small>
+  </div>
+
+  <div class="home-card inventory-kpi-card warning">
+    <span>低庫存商品數</span>
+
+    <strong class="metric-value">
+      {{ lowStockCount }}
+    </strong>
+
+    <small class="info">
+      庫存數量小於等於 10 的商品
+    </small>
+  </div>
+</div>
 
 </div>
 

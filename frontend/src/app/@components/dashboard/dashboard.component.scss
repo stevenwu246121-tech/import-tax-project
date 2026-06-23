@@ -2,68 +2,54 @@
   width: 100%;
 }
 
+.page-header {
+  margin-bottom: 24px;
+}
+
 h1 {
+  margin: 0 0 8px;
+  color: #0f172a;
   font-size: 42px;
   font-weight: 900;
-  margin: 0 0 24px;
-  color: #0f172a;
-}
-
-/* KPI 卡片區 */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-
-.kpi-card {
-  background: white;
-  border-radius: 24px;
-  padding: 28px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid #eef2f7;
-}
-
-.kpi-label {
-  font-size: 15px;
-  font-weight: 800;
-  color: #64748b;
-  margin-bottom: 12px;
-}
-
-.kpi-value {
-  font-size: 32px;
-  font-weight: 900;
-  color: #0f172a;
   line-height: 1.2;
-  margin-bottom: 10px;
 }
 
-.kpi-desc {
-  font-size: 14px;
-  line-height: 1.6;
+.page-header p {
+  margin: 0;
   color: #64748b;
-}
-
-.kpi-card.warning .kpi-value {
-  color: #dc2626;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.7;
 }
 
 .low-stock-card {
-  background: white;
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  border: 1px solid #eef2f7;
   margin-bottom: 32px;
+  padding: 32px;
+  border: 1px solid #eef2f7;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
 }
 
 .section-header {
   margin-bottom: 24px;
 }
 
-/* 低庫存表格 */
+.section-header h2 {
+  margin: 0 0 10px;
+  color: #0f172a;
+  font-size: 26px;
+  font-weight: 900;
+}
+
+.section-header p {
+  margin: 0;
+  color: #475569;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.7;
+}
+
 .table-scroll {
   width: 100%;
   overflow-x: auto;
@@ -86,6 +72,7 @@ th,
 td {
   padding: 16px 18px;
   border-bottom: 1px solid #e5e7eb;
+  color: #0f172a;
   font-size: 16px;
   text-align: left;
   white-space: nowrap;
@@ -93,11 +80,10 @@ td {
 
 th {
   font-weight: 900;
-  color: #0f172a;
 }
 
-td {
-  color: #0f172a;
+tbody tr:last-child td {
+  border-bottom: 0;
 }
 
 .stock-badge {
@@ -110,7 +96,7 @@ td {
   border-radius: 999px;
   background: #eef2ff;
   color: #2563eb;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .stock-badge.low-stock {
@@ -122,45 +108,31 @@ td {
   margin-left: 8px;
   color: #dc2626;
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .empty-message {
-  padding: 24px;
+  padding: 28px;
   border-radius: 18px;
   background: #f8fafc;
   color: #64748b;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 800;
   text-align: center;
 }
 
-/* 平板 */
-@media (max-width: 1200px) {
-  .kpi-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-/* 手機 */
 @media (max-width: 768px) {
   h1 {
     font-size: 32px;
-    line-height: 1.3;
   }
 
-  .kpi-grid {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .kpi-card,
   .low-stock-card {
-    border-radius: 20px;
     padding: 24px;
+    border-radius: 20px;
   }
 
-  .kpi-value {
-    font-size: 28px;
+  .section-header h2 {
+    font-size: 22px;
   }
 
   th,

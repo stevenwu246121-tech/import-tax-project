@@ -42,6 +42,14 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
 
   products: Product[] = [];
 
+  totalProductCount = 0;
+
+  totalStockQty = 0;
+
+  categoryCount = 0;
+
+  lowStockCount = 0;
+
   previewProducts: Product[] = [];
 
   inventoryTotals: { [key: string]: number } = {};
@@ -90,42 +98,62 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.loadDashboardSummary();
+  this.loadDashboardSummary();
 
-    this.loadProducts();
+  this.loadProducts();
 
-    this.loadDashboardTrend();
+  this.loadDashboardTrend();
 
-    this.loadExchangeRate();
+  this.loadExchangeRate();
 
-    this.startExchangeRateAutoRefresh();
+  this.startExchangeRateAutoRefresh();
 
-    this.loadLowStockProducts();
-  }
+  this.loadLowStockProducts();
+}
 
-  loadProducts(): void {
-    this.apiService.getProducts().subscribe({
-      next: (response: Product[]) => {
-        this.products = response ?? [];
+loadProducts(): void {
+  this.apiService.getProducts().subscribe({
+    next: (response: Product[]) => {
+      this.products = response ?? [];
 
-        this.previewProducts = this.products.slice(0, 3);
+      this.previewProducts = this.products.slice(0, 3);
 
-        this.calculateInventoryTotals(this.products);
+      this.calculateInventoryTotals(this.products);
 
-        setTimeout(() => {
-          this.createInventoryChart();
+      this.totalProductCount = this.products.length;
 
-          this.createTaxRankingChart();
-        });
-      },
+      this.totalStockQty = this.products.reduce(
+        (total, product) => total + (product.stockQty ?? 0),
+        0,
+      );
 
-      error: (error: unknown) => {
-        console.error(error);
+      const categorySet = new Set(
+        this.products.map((product) => product.categoryName || '未分類'),
+      );
 
-        this.dialogService.error('商品資料載入失敗');
-      },
-    });
-  }
+      this.categoryCount = categorySet.size;
+
+      this.lowStockCount = this.products.filter(
+        (product) => (product.stockQty ?? 0) <= 10,
+      ).length;
+
+      setTimeout(() => {
+        this.createInventoryChart();
+
+        this.createTaxRankingChart();
+      });
+    },
+
+    error: (error: unknown) => {
+      console.error(error);
+
+      this.dialogService.error('商品資料載入失敗');
+    },
+  });
+}
+
+
+
 
   loadExchangeRate(showError = true): void {
     this.apiService.getJpyExchangeRate().subscribe({
@@ -518,4 +546,5 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
 
     this.inventoryTotals = totals;
   }
+
 }

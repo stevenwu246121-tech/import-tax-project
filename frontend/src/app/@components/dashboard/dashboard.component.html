@@ -1,45 +1,11 @@
 <div class="dashboard-container">
-  <h1>低庫存表</h1>
+  <div class="page-header">
+    <div>
+      <h1>低庫存表</h1>
 
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">商品總數</div>
-      <div class="kpi-value">
-        {{ totalProductCount }}
-      </div>
-      <div class="kpi-desc">
-        目前系統中的商品資料筆數
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-label">本月進貨總額</div>
-      <div class="kpi-value">
-        NT$ {{ monthlyPurchaseTotal | number:'1.0-0' }}
-      </div>
-      <div class="kpi-desc">
-        本月所有進貨訂單的到岸成本加總
-      </div>
-    </div>
-
-    <div class="kpi-card">
-      <div class="kpi-label">本月進口稅總額</div>
-      <div class="kpi-value">
-        NT$ {{ monthlyDutyTotal | number:'1.0-0' }}
-      </div>
-      <div class="kpi-desc">
-        本月進貨訂單產生的進口稅加總
-      </div>
-    </div>
-
-    <div class="kpi-card warning">
-      <div class="kpi-label">低庫存商品數</div>
-      <div class="kpi-value">
-        {{ lowStockCount }}
-      </div>
-      <div class="kpi-desc">
-        庫存數量小於等於 10 的商品
-      </div>
+      <p>
+        庫存數量小於等於 10 的商品會顯示在此，方便優先安排補貨。
+      </p>
     </div>
   </div>
 
@@ -47,8 +13,9 @@
     <div class="section-header">
       <div>
         <h2>低庫存商品清單</h2>
+
         <p>
-          庫存數量小於等於 10 的商品會顯示在此，方便商家優先補貨。
+          依目前商品庫存資料篩選，當庫存數量小於等於 10 時會列入清單。
         </p>
       </div>
     </div>
@@ -71,17 +38,11 @@
 
         <tbody>
           <tr *ngFor="let product of lowStockProducts">
-            <td>
-              {{ product.productName }}
-            </td>
+            <td>{{ product.productName }}</td>
 
-            <td>
-              {{ product.categoryName }}
-            </td>
+            <td>{{ product.categoryName || '-' }}</td>
 
-            <td>
-              {{ product.hsCode }}
-            </td>
+            <td>{{ product.hsCode || '-' }}</td>
 
             <td>
               <span class="stock-badge low-stock">
@@ -93,7 +54,7 @@
               </span>
             </td>
 
-            <td data-label="單位">
+            <td>
               {{ getUnitLabel(product.unit) }}
             </td>
           </tr>
