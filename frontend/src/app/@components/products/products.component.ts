@@ -27,6 +27,13 @@ interface PurchaseCalculateRequest {
   }>;
 }
 
+type ProductSortMode =
+  | 'latestPurchase'
+  | 'stockAsc'
+  | 'priceDesc'
+  | 'priceAsc'
+  | 'nameAsc';
+
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -35,6 +42,12 @@ interface PurchaseCalculateRequest {
   styleUrls: ['./products.component.scss'],
 })
 export class ProductsComponent implements OnInit {
+  selectedProductSort: ProductSortMode = 'latestPurchase';
+
+  private readonly recentPurchasedStorageKey = 'recentPurchasedProductIds';
+
+  recentPurchasedProductIds: number[] = [];
+
   selectedCountry: 'TW' | 'JP' = 'TW';
 
   currency = 'NT$ ';
@@ -74,11 +87,61 @@ export class ProductsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadRecentPurchasedProductIds();
+
     this.loadProducts();
   }
 
   get cartItemCount(): number {
     return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  }
+
+  get displayProducts(): Product[] {
+    const products = [...this.products];
+
+    switch (this.selectedProductSort) {
+      case 'latestPurchase':
+        return products.sort((a, b) => {
+          const indexA = this.recentPurchasedProductIds.indexOf(a.id);
+
+          const indexB = this.recentPurchasedProductIds.indexOf(b.id);
+
+          const aIsRecent = indexA !== -1;
+
+          const bIsRecent = indexB !== -1;
+
+          if (aIsRecent && bIsRecent) {
+            return indexA - indexB;
+          }
+
+          if (aIsRecent) {
+            return -1;
+          }
+
+          if (bIsRecent) {
+            return 1;
+          }
+
+          return b.id - a.id;
+        });
+
+      case 'stockAsc':
+        return products.sort((a, b) => (a.stockQty ?? 0) - (b.stockQty ?? 0));
+
+      case 'priceDesc':
+        return products.sort((a, b) => (b.unitPrice ?? 0) - (a.unitPrice ?? 0));
+
+      case 'priceAsc':
+        return products.sort((a, b) => (a.unitPrice ?? 0) - (b.unitPrice ?? 0));
+
+      case 'nameAsc':
+        return products.sort((a, b) =>
+          (a.productName ?? '').localeCompare(b.productName ?? '', 'zh-Hant'),
+        );
+
+      default:
+        return products;
+    }
   }
 
   toggleCart(): void {
@@ -112,6 +175,36 @@ export class ProductsComponent implements OnInit {
         this.errorMessage = '商品資料載入失敗，請確認後端服務是否正常。';
       },
     });
+  }
+
+  private loadRecentPurchasedProductIds(): void {
+    const value = localStorage.getItem(this.recentPurchasedStorageKey);
+
+    if (!value) {
+      this.recentPurchasedProductIds = [];
+
+      return;
+    }
+
+    try {
+      this.recentPurchasedProductIds = JSON.parse(value);
+    } catch {
+      this.recentPurchasedProductIds = [];
+    }
+  }
+
+  private saveRecentPurchasedProductIds(productIds: number[]): void {
+    const mergedIds = [...productIds, ...this.recentPurchasedProductIds];
+
+    this.recentPurchasedProductIds = Array.from(new Set(mergedIds)).slice(
+      0,
+      30,
+    );
+
+    localStorage.setItem(
+      this.recentPurchasedStorageKey,
+      JSON.stringify(this.recentPurchasedProductIds),
+    );
   }
 
   private initializeQuantities(): void {
@@ -528,6 +621,12 @@ export class ProductsComponent implements OnInit {
 
     this.apiService.createOrder(request).subscribe({
       next: (response) => {
+        const purchasedProductIds = this.cartItems.map(
+          (item) => item.productId,
+        );
+
+        this.saveRecentPurchasedProductIds(purchasedProductIds);
+
         this.isCalculating = false;
 
         this.dialogService.success(`進貨成功：${response.orderNo}`);

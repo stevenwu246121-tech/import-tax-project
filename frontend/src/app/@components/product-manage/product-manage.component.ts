@@ -24,6 +24,14 @@ interface ProductReq {
   stockQty: number | null;
 }
 
+type ProductSortMode =
+  | 'latestPurchase'
+  | 'stockAsc'
+  | 'stockDesc'
+  | 'priceDesc'
+  | 'priceAsc'
+  | 'nameAsc';
+
 @Component({
   selector: 'app-product-manage',
   standalone: true,
@@ -33,6 +41,12 @@ interface ProductReq {
 })
 export class ProductManageComponent implements OnInit {
   products: Product[] = [];
+
+  selectedProductSort: ProductSortMode = 'latestPurchase';
+
+  private readonly recentPurchasedStorageKey = 'recentPurchasedProductIds';
+
+  recentPurchasedProductIds: number[] = [];
 
   categories: Category[] = [];
 
@@ -72,11 +86,29 @@ export class ProductManageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loadRecentPurchasedProductIds();
+
     this.loadProducts();
 
     this.loadCategories();
 
     this.loadHsCodes();
+  }
+
+  private loadRecentPurchasedProductIds(): void {
+    const value = localStorage.getItem(this.recentPurchasedStorageKey);
+
+    if (!value) {
+      this.recentPurchasedProductIds = [];
+
+      return;
+    }
+
+    try {
+      this.recentPurchasedProductIds = JSON.parse(value);
+    } catch {
+      this.recentPurchasedProductIds = [];
+    }
   }
 
   loadProducts(): void {
@@ -578,10 +610,11 @@ export class ProductManageComponent implements OnInit {
   }
 
   filteredProducts(): Product[] {
-    return this.products.filter((product) => {
-      const matchKeyword = product.productName
-        .toLowerCase()
-        .includes(this.keyword.trim().toLowerCase());
+    const keyword = this.keyword.trim().toLowerCase();
+
+    const filteredProducts = this.products.filter((product) => {
+      const matchKeyword =
+        !keyword || product.productName.toLowerCase().includes(keyword);
 
       const matchCategory =
         !this.selectedCategory ||
@@ -589,6 +622,67 @@ export class ProductManageComponent implements OnInit {
 
       return matchKeyword && matchCategory;
     });
+
+    return this.sortProducts(filteredProducts);
+  }
+
+  private sortProducts(products: Product[]): Product[] {
+    const sortedProducts = [...products];
+
+    switch (this.selectedProductSort) {
+      case 'latestPurchase':
+        return sortedProducts.sort((a, b) => {
+          const indexA = this.recentPurchasedProductIds.indexOf(a.id);
+
+          const indexB = this.recentPurchasedProductIds.indexOf(b.id);
+
+          const aIsRecent = indexA !== -1;
+
+          const bIsRecent = indexB !== -1;
+
+          if (aIsRecent && bIsRecent) {
+            return indexA - indexB;
+          }
+
+          if (aIsRecent) {
+            return -1;
+          }
+
+          if (bIsRecent) {
+            return 1;
+          }
+
+          return b.id - a.id;
+        });
+
+      case 'stockAsc':
+        return sortedProducts.sort(
+          (a, b) => (a.stockQty ?? 0) - (b.stockQty ?? 0),
+        );
+
+      case 'stockDesc':
+        return sortedProducts.sort(
+          (a, b) => (b.stockQty ?? 0) - (a.stockQty ?? 0),
+        );
+
+      case 'priceDesc':
+        return sortedProducts.sort(
+          (a, b) => (b.unitPrice ?? 0) - (a.unitPrice ?? 0),
+        );
+
+      case 'priceAsc':
+        return sortedProducts.sort(
+          (a, b) => (a.unitPrice ?? 0) - (b.unitPrice ?? 0),
+        );
+
+      case 'nameAsc':
+        return sortedProducts.sort((a, b) =>
+          (a.productName ?? '').localeCompare(b.productName ?? '', 'zh-Hant'),
+        );
+
+      default:
+        return sortedProducts;
+    }
   }
 
   get uniqueCategories(): Category[] {

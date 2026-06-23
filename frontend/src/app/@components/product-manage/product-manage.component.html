@@ -10,6 +10,32 @@
       {{ category.name }}
     </option>
   </select>
+
+  <select class="product-sort-select" [(ngModel)]="selectedProductSort">
+    <option value="latestPurchase">
+      最新進貨優先
+    </option>
+
+    <option value="stockAsc">
+      庫存低到高
+    </option>
+
+    <option value="stockDesc">
+      庫存高到低
+    </option>
+
+    <option value="priceDesc">
+      價格高到低
+    </option>
+
+    <option value="priceAsc">
+      價格低到高
+    </option>
+
+    <option value="nameAsc">
+      商品名稱排序
+    </option>
+  </select>
 </div>
 
 <div class="form-card">

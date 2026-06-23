@@ -77,13 +77,37 @@
   <div class="product-list-header">
     <h2>商品列表</h2>
 
-    <button type="button" class="cart-toggle-btn" (click)="toggleCart()">
-      🛒 購物車
+    <div class="product-list-actions">
+      <select class="product-sort-select" [(ngModel)]="selectedProductSort">
+        <option value="latestPurchase">
+          最新進貨優先
+        </option>
 
-      <span class="cart-badge" *ngIf="cartItemCount > 0">
-        {{ cartItemCount }}
-      </span>
-    </button>
+        <option value="stockAsc">
+          庫存低到高
+        </option>
+
+        <option value="priceDesc">
+          價格高到低
+        </option>
+
+        <option value="priceAsc">
+          價格低到高
+        </option>
+
+        <option value="nameAsc">
+          商品名稱排序
+        </option>
+      </select>
+
+      <button type="button" class="cart-toggle-btn" (click)="toggleCart()">
+        🛒 購物車
+
+        <span class="cart-badge" *ngIf="cartItemCount > 0">
+          {{ cartItemCount }}
+        </span>
+      </button>
+    </div>
   </div>
 
   <div class="table-scroll">
@@ -106,7 +130,7 @@
 
       <tbody>
 
-        <tr *ngFor="let product of products">
+        <tr *ngFor="let product of displayProducts">
 
           <td>
             <span class="product-name" [title]="product.productName">

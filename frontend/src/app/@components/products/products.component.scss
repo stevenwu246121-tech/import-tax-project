@@ -738,3 +738,40 @@ td button:disabled {
   color: #2563eb;
   font-weight: 900;
 }
+
+.product-list-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.product-sort-select {
+  height: 44px;
+  border: 1px solid #dbe3ef;
+  border-radius: 14px;
+  padding: 0 16px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-weight: 800;
+  outline: none;
+  cursor: pointer;
+}
+
+.product-sort-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+@media (max-width: 768px) {
+  .product-list-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .product-sort-select,
+  .cart-toggle-btn {
+    width: 100%;
+  }
+}
