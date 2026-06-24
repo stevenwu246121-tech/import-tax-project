@@ -30,6 +30,53 @@ h1 {
   max-width: 100%;
 }
 
+/* 庫存統計卡 */
+
+.inventory-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 0 28px;
+}
+
+.inventory-summary-card {
+  min-width: 0;
+  padding: 22px 24px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055);
+  border: 1px solid #e2e8f0;
+}
+
+.inventory-summary-card span {
+  display: block;
+  margin-bottom: 10px;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.inventory-summary-card strong {
+  display: block;
+  color: #0f172a;
+  font-size: clamp(26px, 2vw, 36px);
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.inventory-summary-card p {
+  margin: 10px 0 0;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.inventory-summary-card.warning-card strong {
+  color: #dc2626;
+}
+
 /* 表單卡片 */
 
 .form-card {
@@ -44,11 +91,68 @@ h1 {
   overflow: visible;
 }
 
+.form-card.collapsed {
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+
+/* 這裡不要寫 .form-card button，否則收合表單按鈕會被撐滿 */
+
 .form-card input,
-.form-card select,
-.form-card button {
+.form-card select {
   width: 100%;
   box-sizing: border-box;
+}
+
+.form-card .recommend-btn,
+.form-card .submit-btn {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 表單標題列 */
+
+.form-card-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+}
+
+.form-card-header h2 {
+  margin: 0 0 6px;
+  color: #0f172a;
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.form-card-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.form-card .form-card-header .toggle-add-stock-btn {
+  width: 180px;
+  max-width: 180px;
+  flex: 0 0 180px;
+  height: 52px;
+  border: none;
+  border-radius: 16px;
+  background: #2563eb;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.form-card .form-card-header .toggle-add-stock-btn:hover {
+  background: #1d4ed8;
 }
 
 /* 商品名稱 + 自動推薦按鈕 */
@@ -404,6 +508,14 @@ td:nth-child(8) {
   font-weight: 800;
 }
 
+/* RWD */
+
+@media (max-width: 1200px) {
+  .inventory-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* 平板 */
 
 @media (max-width: 1024px) {
@@ -443,10 +555,25 @@ td:nth-child(8) {
     width: 100%;
   }
 
+  .inventory-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
   .form-card {
     grid-template-columns: 1fr;
     padding: 24px;
     border-radius: 20px;
+  }
+
+  .form-card-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .form-card .form-card-header .toggle-add-stock-btn {
+    width: 100%;
+    max-width: 100%;
+    flex: none;
   }
 
   .product-name-row {
@@ -492,62 +619,5 @@ td:nth-child(8) {
   .stock-status-badge {
     min-width: 68px;
     font-size: 12px;
-  }
-}
-
-.inventory-summary-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
-  margin: 0 0 28px;
-}
-
-.inventory-summary-card {
-  min-width: 0;
-  padding: 22px 24px;
-  border-radius: 22px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.055);
-  border: 1px solid #e2e8f0;
-}
-
-.inventory-summary-card span {
-  display: block;
-  margin-bottom: 10px;
-  color: #64748b;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.inventory-summary-card strong {
-  display: block;
-  color: #0f172a;
-  font-size: clamp(26px, 2vw, 36px);
-  font-weight: 900;
-  line-height: 1.2;
-  white-space: nowrap;
-}
-
-.inventory-summary-card p {
-  margin: 10px 0 0;
-  color: #64748b;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.5;
-}
-
-.inventory-summary-card.warning-card strong {
-  color: #dc2626;
-}
-
-@media (max-width: 1200px) {
-  .inventory-summary-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px) {
-  .inventory-summary-grid {
-    grid-template-columns: 1fr;
   }
 }

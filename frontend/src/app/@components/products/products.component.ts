@@ -48,6 +48,10 @@ export class ProductsComponent implements OnInit {
 
   recentPurchasedProductIds: number[] = [];
 
+  private readonly recentInventoryStorageKey = 'recentInventoryProductIds';
+
+  recentInventoryProductIds: number[] = [];
+
   selectedCountry: 'TW' | 'JP' = 'TW';
 
   currency = 'NT$ ';
@@ -89,6 +93,8 @@ export class ProductsComponent implements OnInit {
   ngOnInit(): void {
     this.loadRecentPurchasedProductIds();
 
+    this.loadRecentInventoryProductIds();
+
     this.loadProducts();
   }
 
@@ -102,9 +108,16 @@ export class ProductsComponent implements OnInit {
     switch (this.selectedProductSort) {
       case 'latestPurchase':
         return products.sort((a, b) => {
-          const indexA = this.recentPurchasedProductIds.indexOf(a.id);
+          const recentActivityIds = Array.from(
+            new Set([
+              ...this.recentInventoryProductIds,
+              ...this.recentPurchasedProductIds,
+            ]),
+          );
 
-          const indexB = this.recentPurchasedProductIds.indexOf(b.id);
+          const indexA = recentActivityIds.indexOf(a.id);
+
+          const indexB = recentActivityIds.indexOf(b.id);
 
           const aIsRecent = indexA !== -1;
 
@@ -190,6 +203,22 @@ export class ProductsComponent implements OnInit {
       this.recentPurchasedProductIds = JSON.parse(value);
     } catch {
       this.recentPurchasedProductIds = [];
+    }
+  }
+
+  private loadRecentInventoryProductIds(): void {
+    const value = localStorage.getItem(this.recentInventoryStorageKey);
+
+    if (!value) {
+      this.recentInventoryProductIds = [];
+
+      return;
+    }
+
+    try {
+      this.recentInventoryProductIds = JSON.parse(value);
+    } catch {
+      this.recentInventoryProductIds = [];
     }
   }
 

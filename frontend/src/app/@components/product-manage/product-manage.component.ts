@@ -48,6 +48,10 @@ export class ProductManageComponent implements OnInit {
 
   recentPurchasedProductIds: number[] = [];
 
+  private readonly recentInventoryStorageKey = 'recentInventoryProductIds';
+
+  recentInventoryProductIds: number[] = [];
+
   categories: Category[] = [];
 
   hsCodes: HsCode[] = [];
@@ -65,6 +69,8 @@ export class ProductManageComponent implements OnInit {
   recommendMessage = '';
 
   isAutoRecommendEnabled = true;
+
+  isProductFormOpen = false;
 
   productReq: ProductReq = {
     name: '',
@@ -88,11 +94,17 @@ export class ProductManageComponent implements OnInit {
   ngOnInit(): void {
     this.loadRecentPurchasedProductIds();
 
+    this.loadRecentInventoryProductIds();
+
     this.loadProducts();
 
     this.loadCategories();
 
     this.loadHsCodes();
+  }
+
+  toggleProductForm(): void {
+    this.isProductFormOpen = !this.isProductFormOpen;
   }
 
   private loadRecentPurchasedProductIds(): void {
@@ -111,10 +123,42 @@ export class ProductManageComponent implements OnInit {
     }
   }
 
-  loadProducts(): void {
+  private loadRecentInventoryProductIds(): void {
+    const value = localStorage.getItem(this.recentInventoryStorageKey);
+
+    if (!value) {
+      this.recentInventoryProductIds = [];
+
+      return;
+    }
+
+    try {
+      this.recentInventoryProductIds = JSON.parse(value);
+    } catch {
+      this.recentInventoryProductIds = [];
+    }
+  }
+
+  private saveRecentInventoryProductIds(productIds: number[]): void {
+    const mergedIds = [...productIds, ...this.recentInventoryProductIds];
+
+    this.recentInventoryProductIds = Array.from(new Set(mergedIds)).slice(
+      0,
+      30,
+    );
+
+    localStorage.setItem(
+      this.recentInventoryStorageKey,
+      JSON.stringify(this.recentInventoryProductIds),
+    );
+  }
+
+  loadProducts(afterLoad?: () => void): void {
     this.apiService.getProducts().subscribe({
       next: (response: Product[]) => {
         this.products = response ?? [];
+
+        afterLoad?.();
       },
       error: (error: unknown) => {
         console.error(error);
@@ -192,8 +236,11 @@ export class ProductManageComponent implements OnInit {
     }
 
     this.recommendMessage = '';
+
     this.recommendedHsCodeId = null;
+
     this.productReq.categoryId = null;
+
     this.productReq.hsCodeId = null;
 
     this.hsCodeSearchKeyword = productName;
@@ -211,6 +258,7 @@ export class ProductManageComponent implements OnInit {
     }
 
     this.filteredHsCodes = relatedHsCodes;
+
     this.recommendedHsCodeId = relatedHsCodes[0].id;
 
     this.recommendMessage = `已列出與「${productName}」相關的 HS Code，請從下拉選單選擇正確品項`;
@@ -481,10 +529,14 @@ export class ProductManageComponent implements OnInit {
     }
 
     if (this.editingProductId) {
+      const updatedProductId = this.editingProductId;
+
       this.apiService
-        .updateProduct(this.editingProductId, this.productReq)
+        .updateProduct(updatedProductId, this.productReq)
         .subscribe({
           next: () => {
+            this.saveRecentInventoryProductIds([updatedProductId]);
+
             this.dialogService.success('更新成功').subscribe(() => {
               this.loadProducts();
 
@@ -505,12 +557,28 @@ export class ProductManageComponent implements OnInit {
   }
 
   createProduct(): void {
-    this.apiService.createProduct(this.productReq).subscribe({
-      next: () => {
-        this.dialogService.success('新增成功').subscribe(() => {
-          this.loadProducts();
+    const createdProductName = this.productReq.name.trim();
 
-          this.resetForm();
+    this.apiService.createProduct(this.productReq).subscribe({
+      next: (response) => {
+        const createdProduct = response as Product | null | undefined;
+
+        this.dialogService.success('新增成功').subscribe(() => {
+          this.loadProducts(() => {
+            if (createdProduct?.id) {
+              this.saveRecentInventoryProductIds([createdProduct.id]);
+            } else {
+              const matchedProduct = this.products.find(
+                (product) => product.productName.trim() === createdProductName,
+              );
+
+              if (matchedProduct) {
+                this.saveRecentInventoryProductIds([matchedProduct.id]);
+              }
+            }
+
+            this.resetForm();
+          });
         });
       },
       error: (error: unknown) => {
@@ -522,6 +590,8 @@ export class ProductManageComponent implements OnInit {
   }
 
   editProduct(product: Product): void {
+    this.isProductFormOpen = true;
+
     this.editingProductId = product.id;
 
     this.productReq = {
@@ -607,6 +677,8 @@ export class ProductManageComponent implements OnInit {
     this.recommendMessage = '';
 
     this.isAutoRecommendEnabled = true;
+
+    this.isProductFormOpen = false;
   }
 
   filteredProducts(): Product[] {
@@ -632,9 +704,16 @@ export class ProductManageComponent implements OnInit {
     switch (this.selectedProductSort) {
       case 'latestPurchase':
         return sortedProducts.sort((a, b) => {
-          const indexA = this.recentPurchasedProductIds.indexOf(a.id);
+          const recentActivityIds = Array.from(
+            new Set([
+              ...this.recentInventoryProductIds,
+              ...this.recentPurchasedProductIds,
+            ]),
+          );
 
-          const indexB = this.recentPurchasedProductIds.indexOf(b.id);
+          const indexA = recentActivityIds.indexOf(a.id);
+
+          const indexB = recentActivityIds.indexOf(b.id);
 
           const aIsRecent = indexA !== -1;
 
@@ -721,12 +800,26 @@ export class ProductManageComponent implements OnInit {
       .length;
   }
 
-  getUnitLabel(unit?: string): string {
+  getUnitLabel(unit?: string | null): string {
     switch (unit) {
       case 'kg':
         return '公斤 kg';
+
       case 'g':
         return '公克 g';
+
+      case '包':
+        return '包';
+
+      case '盒':
+        return '盒';
+
+      case '瓶':
+        return '瓶';
+
+      case '袋':
+        return '袋';
+
       default:
         return unit || '-';
     }

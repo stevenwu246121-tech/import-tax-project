@@ -13,7 +13,7 @@
 
   <select class="product-sort-select" [(ngModel)]="selectedProductSort">
     <option value="latestPurchase">
-      最新進貨優先
+      最近異動優先
     </option>
 
     <option value="stockAsc">
@@ -80,97 +80,127 @@
   </div>
 </section>
 
-<div class="form-card">
-  <!-- 商品名稱 + 自動推薦 HS Code -->
-  <div class="product-name-row">
-    <input type="text" placeholder="商品名稱" maxlength="30" [(ngModel)]="productReq.name" (input)="onProductNameInput()" />
+<div class="form-card" [class.collapsed]="!isProductFormOpen">
+  <div class="form-card-header">
+    <div>
+      <h2>
+        {{ editingProductId ? '編輯商品庫存' : '商品庫存維護' }}
+      </h2>
 
-    <button type="button" class="recommend-btn" (click)="recommendHsCode()">
-      自動推薦 HS Code
+      <p>
+        {{
+        isProductFormOpen
+        ? '填寫商品名稱、HS Code、來源國、單位、單價與庫存數量。'
+        : '新增或編輯商品庫存資料。'
+        }}
+      </p>
+    </div>
+
+    <button type="button" class="toggle-add-stock-btn" (click)="toggleProductForm()">
+      {{ isProductFormOpen ? '收合表單' : '新增庫存' }}
     </button>
   </div>
 
-  <!-- 推薦訊息 -->
-  <div class="recommend-message" *ngIf="recommendMessage">
-    {{ recommendMessage }}
-  </div>
+  <ng-container *ngIf="isProductFormOpen">
 
-  <!-- 分類 -->
-  <select [(ngModel)]="productReq.categoryId" (change)="onManualCategoryChange()">
-    <option [ngValue]="null" disabled>
-      請選擇分類
-    </option>
+    <!-- 商品名稱 + 自動推薦 HS Code -->
+    <div class="product-name-row">
+      <input type="text" placeholder="商品名稱" maxlength="30" [(ngModel)]="productReq.name"
+        (input)="onProductNameInput()" />
 
-    <option *ngFor="let category of uniqueCategories" [ngValue]="category.id">
-      {{ category.name }}
-    </option>
-  </select>
+      <button type="button" class="recommend-btn" (click)="recommendHsCode()">
+        自動推薦 HS Code
+      </button>
+    </div>
 
-  <!-- HS Code -->
-  <div class="hs-code-field">
-    <select class="hs-code-select" [(ngModel)]="productReq.hsCodeId" (change)="onManualHsCodeChange()"
-      [title]="getSelectedHsCodeTitle()">
-      <option [ngValue]="null" title="請選擇 HS Code">
-        請選擇 HS Code
+    <!-- 推薦訊息 -->
+    <div class="recommend-message" *ngIf="recommendMessage">
+      {{ recommendMessage }}
+    </div>
+
+    <!-- 分類 -->
+    <select [(ngModel)]="productReq.categoryId" (change)="onManualCategoryChange()">
+      <option [ngValue]="null" disabled>
+        請選擇分類
       </option>
 
-      <option *ngFor="let hs of filteredHsCodes" [ngValue]="hs.id" [title]="getHsCodeFullText(hs)">
-        {{ formatHsCodeOption(hs) }}
+      <option *ngFor="let category of uniqueCategories" [ngValue]="category.id">
+        {{ category.name }}
       </option>
     </select>
-  </div>
 
-  <!-- 來源國 -->
-  <select [(ngModel)]="productReq.originCountry">
-    <option value="" disabled>
-      請選擇來源國
-    </option>
+    <!-- HS Code -->
+    <div class="hs-code-field">
+      <select class="hs-code-select" [(ngModel)]="productReq.hsCodeId" (change)="onManualHsCodeChange()"
+        [title]="getSelectedHsCodeTitle()">
+        <option [ngValue]="null" title="請選擇 HS Code">
+          請選擇 HS Code
+        </option>
 
-    <option value="JP">JP</option>
-    <option value="TW">TW</option>
-  </select>
+        <option *ngFor="let hs of filteredHsCodes" [ngValue]="hs.id" [title]="getHsCodeFullText(hs)">
+          {{ formatHsCodeOption(hs) }}
+        </option>
+      </select>
+    </div>
 
-  <!-- 單位 -->
-  <select [(ngModel)]="productReq.unit">
-    <option value="" disabled>
-      請選擇數量單位
-    </option>
+    <!-- 來源國 -->
+    <select [(ngModel)]="productReq.originCountry">
+      <option value="" disabled>
+        請選擇來源國
+      </option>
 
-    <option value="kg">
-      公斤 kg
-    </option>
+      <option value="JP">
+        JP
+      </option>
 
-    <option value="g">
-      公克 g
-    </option>
+      <option value="TW">
+        TW
+      </option>
+    </select>
 
-    <option value="包">
-      包
-    </option>
+    <!-- 單位 -->
+    <select [(ngModel)]="productReq.unit">
+      <option value="" disabled>
+        請選擇數量單位
+      </option>
 
-    <option value="盒">
-      盒
-    </option>
+      <option value="kg">
+        公斤 kg
+      </option>
 
-    <option value="瓶">
-      瓶
-    </option>
+      <option value="g">
+        公克 g
+      </option>
 
-    <option value="袋">
-      袋
-    </option>
-  </select>
+      <option value="包">
+        包
+      </option>
 
-  <!-- 單價 -->
-  <input type="number" placeholder="單價" min="1" [(ngModel)]="productReq.unitPrice" />
+      <option value="盒">
+        盒
+      </option>
 
-  <!-- 庫存數量 -->
-  <input type="number" placeholder="庫存數量" min="0" [(ngModel)]="productReq.stockQty" />
+      <option value="瓶">
+        瓶
+      </option>
 
-  <!-- 新增 / 更新商品 -->
-  <button type="button" class="submit-btn" (click)="submitProduct()">
-    {{ editingProductId ? '更新商品' : '新增商品' }}
-  </button>
+      <option value="袋">
+        袋
+      </option>
+    </select>
+
+    <!-- 單價 -->
+    <input type="number" placeholder="單價" min="1" [(ngModel)]="productReq.unitPrice" />
+
+    <!-- 庫存數量 -->
+    <input type="number" placeholder="庫存數量" min="0" [(ngModel)]="productReq.stockQty" />
+
+    <!-- 新增 / 更新商品 -->
+    <button type="button" class="submit-btn" (click)="submitProduct()">
+      {{ editingProductId ? '更新商品' : '新增商品' }}
+    </button>
+
+  </ng-container>
 </div>
 
 <div class="table-scroll">
