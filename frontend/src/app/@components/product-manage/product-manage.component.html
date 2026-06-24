@@ -38,6 +38,48 @@
   </select>
 </div>
 
+<section class="inventory-summary-grid">
+  <div class="inventory-summary-card">
+    <span>商品總數</span>
+
+    <strong>
+      {{ productCount }}
+    </strong>
+
+    <p>目前系統中的商品資料筆數</p>
+  </div>
+
+  <div class="inventory-summary-card">
+    <span>庫存總量</span>
+
+    <strong>
+      {{ inventoryTotal | number:'1.0-0' }}
+    </strong>
+
+    <p>目前所有商品庫存數量加總</p>
+  </div>
+
+  <div class="inventory-summary-card">
+    <span>商品分類數</span>
+
+    <strong>
+      {{ categoryCount }}
+    </strong>
+
+    <p>目前商品涵蓋的分類數量</p>
+  </div>
+
+  <div class="inventory-summary-card warning-card">
+    <span>低庫存商品數</span>
+
+    <strong>
+      {{ lowStockCount }}
+    </strong>
+
+    <p>庫存數量小於等於 10 的商品</p>
+  </div>
+</section>
+
 <div class="form-card">
   <!-- 商品名稱 + 自動推薦 HS Code -->
   <div class="product-name-row">

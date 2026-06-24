@@ -697,6 +697,30 @@ export class ProductManageComponent implements OnInit {
     return Array.from(map.values());
   }
 
+  get productCount(): number {
+    return this.products.length;
+  }
+
+  get inventoryTotal(): number {
+    return this.products.reduce(
+      (sum, product) => sum + (product.stockQty ?? 0),
+      0,
+    );
+  }
+
+  get categoryCount(): number {
+    const categoryNames = this.products
+      .map((product) => product.categoryName)
+      .filter((categoryName): categoryName is string => !!categoryName);
+
+    return new Set(categoryNames).size;
+  }
+
+  get lowStockCount(): number {
+    return this.products.filter((product) => (product.stockQty ?? 0) <= 10)
+      .length;
+  }
+
   getUnitLabel(unit?: string): string {
     switch (unit) {
       case 'kg':
